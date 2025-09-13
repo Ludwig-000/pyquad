@@ -5,8 +5,8 @@ edition = "2024"
 
 
 # uncomment the following 2 lines if building library
-#[lib]
-#crate-type = ["cdylib"]
+[lib]
+crate-type = ["cdylib"]
 
 
 
