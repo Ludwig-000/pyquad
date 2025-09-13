@@ -1,0 +1,50 @@
+[package]
+name = "pyquad"
+version = "0.1.0"
+edition = "2024"
+
+
+# uncomment the following 2 lines if building library
+#[lib]
+#crate-type = ["cdylib"]
+
+
+
+
+
+[package.metadata.maturin]
+include = ["pyquad.pyi"]
+
+
+[dependencies]
+crossbeam = "0.8"
+macroquad = { version = "0.4.14", features = ["audio"] }
+regex = "1"
+reqwest = { version = "0.11", features = ["blocking"] } 
+slotmap = "1.0"
+pyo3 = { version = "0.20", features = ["extension-module"] }
+pyo3-asyncio = { version = "0.20", features = ["tokio-runtime"] }
+tokio = { version = "1", features = ["full"] }
+lazy_static = "1.4"
+async-std = "1.12.0"  # Use the latest version from crates.io
+futures = "0.3"  # This is required for block_on()
+macroquad-particles = "0.2.2"
+#for vectors
+glam = { version = "0.27", features = ["scalar-math"] }
+
+syn = "2.0"
+quote = "1.0"
+proc-macro2 = "1.0"
+miniquad ="0.3"
+
+#directly from macroquad's own dependencies
+#miniquad = { version = "=0.4.8", features = ["log-impl"] }
+quad-rand = "0.2.3"
+image = { version = "0.24", default-features = false, features = ["png", "tga"] }
+#macroquad_macro = { version = "0.1.8", path = "macroquad_macro" }
+fontdue = "0.9"
+backtrace = { version = "0.3.60", optional = true }
+log = { version = "0.4", optional = true }
+quad-snd = { version = "0.2", optional = true }
+
+tobj = "4"

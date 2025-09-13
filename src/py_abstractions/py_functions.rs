@@ -1,0 +1,296 @@
+// python abstractions for both macroquad functions and custom functions.
+// All functions are either 
+// 1) executed directly, if no engine context is needed
+// 2) will be pushed into COMMAND_QUEUE to be executed by macroquad
+//
+// also, any conversion between my abstracted pyclasses and the structs used in macroquad is being done here.
+// ( example:  Color -> mq::Color )
+
+use super::py_structs::*;
+use crate::py_abstractions::structs::Textures_and_Images::*;
+use macroquad::prelude as mq;
+
+use pyo3::prelude::*;
+use pyo3::wrap_pyfunction; 
+
+
+use std::sync::mpsc;
+use std::collections::HashSet;
+use std::sync::Arc;
+use std::time::*;
+
+use crate::COMMAND_QUEUE;
+use crate::Command;
+use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
+use crate::py_abstractions::structs::GLAM::Vec2::Vec2;
+#[pyfunction]
+pub fn draw_rectangle(x: f32, y: f32, w: f32, h: f32, color: Color) {
+    let c = mq::Color::new(color.r,color.g,color.b,color.a);
+    COMMAND_QUEUE.push(Command::DrawRect { x, y, w, h,color:c});
+}
+
+#[pyfunction]
+pub fn draw_grid(slices: u32, spacing: f32, axes_color: Color, other_color: Color) {
+    let c1 = mq::Color::new(axes_color.r,axes_color.g,axes_color.b,axes_color.a);
+    let c2 = mq::Color::new(other_color.r,other_color.g,other_color.b,other_color.a);
+    let c =Command::DrawGrid { slices, spacing, axes_color: c1, other_color: c2 };
+
+    COMMAND_QUEUE.push(c );
+}
+
+#[pyfunction]
+pub fn draw_plane(center: Vec3, size: Vec2, color: Color, texture: Option<Texture2D>)  {
+    let col = mq::Color::new(color.r,color.g,color.b,color.a);
+    let cen = mq::vec3( center.x,center.y,center.z);
+    let siz = mq::vec2(size.x,size.y);
+    let tex = match texture {
+        Some(t) => Some(t.texture),
+        None => None,
+    };
+
+    let c =Command::DrawPlane { center:cen,size:siz,color: col,texture: tex};
+
+    COMMAND_QUEUE.push(c );
+}
+
+#[pyfunction]
+pub fn draw_cube(position: Vec3, size: Vec3, color: Color) {
+    let col = mq::Color{r: color.r,g: color.g,b :color.b,a: color.a};
+    let pos = mq::vec3(position.x,position.y,position.z);
+    let siz = mq::vec3(size.x,size.y,size.z);
+    let texture = None; // for now
+    let c = mq::Color::new(color.r,color.g,color.b,color.a);
+    COMMAND_QUEUE.push(  Command::DrawCube{pos: pos, size: siz, texture, color: c} );
+}
+
+#[pyfunction]
+pub fn clear_background(color: Color) {
+    let col = mq::Color{r: color.r,g: color.g,b: color.b,a: color.a};
+    COMMAND_QUEUE.push(Command::ClearBackground { color: col});
+}
+
+#[pyfunction]
+pub fn next_frame() {
+    let (sender, receiver) = mpsc::sync_channel(1); // Create a blocking channel
+    COMMAND_QUEUE.push(Command::NextFrame(sender));
+
+    // Block until next frame is processed
+    let _ = receiver.recv();
+}
+
+#[pyfunction]
+pub fn draw_text(text: String, x: f32, y: f32, font_size: f32, color: Color) {
+    let c = mq::Color::new(color.r,color.g,color.b,color.a);
+    COMMAND_QUEUE.push(Command::DrawText {text, x, y, font_size, color:c});
+}
+
+#[pyfunction]
+pub fn draw_circle(x: f32, y: f32, r: f32, color: Color) {
+    // "circle" in macroquad is just a 20 sided polygon so we skip calling "draw_circle"
+    let c = mq::Color::new(color.r,color.g,color.b,color.a);
+    COMMAND_QUEUE.push(Command::DrawPoly{ x, y, sides:20, radius:r, rotation:0.0, color:c});
+}
+
+#[pyfunction]
+pub fn draw_poly(x: f32, y: f32, sides: u8, radius: f32, rotation: f32, color: Color) {
+    let c = mq::Color::new(color.r,color.g,color.b,color.a);
+    COMMAND_QUEUE.push(Command::DrawPoly{ x, y, sides, radius, rotation, color: c});
+}
+
+#[pyfunction]
+pub fn draw_texture(texture: Texture2D,x: f32, y: f32, color: Color ) {
+    let c = mq::Color::new(color.r,color.g,color.b,color.a);
+    let innerTexture: mq::Texture2D  = texture.texture;
+    COMMAND_QUEUE.push( Command::DrawTexture{ texture: innerTexture, x, y, color: c   }  );
+   
+}
+
+
+
+
+#[pyfunction]
+pub fn get_fps() -> PyResult<i32> {
+    let (sender, receiver) = mpsc::sync_channel(1);
+    COMMAND_QUEUE.push(Command::GetFPS(sender));
+
+    match receiver.recv() {
+        Ok(fps) => Ok(fps),
+        Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to receive FPS")),
+    }
+
+}
+
+
+
+
+#[pyfunction]
+pub fn get_keys_pressed() -> PyResult<KeyCodeSet> {
+    let (sender, receiver) = mpsc::sync_channel(1);
+    COMMAND_QUEUE.push(Command::Get_Keys_Pressed(sender));
+
+    match receiver.recv() {
+        Ok(keyset) => {
+            let converted_keys: HashSet<KeyCode> = keyset
+                .into_iter()
+                .map(KeyCode::from)
+                .collect();
+
+            let k = KeyCodeSet::new(converted_keys);
+
+            Ok(k)
+        }
+        Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to get keyset")),
+    }
+}
+
+#[pyfunction]
+pub fn get_keys_released() -> PyResult<KeyCodeSet> {
+    let (sender, receiver) = mpsc::sync_channel(1);
+    COMMAND_QUEUE.push(Command::Get_Keys_Released(sender));
+
+    match receiver.recv() {
+        Ok(keyset) => {
+            let converted_keys: HashSet<KeyCode> = keyset
+                .into_iter()
+                .map(KeyCode::from)
+                .collect();
+
+            let k = KeyCodeSet::new(converted_keys);
+
+            Ok(k)
+        }
+        Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to get keyset")),
+    }
+}
+
+#[pyfunction]
+pub fn get_keys_down() -> PyResult<KeyCodeSet> {
+    let (sender, receiver) = mpsc::sync_channel(1);
+    COMMAND_QUEUE.push(Command::Get_Keys_Down(sender));
+
+    match receiver.recv() {
+        Ok(keyset) => {
+            let converted_keys: HashSet<KeyCode> = keyset
+                .into_iter()
+                .map(KeyCode::from)
+                .collect();
+
+            let k = KeyCodeSet::new(converted_keys);
+
+            Ok(k)
+        }
+        Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to get keyset")),
+    }
+}
+//none yet here
+
+/*
+list of macroquad::prelude functions
+
+
+
+    mq::build_textures_atlas
+    mq::camera_font_scale
+    mq::cartesian_to_polar
+    mq::clamp
+    mq::clear_background
+    mq::clear_input_queue
+
+    mq::draw_affine_parallelepiped
+    mq::draw_affine_parallelogram
+    mq::draw_arc
+    mq::draw_circle
+    mq::draw_circle_lines
+    mq::draw_cube
+    mq::draw_cube_wires
+    mq::draw_cylinder
+    mq::draw_cylinder_ex
+    mq::draw_cylinder_wires
+    mq::draw_ellipse
+    mq::draw_ellipse_lines
+    mq::draw_fps
+    mq::draw_grid
+    mq::draw_grid_ex
+    mq::draw_hexagon
+    mq::draw_line
+    mq::draw_line_3d
+    mq::draw_mesh
+    mq::draw_multiline_text
+    mq::draw_plane
+    mq::draw_poly
+    mq::draw_poly_lines
+    mq::draw_rectangle
+    mq::draw_rectangle_ex
+    mq::draw_rectangle_lines
+    mq::draw_rectangle_lines_ex
+    mq::draw_sphere
+    mq::draw_sphere_ex
+    mq::draw_sphere_wires
+
+    mq::draw_text
+    mq::draw_text_ex
+
+    mq::draw_texture
+    mq::draw_texture_ex
+    mq::draw_triangle
+    mq::draw_triangle_lines
+    mq::get_char_pressed
+    mq::get_dropped_files
+    mq::get_fps
+    mq::get_frame_time
+    mq::get_internal_gl
+    mq::get_keys_down
+    mq::get_keys_pressed
+    mq::get_keys_released
+    mq::get_last_key_pressed
+    mq::get_screen_data
+    mq::get_text_center
+    mq::get_time
+    mq::gl_use_default_material
+    mq::gl_use_material
+    mq::is_key_down
+    mq::is_key_pressed
+    mq::is_key_released
+    mq::is_mouse_button_down
+    mq::is_mouse_button_pressed
+    mq::is_mouse_button_released
+    mq::is_quit_requested
+    mq::is_simulating_mouse_with_touch
+    mq::load_file
+    mq::load_image
+    mq::load_material
+    mq::load_string
+    mq::load_texture
+    mq::load_ttf_font_from_bytes
+    mq::measure_text
+    mq::mouse_delta_position
+    mq::mouse_position
+    mq::mouse_position_local
+    mq::mouse_wheel
+    mq::next_frame
+    mq::polar_to_cartesian
+    mq::pop_camera_state
+    mq::prevent_quit
+    mq::push_camera_state
+    mq::quat
+    mq::render_target
+    mq::render_target_ex
+    mq::render_target_msaa
+    mq::request_new_screen_size
+    mq::screen_dpi_scale
+    mq::screen_height
+    mq::screen_width
+    mq::set_camera
+    mq::set_cursor_grab
+    mq::set_default_camera
+    mq::set_default_filter_mode
+    mq::set_fullscreen
+    mq::set_panic_handler
+    mq::set_pc_assets_folder
+    mq::show_mouse
+    mq::simulate_mouse_with_touch
+    mq::touches
+    mq::touches_local
+
+
+*/

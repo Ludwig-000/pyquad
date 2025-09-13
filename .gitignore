@@ -1,0 +1,13 @@
+/target
+.vs/
+target/
+pyvv/
+.venv/
+pyinstll/
+build/
+.idea/
+tst.py
+tst1.py
+tst2.py
+tst3.py
+
