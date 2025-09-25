@@ -456,9 +456,11 @@ impl From<macroquad::input::KeyCode> for KeyCode {
 }
 
 
-pub fn all_colors(m: &PyModule) -> PyResult<()> {
-     m.add("CLOUDY_BLUE", Color { r: 0.6745098039215687, g: 0.7607843137254902, b: 0.8509803921568627, a: 1.0 })?;
-     m.add("DARK_PASTEL_GREEN", Color { r: 0.33725490196078434, g: 0.6823529411764706, b: 0.3411764705882353, a: 1.0 })?;
+pub fn all_colors(m: &Bound<'_, PyModule>, py: Python<'_>) -> PyResult<()> {
+    
+    
+    m.add("CLOUDY_BLUE", Color { r: 0.6745098039215687, g: 0.7607843137254902, b: 0.8509803921568627, a: 1.0 })?;
+    m.add("DARK_PASTEL_GREEN", Color { r: 0.33725490196078434, g: 0.6823529411764706, b: 0.3411764705882353, a: 1.0 })?;
     m.add("DUST", Color { r: 0.6980392156862745, g: 0.6, b: 0.43137254901960786, a: 1.0 })?;
     m.add("ELECTRIC_LIME", Color { r: 0.6588235294117647, g: 1.0, b: 0.01568627450980392, a: 1.0 })?;
     m.add("FRESH_GREEN", Color { r: 0.4117647058823529, g: 0.8470588235294118, b: 0.30980392156862746, a: 1.0 })?;

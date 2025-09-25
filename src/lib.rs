@@ -5,7 +5,7 @@ use std::process;
 use lazy_static::*;
 
 use pyo3::prelude::*;
-use pyo3_asyncio::*;
+
 
 use std::sync::Mutex;
 use macroquad::prelude as mq;
@@ -25,11 +25,7 @@ use crate::py_abstractions::structs::Camera as Camera;
 use crate::py_abstractions::Mouse as Mouse;
 use crate::engine::SHADERS::shaderLoader;
 use crate::engine::SHADERS::shader_manager as sm;
-//use py_abstractions::structs::Textures_and_Images::Texture2D;
 
-
-// todo: remove glam later.
-use glam as glam;
 
 lazy_static! {
     pub static ref COMMAND_QUEUE: Arc<SegQueue<Command>> = Arc::new(SegQueue::new());
@@ -37,14 +33,17 @@ lazy_static! {
 
 
 pub enum Command {
-    SetDefaultCamera(),
-    DrawRect { x: f32, y: f32, w: f32, h: f32, color: mq::Color },
-    DrawPlane { center: mq::Vec3, size: mq::Vec2, color: mq::Color, texture: Option<mq::Texture2D> },
 
+    SetDefaultCamera(),
+
+    DrawRect { x: f32, y: f32, w: f32, h: f32, color: mq::Color },
+
+    DrawPlane { center: mq::Vec3, size: mq::Vec2, color: mq::Color, texture: Option<mq::Texture2D> },
 
     DrawGrid { slices: u32, spacing: f32, axes_color: mq::Color, other_color: mq::Color },
 
     DrawCube { pos: mq::Vec3, size: mq::Vec3, texture: Option<mq::Texture2D>, color: mq::Color},
+
     DrawCubemap { pos: mq::Vec3, size: mq::Vec3, texture: Option<mq::Texture2D>, color: mq::Color},
 
     DrawPoly{ x: f32, y: f32, sides: u8, radius: f32, rotation: f32, color: mq::Color},
@@ -56,6 +55,7 @@ pub enum Command {
     ClearBackground { color: mq::Color },
 
     GetFPS(mpsc::SyncSender<i32>),
+
     GetMousePosition(mpsc::SyncSender<(f32,f32)>),
     
     Get_Keys_Pressed(mpsc::SyncSender<HashSet<mq::KeyCode>>),
@@ -70,63 +70,24 @@ pub enum Command {
         image: Arc<mq::Image>,
         sender: mpsc::SyncSender<mq::Texture2D>,
     },
+
     LoadImage {
         path: String,
         sender: mpsc::SyncSender<Result<mq::Image, macroquad::Error>>,
     },
+
     SetCamera{camera_2d: Option<mq::Camera2D>, camera_3d: Option<mq::Camera3D>},
+
     SetCursorGrab ( bool ),
+
     ShowMouse(bool),
     
 }
 
 
 async fn process_commands() {
-    
-    // Process commands until a NextFrame command is encountered.
-
-    //glam::Affine2
-    //glam::Affine3A
-    //glam::BVec2
-    //glam::BVec3
-    //glam::BVec3A
-    //glam::BVec4
-    //glam::DAffine2
-    //glam::DAffine3
-    //glam::DMat2
-    //glam::DMat3
-    //glam::DMat4
-    //glam::DQuat
-    //glam::DVec2
-    //glam::DVec3
-    //glam::DVec4
-    //glam::I16Vec2
-    //glam::I16Vec3
-    //glam::I16Vec4
-    //glam::I64Vec2
-    //glam::I64Vec3
-    //glam::I64Vec4
-    //glam::IVec2
-    //glam::IVec3
-    //glam::IVec4
-    //glam::Mat2
-    //glam::Mat3
-    //glam::Mat3A
-    //glam::Mat4
-    //glam::Quat
-    //glam::U16Vec2
-    //glam::U16Vec3
-    //glam::U16Vec4
-    //glam::U64Vec2
-    //glam::U64Vec3
-    //glam::U64Vec4
-    //glam::UVec2
-    //glam::UVec3
-    //glam::UVec4
-    //glam::Vec2
-    //glam::Vec3
-    //glam::Vec3A
-    //glam::Vec4
+    // processes commands that rely on the macroquad engine
+    // commands that do not rely on it's core (openGL) components are found elsewhere.
 
     while let Some(command) = COMMAND_QUEUE.pop() {
         match command {
@@ -158,21 +119,11 @@ async fn process_commands() {
                 mq::draw_cube(pos,size,texture.as_ref(),color)
             }
             
-            
-
             Command::LoadImage { path,sender} => {
                 let result = async {
-                // Use the macroquad function to load the file.
-                // The `?` operator here requires `macroquad::Error` to be
-                // convertible to your custom error type.
                 let bytes = mq::load_file(&path).await?;
                 
-                // Use macroquad's built-in image loader.
-                // This will also return a Result, which is then
-                // propagated by the `?` operator.
                 let image = mq::Image::from_file_with_format(&bytes, None)?;
-                
-                // Wrap the mq::Image in your PyO3-compatible Image struct.
                 Ok(image)
             }.await;
 
@@ -184,6 +135,7 @@ async fn process_commands() {
                 mq::draw_poly(x,y,sides,radius,rotation,color  );
             }
             Command::SetDefaultCamera() =>{ mq::set_default_camera() }
+
             Command::DrawTexture { texture,x,y,color}=>
             {
                 sm::switch_to_desired_shader(sm::ShaderKind::None);
@@ -193,15 +145,11 @@ async fn process_commands() {
             Command::ClearBackground {color } => {
                 macroquad::prelude::clear_background(color);
             }
+
             Command::NextFrame(sender) => {
                 mq::next_frame().await;
-
-                //let currentSHader= engine::SHADERS::shaderLoader::get_shader(0).unwrap(); // apply our custom shader each frame.
-                //mq::gl_use_material(&currentSHader);
                 engine::SHADERS::shader_manager::new_frame_shader_update();
-
                 let _ = sender.send(());
-                
             }
          
             Command::DrawText { text, x, y, font_size, color }=>{
@@ -211,36 +159,30 @@ async fn process_commands() {
             
             Command::GetFPS(sender) => {
             let fps = mq::get_fps();
-
             let _ = sender.send(fps);
             }
             Command::GetMousePosition(sender) => {
             let pos = mq::mouse_position();
-
             let _ = sender.send(pos);
             }
             Command::Get_Keys_Pressed(sender) => {
             let keyset = mq::get_keys_pressed();
-
             let _ = sender.send(keyset);
             }
             Command::Get_Keys_Released(sender) => {
             let keyset = mq::get_keys_released();
-            
             let _ = sender.send(keyset);
             }
             Command::Get_Keys_Down(sender) => {
             let keyset = mq::get_keys_down();
-           
             let _ = sender.send(keyset);
             }
             Command::ImgToTexture { image, sender }=>{
                 let tex: mq::Texture2D = mq::Texture2D::from_image(&image);
                 let _ = sender.send(tex);
             }
-            Command::SetCamera { camera_2d, camera_3d } => {
+            Command::SetCamera { camera_2d, camera_3d } => { // merged cam2d and 3d for simplicity.
                 match (camera_2d, camera_3d) {
-
                     (Some(cam), None) => mq::set_camera(&cam),
                     (None, Some(cam)) => mq::set_camera(&cam),
                     _ => panic!("invalid cam pattern"),
@@ -326,7 +268,7 @@ fn activate_engine(_py: Python, conf: Option<Config>) {
 }
 
 #[pymodule]
-fn pyquad(py: Python, m: &PyModule) -> PyResult<()> {
+fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes all functionality to python
 
     // functions
     m.add_function(wrap_pyfunction!(activate_engine, m)?)?;
@@ -380,7 +322,7 @@ fn pyquad(py: Python, m: &PyModule) -> PyResult<()> {
 
     // colors
     {
-        all_colors(m);
+        all_colors(m,py);
     }
 
     //extra
@@ -392,7 +334,8 @@ fn pyquad(py: Python, m: &PyModule) -> PyResult<()> {
 
     
     
-    }
+}
+
 /*
 
 list of macroquad enums
@@ -529,28 +472,3 @@ list of macroquad::prelude functions
 
 
 */
-//#[pyfunction]
-//fn write_texture(path: String) -> Option<Texture2D> {
-//    let (sender, receiver) = mpsc::sync_channel(1);
-//    COMMAND_QUEUE.lock().unwrap().push(Command::LoadTexture { sender, path });
-
-//    // Block and return texture result
-//    match receiver.recv() {
-//        Ok(texture_option) => texture_option, // Return the Option<Texture2D>
-//        Err(_) => None, // Or handle the error appropriately (e.g., log it)
-//    }
-//}
-
-
-
-
-//#[pyfunction]
-//fn activate_engine_1(_py: Python) {
-//    std::thread::spawn(|| {
-//        macroquad::Window::new("PyQuad", async {
-//            loop {
-//                process_commands().await;
-//            }
-//        });
-//    });
-//}

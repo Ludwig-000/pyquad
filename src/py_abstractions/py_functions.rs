@@ -23,6 +23,7 @@ use crate::COMMAND_QUEUE;
 use crate::Command;
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::py_abstractions::structs::GLAM::Vec2::Vec2;
+
 #[pyfunction]
 pub fn draw_rectangle(x: f32, y: f32, w: f32, h: f32, color: Color) {
     let c = mq::Color::new(color.r,color.g,color.b,color.a);

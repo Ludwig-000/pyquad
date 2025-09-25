@@ -807,16 +807,16 @@ impl Vec3 {
 
     #[pyo3(name = "__truediv__")]
     #[inline]
-    pub fn __truediv__ (&self, rhs: &PyAny) -> PyResult<Self> {
+    pub fn truediv(&self, rhs: Vec3OrF32) -> PyResult<Self> {
         let lhs: gl = (*self).into();
-
-        if let Ok(rhs_self) = rhs.extract::<Self>() {
-            let b: gl = rhs_self.into();
-            Ok((lhs/b).into())
-        } else if let Ok(val_f32) = rhs.extract::<f32>() {
-            Ok((lhs / val_f32).into())
-        } else {
-            Err(PyNotImplementedError::new_err("Unsupported operand type for /",))
+        match rhs {
+            Vec3OrF32::F32(rhs_into) => {
+                Ok((lhs / rhs_into).into())
+            }
+            Vec3OrF32::Vec3(rhs_into) => {
+                let b: gl = rhs_into.into();
+                Ok((lhs / b).into())
+            }
         }
     }
     
@@ -844,19 +844,18 @@ impl Vec3 {
 
     #[pyo3(name = "__mul__")]
     #[inline]
-    pub fn mul(&self, rhs: &PyAny) -> PyResult<Self> {
+    pub fn mul(&self, rhs: Vec3OrF32) -> PyResult<Self> {
         let lhs: gl = (*self).into();
-
-        if let Ok(rhs_self) = rhs.extract::<Self>() {
-            let b: gl = rhs_self.into();
-            Ok((lhs*b).into())
-
-        } else if let Ok(val_f32) = rhs.extract::<f32>() {
-            Ok((lhs * val_f32).into())
-
-        } else {
-            Err(PyNotImplementedError::new_err("Unsupported operand type for *",))
+        match rhs {
+            Vec3OrF32::F32(rhs_into) =>{
+                Ok((lhs * rhs_into).into())
+            }
+            Vec3OrF32::Vec3(rhs_into) =>{
+                let b: gl = rhs_into.into();
+                Ok((lhs*b).into())
+            }
         }
+        
     }
 
     //#[pyo3(name = "__imul__")]
@@ -885,18 +884,16 @@ impl Vec3 {
 
     #[pyo3(name = "__add__")]
     #[inline]
-    pub fn __add__(&self, rhs: &PyAny) -> PyResult<Self> {
+    pub fn add(&self, rhs: Vec3OrF32) -> PyResult<Self> {
         let lhs: gl = (*self).into();
-
-        if let Ok(rhs_self) = rhs.extract::<Self>() {
-            let b: gl = rhs_self.into();
-            Ok((lhs+b).into())
-
-        } else if let Ok(val_f32) = rhs.extract::<f32>() {
-            Ok((lhs + val_f32).into())
-
-        } else {
-            Err(PyNotImplementedError::new_err("Unsupported operand type for +",))
+        match rhs {
+            Vec3OrF32::F32(rhs_into) => {
+                Ok((lhs + rhs_into).into())
+            }
+            Vec3OrF32::Vec3(rhs_into) => {
+                let b: gl = rhs_into.into();
+                Ok((lhs + b).into())
+            }
         }
     }
 
@@ -927,18 +924,16 @@ impl Vec3 {
 
     #[pyo3(name = "__sub__")]
     #[inline]
-    pub fn __sub__(&self, rhs: &PyAny) -> PyResult<Self> {
+    pub fn sub(&self, rhs: Vec3OrF32) -> PyResult<Self> {
         let lhs: gl = (*self).into();
-
-        if let Ok(rhs_self) = rhs.extract::<Self>() {
-            let b: gl = rhs_self.into();
-            Ok((lhs-b).into())
-
-        } else if let Ok(val_f32) = rhs.extract::<f32>() {
-            Ok((lhs - val_f32).into())
-
-        } else {
-            Err(PyNotImplementedError::new_err("Unsupported operand type for -",))
+        match rhs {
+            Vec3OrF32::F32(rhs_into) => {
+                Ok((lhs - rhs_into).into())
+            }
+            Vec3OrF32::Vec3(rhs_into) => {
+                let b: gl = rhs_into.into();
+                Ok((lhs - b).into())
+            }
         }
     }
 
@@ -970,18 +965,16 @@ impl Vec3 {
 
     #[pyo3(name = "__mod__")]
     #[inline]
-    pub fn __mod__(&self, rhs: &PyAny) -> PyResult<Self> {
+    pub fn __mod__(&self, rhs: Vec3OrF32) -> PyResult<Self> {
         let lhs: gl = (*self).into();
-
-        if let Ok(rhs_self) = rhs.extract::<Self>() {
-            let b: gl = rhs_self.into();
-            Ok((lhs%b).into())
-
-        } else if let Ok(val_f32) = rhs.extract::<f32>() {
-            Ok((lhs % val_f32).into())
-
-        } else {
-            Err(PyNotImplementedError::new_err("Unsupported operand type for %",))
+        match rhs {
+            Vec3OrF32::F32(rhs_into) => {
+                Ok((lhs % rhs_into).into())
+            }
+            Vec3OrF32::Vec3(rhs_into) => {
+                let b: gl = rhs_into.into(); 
+                Ok((lhs % b).into())
+            }
         }
     }
 
@@ -1033,4 +1026,10 @@ impl From<gl> for Vec3 {
         z: v.z,
         }
     }
+}
+
+#[derive(FromPyObject)]
+enum Vec3OrF32 {
+    Vec3(Vec3),
+    F32(f32),
 }

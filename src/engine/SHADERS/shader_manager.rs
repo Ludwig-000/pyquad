@@ -26,6 +26,7 @@ impl From<ShaderKind> for u8 {
 
 static CURRENT_SHADER: AtomicU8 = AtomicU8::new(ShaderKind::None as u8);
 static SWITCH_COUNT: AtomicUsize = AtomicUsize::new(0);
+
 lazy_static::lazy_static! {
     static ref SWITCH_HISTORY: Mutex<Vec<usize>> = Mutex::new(Vec::new());
 }
@@ -98,6 +99,6 @@ fn load_shader(shader: ShaderKind){
         let material = crate::engine::SHADERS::shaderLoader::get_shader(0).expect("Basic shader not loaded");
         macroquad::material::gl_use_material(&material);
     }
-}
+   }
     
 }
