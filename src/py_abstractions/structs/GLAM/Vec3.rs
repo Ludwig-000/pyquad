@@ -5,11 +5,15 @@ use glam::Vec2 as glVec2;
 use pyo3::exceptions::PyNotImplementedError;
 use pyo3::prelude::*;
 
+use pyo3_stub_gen::{derive::gen_stub_pyfunction, define_stub_info_gatherer,derive::*};
+//define_stub_info_gatherer!(stub_info);
+
 //
 // A python abstraction for the Vec3 struct from the GLAM crate.
 // This file implements all functionality from Glam, replacing uses of BVec3 and Vec2 with the pyabstracted versions.
 //
 
+#[gen_stub_pyclass]
 #[pyclass]
 #[derive(Clone, Copy, PartialEq,Debug)]
 pub struct Vec3 {
@@ -25,14 +29,14 @@ impl Vec3 {
     // Const constructor for compile-time constants
     #[inline(always)]
     pub const fn const_new(x: f32, y: f32, z: f32) -> Self {
-    Vec3 { x, y, z }
+        Vec3 { x, y, z }
     }
 
 
     // Const constructor for splat values
     #[inline(always)]
     pub const fn splat(value: f32) -> Self {
-    Vec3 { x: value, y: value, z: value }
+        Vec3 { x: value, y: value, z: value }
     }
 }
 
@@ -40,9 +44,8 @@ impl Vec3 {
 impl Vec3 {
     #[new]
     pub fn new(x: f32, y: f32, z: f32) -> Self {
-    Self { x, y, z }
+        Self { x, y, z }
     }
-
 
     #[classattr]
     pub const ZERO: Self = Self::splat(0.0);
@@ -137,7 +140,7 @@ impl Vec3 {
     #[inline]
     pub fn truncate(&self) -> Vec2 {
         let s: gl=  (*self).into();
-        let g2: glVec2 = s.truncate();   // glam does the math
+        let g2: glVec2 = s.truncate();
         g2.into()         
     }
 

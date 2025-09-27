@@ -7,9 +7,10 @@ use std::option;
 use std::sync::mpsc;
 use crate::COMMAND_QUEUE;
 use crate::Command;
-use pyo3::exceptions::PyValueError;
+use pyo3::exceptions::PyValueError;use pyo3_stub_gen::{derive::gen_stub_pyfunction, define_stub_info_gatherer,derive::*};
 
 /// Image, data stored in CPU memory
+#[gen_stub_pyclass]
 #[pyclass(name = "Image")]
 #[derive(Clone)]
 pub struct Image {
@@ -21,6 +22,7 @@ pub struct Image {
     pub height: u16,
 }
 
+#[gen_stub_pymethods]
 #[pymethods]
 impl Image {
 
@@ -163,12 +165,14 @@ impl Image {
 
 
 /// Texture, data stored in GPU memory
+#[gen_stub_pyclass]
 #[pyclass(name = "Texture2D")]
 #[derive(Clone, Debug, PartialEq)]
 pub struct Texture2D {
    pub texture: mq::Texture2D,
 }
 
+#[gen_stub_pymethods]
 #[pymethods]
 impl Texture2D {
    

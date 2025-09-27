@@ -5,9 +5,12 @@ use pyo3::wrap_pyfunction;
 use macroquad::prelude as mq;
 
 
+use pyo3_stub_gen::{derive::gen_stub_pyfunction, define_stub_info_gatherer,derive::*} ;
+use pyo3_stub_gen::derive::gen_stub_pyclass_enum;
 // macros 
 macro_rules! make_basic_pyclass {
     ($name:ident, { $($field:ident : $ty:ty),* $(,)? }) => {
+        #[gen_stub_pyclass]
         #[pyclass]
         #[derive(Clone)]
         #[derive(Debug)]
@@ -15,7 +18,7 @@ macro_rules! make_basic_pyclass {
             $(#[pyo3(get, set)]
             pub $field: $ty),*
         }
-
+        #[gen_stub_pymethods]
         #[pymethods]
         impl $name {
             #[new]
@@ -103,7 +106,7 @@ make_basic_pyclass!(DMat4, {x_axis: DVec4, y_axis: DVec4, z_axis: DVec4, w_axis:
 use std::collections::HashSet;
 
 
-
+#[gen_stub_pyclass]
 #[pyclass]
 #[derive(Clone)]
 #[derive(Debug)]
@@ -197,6 +200,7 @@ impl KeyCodeSet {
     }
 }
 
+#[gen_stub_pyclass_enum]
 #[pyclass]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)] // Crucial for HashSet
 pub enum KeyCode {

@@ -12,7 +12,7 @@ use macroquad::prelude as mq;
 
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction; 
-
+use pyo3_stub_gen::{derive::gen_stub_pyfunction};
 
 use std::sync::mpsc;
 use std::collections::HashSet;
@@ -24,12 +24,14 @@ use crate::Command;
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::py_abstractions::structs::GLAM::Vec2::Vec2;
 
+#[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_rectangle(x: f32, y: f32, w: f32, h: f32, color: Color) {
     let c = mq::Color::new(color.r,color.g,color.b,color.a);
     COMMAND_QUEUE.push(Command::DrawRect { x, y, w, h,color:c});
 }
 
+#[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_grid(slices: u32, spacing: f32, axes_color: Color, other_color: Color) {
     let c1 = mq::Color::new(axes_color.r,axes_color.g,axes_color.b,axes_color.a);
@@ -39,6 +41,7 @@ pub fn draw_grid(slices: u32, spacing: f32, axes_color: Color, other_color: Colo
     COMMAND_QUEUE.push(c );
 }
 
+#[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_plane(center: Vec3, size: Vec2, color: Color, texture: Option<Texture2D>)  {
     let col = mq::Color::new(color.r,color.g,color.b,color.a);
@@ -54,6 +57,7 @@ pub fn draw_plane(center: Vec3, size: Vec2, color: Color, texture: Option<Textur
     COMMAND_QUEUE.push(c );
 }
 
+#[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_cube(position: Vec3, size: Vec3, color: Color) {
     let col = mq::Color{r: color.r,g: color.g,b :color.b,a: color.a};
@@ -64,12 +68,14 @@ pub fn draw_cube(position: Vec3, size: Vec3, color: Color) {
     COMMAND_QUEUE.push(  Command::DrawCube{pos: pos, size: siz, texture, color: c} );
 }
 
+#[gen_stub_pyfunction]
 #[pyfunction]
 pub fn clear_background(color: Color) {
     let col = mq::Color{r: color.r,g: color.g,b: color.b,a: color.a};
     COMMAND_QUEUE.push(Command::ClearBackground { color: col});
 }
 
+#[gen_stub_pyfunction]
 #[pyfunction]
 pub fn next_frame() {
     let (sender, receiver) = mpsc::sync_channel(1); // Create a blocking channel
@@ -79,12 +85,14 @@ pub fn next_frame() {
     let _ = receiver.recv();
 }
 
+#[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_text(text: String, x: f32, y: f32, font_size: f32, color: Color) {
     let c = mq::Color::new(color.r,color.g,color.b,color.a);
     COMMAND_QUEUE.push(Command::DrawText {text, x, y, font_size, color:c});
 }
 
+#[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_circle(x: f32, y: f32, r: f32, color: Color) {
     // "circle" in macroquad is just a 20 sided polygon so we skip calling "draw_circle"
@@ -92,12 +100,14 @@ pub fn draw_circle(x: f32, y: f32, r: f32, color: Color) {
     COMMAND_QUEUE.push(Command::DrawPoly{ x, y, sides:20, radius:r, rotation:0.0, color:c});
 }
 
+#[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_poly(x: f32, y: f32, sides: u8, radius: f32, rotation: f32, color: Color) {
     let c = mq::Color::new(color.r,color.g,color.b,color.a);
     COMMAND_QUEUE.push(Command::DrawPoly{ x, y, sides, radius, rotation, color: c});
 }
 
+#[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_texture(texture: Texture2D,x: f32, y: f32, color: Color ) {
     let c = mq::Color::new(color.r,color.g,color.b,color.a);
@@ -108,7 +118,7 @@ pub fn draw_texture(texture: Texture2D,x: f32, y: f32, color: Color ) {
 
 
 
-
+#[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_fps() -> PyResult<i32> {
     let (sender, receiver) = mpsc::sync_channel(1);
@@ -123,7 +133,7 @@ pub fn get_fps() -> PyResult<i32> {
 
 
 
-
+#[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_keys_pressed() -> PyResult<KeyCodeSet> {
     let (sender, receiver) = mpsc::sync_channel(1);
@@ -143,7 +153,7 @@ pub fn get_keys_pressed() -> PyResult<KeyCodeSet> {
         Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to get keyset")),
     }
 }
-
+#[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_keys_released() -> PyResult<KeyCodeSet> {
     let (sender, receiver) = mpsc::sync_channel(1);
@@ -163,7 +173,7 @@ pub fn get_keys_released() -> PyResult<KeyCodeSet> {
         Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to get keyset")),
     }
 }
-
+#[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_keys_down() -> PyResult<KeyCodeSet> {
     let (sender, receiver) = mpsc::sync_channel(1);

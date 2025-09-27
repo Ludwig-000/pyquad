@@ -5,7 +5,7 @@ use std::process;
 use lazy_static::*;
 
 use pyo3::prelude::*;
-
+use pyo3_stub_gen::define_stub_info_gatherer;
 
 use std::sync::Mutex;
 use macroquad::prelude as mq;
@@ -335,6 +335,8 @@ fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes
     
     
 }
+
+define_stub_info_gatherer!(stub_info);
 
 /*
 

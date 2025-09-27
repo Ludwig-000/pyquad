@@ -1,0 +1,8 @@
+[project]
+name = "pyquad"
+version = "0.1.0"
+description = "PyO3 bindings for Macroquad"
+
+[tool.maturin]
+# Optional: include stub files
+include = ["pyquad.pyi"]

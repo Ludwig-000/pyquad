@@ -2,10 +2,10 @@
 use glam::Vec2 as gl;
 
 use pyo3::prelude::*;
+use pyo3_stub_gen::{derive::gen_stub_pyfunction, define_stub_info_gatherer,derive::*};
 
 
-
-
+#[gen_stub_pyclass]
 #[pyclass]
 #[derive(Clone, Copy, PartialEq,Debug)]
 pub struct Vec2 {
@@ -31,6 +31,8 @@ impl Vec2 {
     }
 }
 
+
+#[gen_stub_pymethods]
 #[pymethods]
 impl Vec2 {
     #[new]
@@ -39,9 +41,10 @@ impl Vec2 {
     }
 
 
-    //pub fn normalize(self) -> Self {
-    //gl::normalize(self.into()).into()
-    //}
+    pub fn normalize(&self) -> Self {
+    let a: gl = (*self).into();
+    a.normalize().into()
+    }
 }
 
 

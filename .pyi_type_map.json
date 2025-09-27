@@ -1,8 +1,0 @@
-{
-  "(f32,f32)": "tuple[float, float]",
-  "Color": "Color",
-  "KeyCodeSet": "KeyCodeSet",
-  "Texture2D": "Texture2D",
-  "Vec2": "Vec2",
-  "Vec3": "Vec3"
-}
