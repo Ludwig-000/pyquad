@@ -16,8 +16,10 @@ How to build:
 
 1) Create and activate a python virtual enviroment.
 
-2) Run `maturin build --release`
+2) Run `cargo run --bin stub_gen` to update `pyquad.pyi` and gennerate an up-to-date python stub.
 
-3) The .whl file can be found at `./target/wheels/`
+3) Run `maturin build --release`
 
-4) The .whl file can be added to pip via `pip install C:\path\to\your\file.whl --force-reinstall`
+4) The .whl file can be found at `./target/wheels/`
+
+5) The .whl file can be added to pip via `pip install C:\path\to\your\file.whl --force-reinstall`

@@ -6,7 +6,7 @@ use pyquad::stub_info;
 fn main() -> Result<()> {
     match stub_info() {
         Ok(stub) => {
-            println!("stub_info succeeded. Stub: {:?}", stub);
+            println!("stub_info succeeded.");
             stub.generate()?;
             Ok(())
         }

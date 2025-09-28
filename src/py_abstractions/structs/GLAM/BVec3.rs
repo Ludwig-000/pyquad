@@ -2,10 +2,10 @@
 use glam::BVec3 as gl;
 
 use pyo3::prelude::*;
+use pyo3_stub_gen::{derive::gen_stub_pyfunction, define_stub_info_gatherer,derive::*};
 
 
-
-
+#[gen_stub_pyclass]
 #[pyclass]
 #[derive(Clone, Copy, PartialEq,Debug,Eq, Hash)]
 pub struct BVec3 {
@@ -41,6 +41,7 @@ impl BVec3 {
 
 const MASK: [u32; 2] = [0, 0xff_ff_ff_ff];
 
+#[gen_stub_pymethods]
 #[pymethods]
 impl BVec3 {
     #[new]
@@ -48,15 +49,18 @@ impl BVec3 {
     Self { x, y, z }
     }
 
-
-
     /// All false.
-    #[classattr]   
-    pub const FALSE: Self = Self::splat(false);
+    #[classattr]
+    fn FALSE() -> BVec3 {
+        Self::splat(false)
+    }
 
     /// All true.
-    #[classattr]   
-    pub const TRUE: Self = Self::splat(true);
+    #[classattr]
+    fn TRUE() -> BVec3 {
+        Self::splat(true)
+    }
+
     
     #[inline]
     pub fn bitmask(&self) -> u32 {

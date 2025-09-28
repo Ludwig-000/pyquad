@@ -8,11 +8,16 @@ use std::sync::mpsc;
 use crate::COMMAND_QUEUE;
 use crate::Command;
 use pyo3::exceptions::PyValueError;
+use pyo3_stub_gen::{derive::gen_stub_pyfunction, define_stub_info_gatherer,derive::*};
+
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::py_abstractions::structs::GLAM::Vec2::Vec2;
+
+#[gen_stub_pyclass]
 #[pyclass(name = "Camera2D")]
 #[derive(Debug,Clone)]
 pub struct Camera2D {
+
     /// Rotation in degrees.
     #[pyo3(get, set)]
     pub rotation: f32,
@@ -30,13 +35,15 @@ pub struct Camera2D {
     pub viewport: Option<(i32, i32, i32, i32)>,
 }
 
-   
+#[gen_stub_pymethods]
 #[pymethods]  
 impl Camera2D {
+
     #[new]
     fn new() -> Self {
     Camera2D::default()
     }
+
     /// Will make camera space equals given rect.
     #[staticmethod]
     pub fn from_display_rect(rect: Rect) -> Camera2D {
@@ -98,7 +105,7 @@ impl Default for Camera2D {
 //    }
 //}
 
-
+#[gen_stub_pyfunction]
 #[pyfunction]
 pub fn set_default_camera()  {
     COMMAND_QUEUE.push(Command::SetDefaultCamera());
@@ -108,7 +115,7 @@ pub fn set_default_camera()  {
 
 
 
-
+#[gen_stub_pyclass]
 #[pyclass(name = "Camera3D")]
 #[derive(Debug,Clone)]
 pub struct Camera3D {
@@ -134,7 +141,8 @@ pub struct Camera3D {
     pub z_far: f32,
 }
 
-   
+
+#[gen_stub_pymethods]
 #[pymethods]  
 impl Camera3D {
     #[new]

@@ -5,7 +5,7 @@ use std::process;
 use lazy_static::*;
 
 use pyo3::prelude::*;
-use pyo3_stub_gen::define_stub_info_gatherer;
+use pyo3_stub_gen::{derive::gen_stub_pyfunction, define_stub_info_gatherer,derive::*};
 
 use std::sync::Mutex;
 use macroquad::prelude as mq;
@@ -25,7 +25,7 @@ use crate::py_abstractions::structs::Camera as Camera;
 use crate::py_abstractions::Mouse as Mouse;
 use crate::engine::SHADERS::shaderLoader;
 use crate::engine::SHADERS::shader_manager as sm;
-
+use crate::py_abstractions::Color::*;
 
 lazy_static! {
     pub static ref COMMAND_QUEUE: Arc<SegQueue<Command>> = Arc::new(SegQueue::new());
@@ -202,6 +202,7 @@ async fn process_commands() {
    
 }
 
+#[gen_stub_pyfunction]
 #[pyfunction]
 #[pyo3(signature = (conf = None))] // overloads activate_engine with config
 fn activate_engine(_py: Python, conf: Option<Config>) {
@@ -322,7 +323,7 @@ fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes
 
     // colors
     {
-        all_colors(m,py);
+        //all_colors(m,py);
     }
 
     //extra

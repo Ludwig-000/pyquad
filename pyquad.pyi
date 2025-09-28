@@ -5,6 +5,193 @@ import builtins
 import typing
 from enum import Enum
 
+class BVec2:
+    FALSE: BVec2
+    r"""
+    All false.
+    """
+    TRUE: BVec2
+    r"""
+    All true.
+    """
+    @property
+    def x(self) -> builtins.bool: ...
+    @x.setter
+    def x(self, value: builtins.bool) -> None: ...
+    @property
+    def y(self) -> builtins.bool: ...
+    @y.setter
+    def y(self, value: builtins.bool) -> None: ...
+    def __new__(cls, x:builtins.bool, y:builtins.bool) -> BVec2: ...
+    def bitmask(self) -> builtins.int: ...
+    def any(self) -> builtins.bool: ...
+    def all(self) -> builtins.bool:
+        r"""
+        Returns true if all the elements are true, false otherwise.
+        """
+    def test(self, index:builtins.int) -> builtins.bool: ...
+    def set(self, index:builtins.int, value:builtins.bool) -> None: ...
+    def into_bool_array(self) -> builtins.list[builtins.bool]: ...
+    def into_u32_array(self) -> builtins.list[builtins.int]: ...
+    def bitand(self, rhs:BVec2) -> BVec2: ...
+    def bitor(self, rhs:BVec2) -> BVec2: ...
+    def bitxor(self, rhs:BVec2) -> BVec2: ...
+    def not(self) -> BVec2: ...
+    def __str__(self) -> builtins.str: ...
+
+class BVec3:
+    FALSE: BVec3
+    r"""
+    All false.
+    """
+    TRUE: BVec3
+    r"""
+    All true.
+    """
+    @property
+    def x(self) -> builtins.bool: ...
+    @x.setter
+    def x(self, value: builtins.bool) -> None: ...
+    @property
+    def y(self) -> builtins.bool: ...
+    @y.setter
+    def y(self, value: builtins.bool) -> None: ...
+    @property
+    def z(self) -> builtins.bool: ...
+    @z.setter
+    def z(self, value: builtins.bool) -> None: ...
+    def __new__(cls, x:builtins.bool, y:builtins.bool, z:builtins.bool) -> BVec3: ...
+    def bitmask(self) -> builtins.int: ...
+    def any(self) -> builtins.bool: ...
+    def all(self) -> builtins.bool:
+        r"""
+        Returns true if all the elements are true, false otherwise.
+        """
+    def test(self, index:builtins.int) -> builtins.bool: ...
+    def set(self, index:builtins.int, value:builtins.bool) -> None: ...
+    def into_bool_array(self) -> builtins.list[builtins.bool]: ...
+    def into_u32_array(self) -> builtins.list[builtins.int]: ...
+    def bitand(self, rhs:BVec3) -> BVec3: ...
+    def bitor(self, rhs:BVec3) -> BVec3: ...
+    def bitxor(self, rhs:BVec3) -> BVec3: ...
+    def not(self) -> BVec3: ...
+    def __str__(self) -> builtins.str: ...
+
+class Camera2D:
+    @property
+    def rotation(self) -> builtins.float:
+        r"""
+        Rotation in degrees.
+        """
+    @rotation.setter
+    def rotation(self, value: builtins.float) -> None:
+        r"""
+        Rotation in degrees.
+        """
+    @property
+    def zoom(self) -> Vec2:
+        r"""
+        Scaling, should be (1.0, 1.0) by default.
+        """
+    @zoom.setter
+    def zoom(self, value: Vec2) -> None:
+        r"""
+        Scaling, should be (1.0, 1.0) by default.
+        """
+    @property
+    def target(self) -> Vec2:
+        r"""
+        Rotation and zoom origin.
+        """
+    @target.setter
+    def target(self, value: Vec2) -> None:
+        r"""
+        Rotation and zoom origin.
+        """
+    @property
+    def offset(self) -> Vec2:
+        r"""
+        Displacement from target.
+        """
+    @offset.setter
+    def offset(self, value: Vec2) -> None:
+        r"""
+        Displacement from target.
+        """
+    @property
+    def viewport(self) -> typing.Optional[tuple[builtins.int, builtins.int, builtins.int, builtins.int]]: ...
+    @viewport.setter
+    def viewport(self, value: typing.Optional[tuple[builtins.int, builtins.int, builtins.int, builtins.int]]) -> None: ...
+    def __new__(cls) -> Camera2D: ...
+    @staticmethod
+    def from_display_rect(rect:Rect) -> Camera2D:
+        r"""
+        Will make camera space equals given rect.
+        """
+    @staticmethod
+    def set_camera(camera:Camera2D) -> None:
+        r"""
+        Set active 2D or 3D camera.
+        """
+
+class Camera3D:
+    @property
+    def position(self) -> Vec3: ...
+    @position.setter
+    def position(self, value: Vec3) -> None: ...
+    @property
+    def target(self) -> Vec3: ...
+    @target.setter
+    def target(self, value: Vec3) -> None: ...
+    @property
+    def up(self) -> Vec3: ...
+    @up.setter
+    def up(self, value: Vec3) -> None: ...
+    @property
+    def fovy(self) -> builtins.float: ...
+    @fovy.setter
+    def fovy(self, value: builtins.float) -> None: ...
+    @property
+    def aspect(self) -> typing.Optional[builtins.float]:
+        r"""
+        Screen aspect ratio.
+        
+        By default aspect is calculated with screen_width() / screen_height() on each frame.
+        """
+    @aspect.setter
+    def aspect(self, value: typing.Optional[builtins.float]) -> None:
+        r"""
+        Screen aspect ratio.
+        
+        By default aspect is calculated with screen_width() / screen_height() on each frame.
+        """
+    @property
+    def z_near(self) -> builtins.float:
+        r"""
+        Camera near plane
+        """
+    @z_near.setter
+    def z_near(self, value: builtins.float) -> None:
+        r"""
+        Camera near plane
+        """
+    @property
+    def z_far(self) -> builtins.float:
+        r"""
+        Camera far plane
+        """
+    @z_far.setter
+    def z_far(self, value: builtins.float) -> None:
+        r"""
+        Camera far plane
+        """
+    def __new__(cls) -> Camera3D: ...
+    @staticmethod
+    def set_camera(camera:Camera3D) -> None:
+        r"""
+        Set active 2D or 3D camera.
+        """
+
 class Circle:
     @property
     def x(self) -> builtins.float: ...
@@ -22,24 +209,4374 @@ class Circle:
     def __repr__(self) -> builtins.str: ...
 
 class Color:
+    CLOUDY_BLUE: Color
+    r"""
+    CLOUDY_BLUE
+    """
+    DARK_PASTEL_GREEN: Color
+    r"""
+    DARK_PASTEL_GREEN
+    """
+    DUST: Color
+    r"""
+    DUST
+    """
+    ELECTRIC_LIME: Color
+    r"""
+    ELECTRIC_LIME
+    """
+    FRESH_GREEN: Color
+    r"""
+    FRESH_GREEN
+    """
+    LIGHT_EGGPLANT: Color
+    r"""
+    LIGHT_EGGPLANT
+    """
+    NASTY_GREEN: Color
+    r"""
+    NASTY_GREEN
+    """
+    REALLY_LIGHT_BLUE: Color
+    r"""
+    REALLY_LIGHT_BLUE
+    """
+    TEA: Color
+    r"""
+    TEA
+    """
+    WARM_PURPLE: Color
+    r"""
+    WARM_PURPLE
+    """
+    YELLOWISH_TAN: Color
+    r"""
+    YELLOWISH_TAN
+    """
+    CEMENT: Color
+    r"""
+    CEMENT
+    """
+    DARK_GRASS_GREEN: Color
+    r"""
+    DARK_GRASS_GREEN
+    """
+    DUSTY_TEAL: Color
+    r"""
+    DUSTY_TEAL
+    """
+    GREY_TEAL: Color
+    r"""
+    GREY_TEAL
+    """
+    MACARONI_AND_CHEESE: Color
+    r"""
+    MACARONI_AND_CHEESE
+    """
+    PINKISH_TAN: Color
+    r"""
+    PINKISH_TAN
+    """
+    SPRUCE: Color
+    r"""
+    SPRUCE
+    """
+    STRONG_BLUE: Color
+    r"""
+    STRONG_BLUE
+    """
+    TOXIC_GREEN: Color
+    r"""
+    TOXIC_GREEN
+    """
+    WINDOWS_BLUE: Color
+    r"""
+    WINDOWS_BLUE
+    """
+    BLUE_BLUE: Color
+    r"""
+    BLUE_BLUE
+    """
+    BLUE_WITH_A_HINT_OF_PURPLE: Color
+    r"""
+    BLUE_WITH_A_HINT_OF_PURPLE
+    """
+    BOOGER: Color
+    r"""
+    BOOGER
+    """
+    BRIGHT_SEA_GREEN: Color
+    r"""
+    BRIGHT_SEA_GREEN
+    """
+    DARK_GREEN_BLUE: Color
+    r"""
+    DARK_GREEN_BLUE
+    """
+    DEEP_TURQUOISE: Color
+    r"""
+    DEEP_TURQUOISE
+    """
+    GREEN_TEAL: Color
+    r"""
+    GREEN_TEAL
+    """
+    STRONG_PINK: Color
+    r"""
+    STRONG_PINK
+    """
+    BLAND: Color
+    r"""
+    BLAND
+    """
+    DEEP_AQUA: Color
+    r"""
+    DEEP_AQUA
+    """
+    LAVENDER_PINK: Color
+    r"""
+    LAVENDER_PINK
+    """
+    LIGHT_MOSS_GREEN: Color
+    r"""
+    LIGHT_MOSS_GREEN
+    """
+    LIGHT_SEAFOAM_GREEN: Color
+    r"""
+    LIGHT_SEAFOAM_GREEN
+    """
+    OLIVE_YELLOW: Color
+    r"""
+    OLIVE_YELLOW
+    """
+    PIG_PINK: Color
+    r"""
+    PIG_PINK
+    """
+    DEEP_LILAC: Color
+    r"""
+    DEEP_LILAC
+    """
+    DESERT: Color
+    r"""
+    DESERT
+    """
+    DUSTY_LAVENDER: Color
+    r"""
+    DUSTY_LAVENDER
+    """
+    PURPLEY_GREY: Color
+    r"""
+    PURPLEY_GREY
+    """
+    PURPLY: Color
+    r"""
+    PURPLY
+    """
+    CANDY_PINK: Color
+    r"""
+    CANDY_PINK
+    """
+    LIGHT_PASTEL_GREEN: Color
+    r"""
+    LIGHT_PASTEL_GREEN
+    """
+    BORING_GREEN: Color
+    r"""
+    BORING_GREEN
+    """
+    KIWI_GREEN: Color
+    r"""
+    KIWI_GREEN
+    """
+    LIGHT_GREY_GREEN: Color
+    r"""
+    LIGHT_GREY_GREEN
+    """
+    ORANGE_PINK: Color
+    r"""
+    ORANGE_PINK
+    """
+    TEA_GREEN: Color
+    r"""
+    TEA_GREEN
+    """
+    VERY_LIGHT_BROWN: Color
+    r"""
+    VERY_LIGHT_BROWN
+    """
+    EGG_SHELL: Color
+    r"""
+    EGG_SHELL
+    """
+    EGGPLANT_PURPLE: Color
+    r"""
+    EGGPLANT_PURPLE
+    """
+    POWDER_PINK: Color
+    r"""
+    POWDER_PINK
+    """
+    REDDISH_GREY: Color
+    r"""
+    REDDISH_GREY
+    """
+    BABY_SHIT_BROWN: Color
+    r"""
+    BABY_SHIT_BROWN
+    """
+    LILIAC: Color
+    r"""
+    LILIAC
+    """
+    STORMY_BLUE: Color
+    r"""
+    STORMY_BLUE
+    """
+    UGLY_BROWN: Color
+    r"""
+    UGLY_BROWN
+    """
+    CUSTARD: Color
+    r"""
+    CUSTARD
+    """
+    DARKISH_PINK: Color
+    r"""
+    DARKISH_PINK
+    """
+    DEEP_BROWN: Color
+    r"""
+    DEEP_BROWN
+    """
+    GREENISH_BEIGE: Color
+    r"""
+    GREENISH_BEIGE
+    """
+    MANILLA: Color
+    r"""
+    MANILLA
+    """
+    OFF_BLUE: Color
+    r"""
+    OFF_BLUE
+    """
+    BATTLESHIP_GREY: Color
+    r"""
+    BATTLESHIP_GREY
+    """
+    BROWNY_GREEN: Color
+    r"""
+    BROWNY_GREEN
+    """
+    BRUISE: Color
+    r"""
+    BRUISE
+    """
+    KELLEY_GREEN: Color
+    r"""
+    KELLEY_GREEN
+    """
+    SICKLY_YELLOW: Color
+    r"""
+    SICKLY_YELLOW
+    """
+    SUNNY_YELLOW: Color
+    r"""
+    SUNNY_YELLOW
+    """
+    AZUL: Color
+    r"""
+    AZUL
+    """
+    DARKGREEN: Color
+    r"""
+    DARKGREEN
+    """
+    GREEN_YELLOW: Color
+    r"""
+    GREEN_YELLOW
+    """
+    LICHEN: Color
+    r"""
+    LICHEN
+    """
+    LIGHT_LIGHT_GREEN: Color
+    r"""
+    LIGHT_LIGHT_GREEN
+    """
+    PALE_GOLD: Color
+    r"""
+    PALE_GOLD
+    """
+    SUN_YELLOW: Color
+    r"""
+    SUN_YELLOW
+    """
+    TAN_GREEN: Color
+    r"""
+    TAN_GREEN
+    """
+    BURPLE: Color
+    r"""
+    BURPLE
+    """
+    BUTTERSCOTCH: Color
+    r"""
+    BUTTERSCOTCH
+    """
+    TOUPE: Color
+    r"""
+    TOUPE
+    """
+    DARK_CREAM: Color
+    r"""
+    DARK_CREAM
+    """
+    INDIAN_RED: Color
+    r"""
+    INDIAN_RED
+    """
+    LIGHT_LAVENDAR: Color
+    r"""
+    LIGHT_LAVENDAR
+    """
+    POISON_GREEN: Color
+    r"""
+    POISON_GREEN
+    """
+    BABY_PUKE_GREEN: Color
+    r"""
+    BABY_PUKE_GREEN
+    """
+    BRIGHT_YELLOW_GREEN: Color
+    r"""
+    BRIGHT_YELLOW_GREEN
+    """
+    CHARCOAL_GREY: Color
+    r"""
+    CHARCOAL_GREY
+    """
+    SQUASH: Color
+    r"""
+    SQUASH
+    """
+    CINNAMON: Color
+    r"""
+    CINNAMON
+    """
+    LIGHT_PEA_GREEN: Color
+    r"""
+    LIGHT_PEA_GREEN
+    """
+    RADIOACTIVE_GREEN: Color
+    r"""
+    RADIOACTIVE_GREEN
+    """
+    RAW_SIENNA: Color
+    r"""
+    RAW_SIENNA
+    """
+    BABY_PURPLE: Color
+    r"""
+    BABY_PURPLE
+    """
+    COCOA: Color
+    r"""
+    COCOA
+    """
+    LIGHT_ROYAL_BLUE: Color
+    r"""
+    LIGHT_ROYAL_BLUE
+    """
+    ORANGEISH: Color
+    r"""
+    ORANGEISH
+    """
+    RUST_BROWN: Color
+    r"""
+    RUST_BROWN
+    """
+    SAND_BROWN: Color
+    r"""
+    SAND_BROWN
+    """
+    SWAMP: Color
+    r"""
+    SWAMP
+    """
+    TEALISH_GREEN: Color
+    r"""
+    TEALISH_GREEN
+    """
+    BURNT_SIENA: Color
+    r"""
+    BURNT_SIENA
+    """
+    CAMO: Color
+    r"""
+    CAMO
+    """
+    DUSK_BLUE: Color
+    r"""
+    DUSK_BLUE
+    """
+    FERN: Color
+    r"""
+    FERN
+    """
+    OLD_ROSE: Color
+    r"""
+    OLD_ROSE
+    """
+    PALE_LIGHT_GREEN: Color
+    r"""
+    PALE_LIGHT_GREEN
+    """
+    PEACHY_PINK: Color
+    r"""
+    PEACHY_PINK
+    """
+    ROSY_PINK: Color
+    r"""
+    ROSY_PINK
+    """
+    LIGHT_BLUISH_GREEN: Color
+    r"""
+    LIGHT_BLUISH_GREEN
+    """
+    LIGHT_BRIGHT_GREEN: Color
+    r"""
+    LIGHT_BRIGHT_GREEN
+    """
+    LIGHT_NEON_GREEN: Color
+    r"""
+    LIGHT_NEON_GREEN
+    """
+    LIGHT_SEAFOAM: Color
+    r"""
+    LIGHT_SEAFOAM
+    """
+    TIFFANY_BLUE: Color
+    r"""
+    TIFFANY_BLUE
+    """
+    WASHED_OUT_GREEN: Color
+    r"""
+    WASHED_OUT_GREEN
+    """
+    BROWNY_ORANGE: Color
+    r"""
+    BROWNY_ORANGE
+    """
+    NICE_BLUE: Color
+    r"""
+    NICE_BLUE
+    """
+    SAPPHIRE: Color
+    r"""
+    SAPPHIRE
+    """
+    GREYISH_TEAL: Color
+    r"""
+    GREYISH_TEAL
+    """
+    ORANGEY_YELLOW: Color
+    r"""
+    ORANGEY_YELLOW
+    """
+    PARCHMENT: Color
+    r"""
+    PARCHMENT
+    """
+    STRAW: Color
+    r"""
+    STRAW
+    """
+    VERY_DARK_BROWN: Color
+    r"""
+    VERY_DARK_BROWN
+    """
+    TERRACOTA: Color
+    r"""
+    TERRACOTA
+    """
+    UGLY_BLUE: Color
+    r"""
+    UGLY_BLUE
+    """
+    CLEAR_BLUE: Color
+    r"""
+    CLEAR_BLUE
+    """
+    CREME: Color
+    r"""
+    CREME
+    """
+    FOAM_GREEN: Color
+    r"""
+    FOAM_GREEN
+    """
+    GREY_GREEN: Color
+    r"""
+    GREY_GREEN
+    """
+    LIGHT_GOLD: Color
+    r"""
+    LIGHT_GOLD
+    """
+    SEAFOAM_BLUE: Color
+    r"""
+    SEAFOAM_BLUE
+    """
+    TOPAZ: Color
+    r"""
+    TOPAZ
+    """
+    VIOLET_PINK: Color
+    r"""
+    VIOLET_PINK
+    """
+    WINTERGREEN: Color
+    r"""
+    WINTERGREEN
+    """
+    YELLOW_TAN: Color
+    r"""
+    YELLOW_TAN
+    """
+    DARK_FUCHSIA: Color
+    r"""
+    DARK_FUCHSIA
+    """
+    INDIGO_BLUE: Color
+    r"""
+    INDIGO_BLUE
+    """
+    LIGHT_YELLOWISH_GREEN: Color
+    r"""
+    LIGHT_YELLOWISH_GREEN
+    """
+    PALE_MAGENTA: Color
+    r"""
+    PALE_MAGENTA
+    """
+    RICH_PURPLE: Color
+    r"""
+    RICH_PURPLE
+    """
+    SUNFLOWER_YELLOW: Color
+    r"""
+    SUNFLOWER_YELLOW
+    """
+    GREEN_BLUE: Color
+    r"""
+    GREEN_BLUE
+    """
+    LEATHER: Color
+    r"""
+    LEATHER
+    """
+    RACING_GREEN: Color
+    r"""
+    RACING_GREEN
+    """
+    VIVID_PURPLE: Color
+    r"""
+    VIVID_PURPLE
+    """
+    DARK_ROYAL_BLUE: Color
+    r"""
+    DARK_ROYAL_BLUE
+    """
+    HAZEL: Color
+    r"""
+    HAZEL
+    """
+    MUTED_PINK: Color
+    r"""
+    MUTED_PINK
+    """
+    BOOGER_GREEN: Color
+    r"""
+    BOOGER_GREEN
+    """
+    CANARY: Color
+    r"""
+    CANARY
+    """
+    COOL_GREY: Color
+    r"""
+    COOL_GREY
+    """
+    DARK_TAUPE: Color
+    r"""
+    DARK_TAUPE
+    """
+    DARKISH_PURPLE: Color
+    r"""
+    DARKISH_PURPLE
+    """
+    TRUE_GREEN: Color
+    r"""
+    TRUE_GREEN
+    """
+    CORAL_PINK: Color
+    r"""
+    CORAL_PINK
+    """
+    DARK_SAGE: Color
+    r"""
+    DARK_SAGE
+    """
+    DARK_SLATE_BLUE: Color
+    r"""
+    DARK_SLATE_BLUE
+    """
+    FLAT_BLUE: Color
+    r"""
+    FLAT_BLUE
+    """
+    MUSHROOM: Color
+    r"""
+    MUSHROOM
+    """
+    RICH_BLUE: Color
+    r"""
+    RICH_BLUE
+    """
+    DIRTY_PURPLE: Color
+    r"""
+    DIRTY_PURPLE
+    """
+    GREENBLUE: Color
+    r"""
+    GREENBLUE
+    """
+    ICKY_GREEN: Color
+    r"""
+    ICKY_GREEN
+    """
+    LIGHT_KHAKI: Color
+    r"""
+    LIGHT_KHAKI
+    """
+    WARM_BLUE: Color
+    r"""
+    WARM_BLUE
+    """
+    DARK_HOT_PINK: Color
+    r"""
+    DARK_HOT_PINK
+    """
+    DEEP_SEA_BLUE: Color
+    r"""
+    DEEP_SEA_BLUE
+    """
+    CARMINE: Color
+    r"""
+    CARMINE
+    """
+    DARK_YELLOW_GREEN: Color
+    r"""
+    DARK_YELLOW_GREEN
+    """
+    PALE_PEACH: Color
+    r"""
+    PALE_PEACH
+    """
+    PLUM_PURPLE: Color
+    r"""
+    PLUM_PURPLE
+    """
+    GOLDEN_ROD: Color
+    r"""
+    GOLDEN_ROD
+    """
+    NEON_RED: Color
+    r"""
+    NEON_RED
+    """
+    OLD_PINK: Color
+    r"""
+    OLD_PINK
+    """
+    VERY_PALE_BLUE: Color
+    r"""
+    VERY_PALE_BLUE
+    """
+    BLOOD_ORANGE: Color
+    r"""
+    BLOOD_ORANGE
+    """
+    GRAPEFRUIT: Color
+    r"""
+    GRAPEFRUIT
+    """
+    SAND_YELLOW: Color
+    r"""
+    SAND_YELLOW
+    """
+    CLAY_BROWN: Color
+    r"""
+    CLAY_BROWN
+    """
+    DARK_BLUE_GREY: Color
+    r"""
+    DARK_BLUE_GREY
+    """
+    FLAT_GREEN: Color
+    r"""
+    FLAT_GREEN
+    """
+    LIGHT_GREEN_BLUE: Color
+    r"""
+    LIGHT_GREEN_BLUE
+    """
+    WARM_PINK: Color
+    r"""
+    WARM_PINK
+    """
+    DODGER_BLUE: Color
+    r"""
+    DODGER_BLUE
+    """
+    GROSS_GREEN: Color
+    r"""
+    GROSS_GREEN
+    """
+    ICE: Color
+    r"""
+    ICE
+    """
+    METALLIC_BLUE: Color
+    r"""
+    METALLIC_BLUE
+    """
+    PALE_SALMON: Color
+    r"""
+    PALE_SALMON
+    """
+    SAP_GREEN: Color
+    r"""
+    SAP_GREEN
+    """
+    ALGAE: Color
+    r"""
+    ALGAE
+    """
+    BLUEY_GREY: Color
+    r"""
+    BLUEY_GREY
+    """
+    GREENY_GREY: Color
+    r"""
+    GREENY_GREY
+    """
+    HIGHLIGHTER_GREEN: Color
+    r"""
+    HIGHLIGHTER_GREEN
+    """
+    LIGHT_LIGHT_BLUE: Color
+    r"""
+    LIGHT_LIGHT_BLUE
+    """
+    LIGHT_MINT: Color
+    r"""
+    LIGHT_MINT
+    """
+    RAW_UMBER: Color
+    r"""
+    RAW_UMBER
+    """
+    VIVID_BLUE: Color
+    r"""
+    VIVID_BLUE
+    """
+    DEEP_LAVENDER: Color
+    r"""
+    DEEP_LAVENDER
+    """
+    DULL_TEAL: Color
+    r"""
+    DULL_TEAL
+    """
+    LIGHT_GREENISH_BLUE: Color
+    r"""
+    LIGHT_GREENISH_BLUE
+    """
+    MUD_GREEN: Color
+    r"""
+    MUD_GREEN
+    """
+    PINKY: Color
+    r"""
+    PINKY
+    """
+    RED_WINE: Color
+    r"""
+    RED_WINE
+    """
+    SHIT_GREEN: Color
+    r"""
+    SHIT_GREEN
+    """
+    TAN_BROWN: Color
+    r"""
+    TAN_BROWN
+    """
+    DARKBLUE: Color
+    r"""
+    DARKBLUE
+    """
+    ROSA: Color
+    r"""
+    ROSA
+    """
+    LIPSTICK: Color
+    r"""
+    LIPSTICK
+    """
+    PALE_MAUVE: Color
+    r"""
+    PALE_MAUVE
+    """
+    CLARET: Color
+    r"""
+    CLARET
+    """
+    DANDELION: Color
+    r"""
+    DANDELION
+    """
+    ORANGERED: Color
+    r"""
+    ORANGERED
+    """
+    POOP_GREEN: Color
+    r"""
+    POOP_GREEN
+    """
+    RUBY: Color
+    r"""
+    RUBY
+    """
+    DARK: Color
+    r"""
+    DARK
+    """
+    GREENISH_TURQUOISE: Color
+    r"""
+    GREENISH_TURQUOISE
+    """
+    PASTEL_RED: Color
+    r"""
+    PASTEL_RED
+    """
+    PISS_YELLOW: Color
+    r"""
+    PISS_YELLOW
+    """
+    BRIGHT_CYAN: Color
+    r"""
+    BRIGHT_CYAN
+    """
+    DARK_CORAL: Color
+    r"""
+    DARK_CORAL
+    """
+    ALGAE_GREEN: Color
+    r"""
+    ALGAE_GREEN
+    """
+    DARKISH_RED: Color
+    r"""
+    DARKISH_RED
+    """
+    REDDY_BROWN: Color
+    r"""
+    REDDY_BROWN
+    """
+    BLUSH_PINK: Color
+    r"""
+    BLUSH_PINK
+    """
+    CAMOUFLAGE_GREEN: Color
+    r"""
+    CAMOUFLAGE_GREEN
+    """
+    LAWN_GREEN: Color
+    r"""
+    LAWN_GREEN
+    """
+    PUTTY: Color
+    r"""
+    PUTTY
+    """
+    VIBRANT_BLUE: Color
+    r"""
+    VIBRANT_BLUE
+    """
+    DARK_SAND: Color
+    r"""
+    DARK_SAND
+    """
+    PURPLE_BLUE: Color
+    r"""
+    PURPLE_BLUE
+    """
+    SAFFRON: Color
+    r"""
+    SAFFRON
+    """
+    TWILIGHT: Color
+    r"""
+    TWILIGHT
+    """
+    WARM_BROWN: Color
+    r"""
+    WARM_BROWN
+    """
+    BLUEGREY: Color
+    r"""
+    BLUEGREY
+    """
+    BUBBLE_GUM_PINK: Color
+    r"""
+    BUBBLE_GUM_PINK
+    """
+    DUCK_EGG_BLUE: Color
+    r"""
+    DUCK_EGG_BLUE
+    """
+    GREENISH_CYAN: Color
+    r"""
+    GREENISH_CYAN
+    """
+    PETROL: Color
+    r"""
+    PETROL
+    """
+    ROYAL: Color
+    r"""
+    ROYAL
+    """
+    BUTTER: Color
+    r"""
+    BUTTER
+    """
+    DUSTY_ORANGE: Color
+    r"""
+    DUSTY_ORANGE
+    """
+    OFF_YELLOW: Color
+    r"""
+    OFF_YELLOW
+    """
+    PALE_OLIVE_GREEN: Color
+    r"""
+    PALE_OLIVE_GREEN
+    """
+    ORANGISH: Color
+    r"""
+    ORANGISH
+    """
+    LEAF: Color
+    r"""
+    LEAF
+    """
+    LIGHT_BLUE_GREY: Color
+    r"""
+    LIGHT_BLUE_GREY
+    """
+    DRIED_BLOOD: Color
+    r"""
+    DRIED_BLOOD
+    """
+    LIGHTISH_PURPLE: Color
+    r"""
+    LIGHTISH_PURPLE
+    """
+    RUSTY_RED: Color
+    r"""
+    RUSTY_RED
+    """
+    LAVENDER_BLUE: Color
+    r"""
+    LAVENDER_BLUE
+    """
+    LIGHT_GRASS_GREEN: Color
+    r"""
+    LIGHT_GRASS_GREEN
+    """
+    LIGHT_MINT_GREEN: Color
+    r"""
+    LIGHT_MINT_GREEN
+    """
+    SUNFLOWER: Color
+    r"""
+    SUNFLOWER
+    """
+    VELVET: Color
+    r"""
+    VELVET
+    """
+    BRICK_ORANGE: Color
+    r"""
+    BRICK_ORANGE
+    """
+    LIGHTISH_RED: Color
+    r"""
+    LIGHTISH_RED
+    """
+    PURE_BLUE: Color
+    r"""
+    PURE_BLUE
+    """
+    TWILIGHT_BLUE: Color
+    r"""
+    TWILIGHT_BLUE
+    """
+    VIOLET_RED: Color
+    r"""
+    VIOLET_RED
+    """
+    YELLOWY_BROWN: Color
+    r"""
+    YELLOWY_BROWN
+    """
+    CARNATION: Color
+    r"""
+    CARNATION
+    """
+    MUDDY_YELLOW: Color
+    r"""
+    MUDDY_YELLOW
+    """
+    DARK_SEAFOAM_GREEN: Color
+    r"""
+    DARK_SEAFOAM_GREEN
+    """
+    DEEP_ROSE: Color
+    r"""
+    DEEP_ROSE
+    """
+    DUSTY_RED: Color
+    r"""
+    DUSTY_RED
+    """
+    GREY_BLUE: Color
+    r"""
+    GREY_BLUE
+    """
+    LEMON_LIME: Color
+    r"""
+    LEMON_LIME
+    """
+    PURPLE_PINK: Color
+    r"""
+    PURPLE_PINK
+    """
+    BROWN_YELLOW: Color
+    r"""
+    BROWN_YELLOW
+    """
+    PURPLE_BROWN: Color
+    r"""
+    PURPLE_BROWN
+    """
+    WISTERIA: Color
+    r"""
+    WISTERIA
+    """
+    BANANA_YELLOW: Color
+    r"""
+    BANANA_YELLOW
+    """
+    LIPSTICK_RED: Color
+    r"""
+    LIPSTICK_RED
+    """
+    WATER_BLUE: Color
+    r"""
+    WATER_BLUE
+    """
+    BROWN_GREY: Color
+    r"""
+    BROWN_GREY
+    """
+    VIBRANT_PURPLE: Color
+    r"""
+    VIBRANT_PURPLE
+    """
+    BABY_GREEN: Color
+    r"""
+    BABY_GREEN
+    """
+    BARF_GREEN: Color
+    r"""
+    BARF_GREEN
+    """
+    EGGSHELL_BLUE: Color
+    r"""
+    EGGSHELL_BLUE
+    """
+    SANDY_YELLOW: Color
+    r"""
+    SANDY_YELLOW
+    """
+    COOL_GREEN: Color
+    r"""
+    COOL_GREEN
+    """
+    PALE: Color
+    r"""
+    PALE
+    """
+    BLUE_GREY: Color
+    r"""
+    BLUE_GREY
+    """
+    HOT_MAGENTA: Color
+    r"""
+    HOT_MAGENTA
+    """
+    GREYBLUE: Color
+    r"""
+    GREYBLUE
+    """
+    PURPLEY: Color
+    r"""
+    PURPLEY
+    """
+    BABY_SHIT_GREEN: Color
+    r"""
+    BABY_SHIT_GREEN
+    """
+    BROWNISH_PINK: Color
+    r"""
+    BROWNISH_PINK
+    """
+    DARK_AQUAMARINE: Color
+    r"""
+    DARK_AQUAMARINE
+    """
+    DIARRHEA: Color
+    r"""
+    DIARRHEA
+    """
+    LIGHT_MUSTARD: Color
+    r"""
+    LIGHT_MUSTARD
+    """
+    PALE_SKY_BLUE: Color
+    r"""
+    PALE_SKY_BLUE
+    """
+    TURTLE_GREEN: Color
+    r"""
+    TURTLE_GREEN
+    """
+    BRIGHT_OLIVE: Color
+    r"""
+    BRIGHT_OLIVE
+    """
+    DARK_GREY_BLUE: Color
+    r"""
+    DARK_GREY_BLUE
+    """
+    GREENY_BROWN: Color
+    r"""
+    GREENY_BROWN
+    """
+    LEMON_GREEN: Color
+    r"""
+    LEMON_GREEN
+    """
+    LIGHT_PERIWINKLE: Color
+    r"""
+    LIGHT_PERIWINKLE
+    """
+    SEAWEED_GREEN: Color
+    r"""
+    SEAWEED_GREEN
+    """
+    SUNSHINE_YELLOW: Color
+    r"""
+    SUNSHINE_YELLOW
+    """
+    UGLY_PURPLE: Color
+    r"""
+    UGLY_PURPLE
+    """
+    MEDIUM_PINK: Color
+    r"""
+    MEDIUM_PINK
+    """
+    PUKE_BROWN: Color
+    r"""
+    PUKE_BROWN
+    """
+    VERY_LIGHT_PINK: Color
+    r"""
+    VERY_LIGHT_PINK
+    """
+    VIRIDIAN: Color
+    r"""
+    VIRIDIAN
+    """
+    BILE: Color
+    r"""
+    BILE
+    """
+    FADED_YELLOW: Color
+    r"""
+    FADED_YELLOW
+    """
+    VERY_PALE_GREEN: Color
+    r"""
+    VERY_PALE_GREEN
+    """
+    VIBRANT_GREEN: Color
+    r"""
+    VIBRANT_GREEN
+    """
+    BRIGHT_LIME: Color
+    r"""
+    BRIGHT_LIME
+    """
+    SPEARMINT: Color
+    r"""
+    SPEARMINT
+    """
+    LIGHT_AQUAMARINE: Color
+    r"""
+    LIGHT_AQUAMARINE
+    """
+    LIGHT_SAGE: Color
+    r"""
+    LIGHT_SAGE
+    """
+    YELLOWGREEN: Color
+    r"""
+    YELLOWGREEN
+    """
+    BABY_POO: Color
+    r"""
+    BABY_POO
+    """
+    DARK_SEAFOAM: Color
+    r"""
+    DARK_SEAFOAM
+    """
+    DEEP_TEAL: Color
+    r"""
+    DEEP_TEAL
+    """
+    HEATHER: Color
+    r"""
+    HEATHER
+    """
+    RUST_ORANGE: Color
+    r"""
+    RUST_ORANGE
+    """
+    DIRTY_BLUE: Color
+    r"""
+    DIRTY_BLUE
+    """
+    FERN_GREEN: Color
+    r"""
+    FERN_GREEN
+    """
+    BRIGHT_LILAC: Color
+    r"""
+    BRIGHT_LILAC
+    """
+    WEIRD_GREEN: Color
+    r"""
+    WEIRD_GREEN
+    """
+    PEACOCK_BLUE: Color
+    r"""
+    PEACOCK_BLUE
+    """
+    AVOCADO_GREEN: Color
+    r"""
+    AVOCADO_GREEN
+    """
+    FADED_ORANGE: Color
+    r"""
+    FADED_ORANGE
+    """
+    GRAPE_PURPLE: Color
+    r"""
+    GRAPE_PURPLE
+    """
+    HOT_GREEN: Color
+    r"""
+    HOT_GREEN
+    """
+    LIME_YELLOW: Color
+    r"""
+    LIME_YELLOW
+    """
+    MANGO: Color
+    r"""
+    MANGO
+    """
+    SHAMROCK: Color
+    r"""
+    SHAMROCK
+    """
+    BUBBLEGUM: Color
+    r"""
+    BUBBLEGUM
+    """
+    PURPLISH_BROWN: Color
+    r"""
+    PURPLISH_BROWN
+    """
+    VOMIT_YELLOW: Color
+    r"""
+    VOMIT_YELLOW
+    """
+    PALE_CYAN: Color
+    r"""
+    PALE_CYAN
+    """
+    KEY_LIME: Color
+    r"""
+    KEY_LIME
+    """
+    TOMATO_RED: Color
+    r"""
+    TOMATO_RED
+    """
+    LIGHTGREEN: Color
+    r"""
+    LIGHTGREEN
+    """
+    MERLOT: Color
+    r"""
+    MERLOT
+    """
+    NIGHT_BLUE: Color
+    r"""
+    NIGHT_BLUE
+    """
+    PURPLEISH_PINK: Color
+    r"""
+    PURPLEISH_PINK
+    """
+    APPLE: Color
+    r"""
+    APPLE
+    """
+    BABY_POOP_GREEN: Color
+    r"""
+    BABY_POOP_GREEN
+    """
+    GREEN_APPLE: Color
+    r"""
+    GREEN_APPLE
+    """
+    HELIOTROPE: Color
+    r"""
+    HELIOTROPE
+    """
+    YELLOW_GREEN: Color
+    r"""
+    YELLOW_GREEN
+    """
+    ALMOST_BLACK: Color
+    r"""
+    ALMOST_BLACK
+    """
+    COOL_BLUE: Color
+    r"""
+    COOL_BLUE
+    """
+    LEAFY_GREEN: Color
+    r"""
+    LEAFY_GREEN
+    """
+    MUSTARD_BROWN: Color
+    r"""
+    MUSTARD_BROWN
+    """
+    DUSK: Color
+    r"""
+    DUSK
+    """
+    DULL_BROWN: Color
+    r"""
+    DULL_BROWN
+    """
+    FROG_GREEN: Color
+    r"""
+    FROG_GREEN
+    """
+    VIVID_GREEN: Color
+    r"""
+    VIVID_GREEN
+    """
+    BRIGHT_LIGHT_GREEN: Color
+    r"""
+    BRIGHT_LIGHT_GREEN
+    """
+    FLURO_GREEN: Color
+    r"""
+    FLURO_GREEN
+    """
+    KIWI: Color
+    r"""
+    KIWI
+    """
+    SEAWEED: Color
+    r"""
+    SEAWEED
+    """
+    NAVY_GREEN: Color
+    r"""
+    NAVY_GREEN
+    """
+    ULTRAMARINE_BLUE: Color
+    r"""
+    ULTRAMARINE_BLUE
+    """
+    IRIS: Color
+    r"""
+    IRIS
+    """
+    PASTEL_ORANGE: Color
+    r"""
+    PASTEL_ORANGE
+    """
+    YELLOWISH_ORANGE: Color
+    r"""
+    YELLOWISH_ORANGE
+    """
+    PERRYWINKLE: Color
+    r"""
+    PERRYWINKLE
+    """
+    TEALISH: Color
+    r"""
+    TEALISH
+    """
+    DARK_PLUM: Color
+    r"""
+    DARK_PLUM
+    """
+    PEAR: Color
+    r"""
+    PEAR
+    """
+    PINKISH_ORANGE: Color
+    r"""
+    PINKISH_ORANGE
+    """
+    MIDNIGHT_PURPLE: Color
+    r"""
+    MIDNIGHT_PURPLE
+    """
+    LIGHT_URPLE: Color
+    r"""
+    LIGHT_URPLE
+    """
+    DARK_MINT: Color
+    r"""
+    DARK_MINT
+    """
+    GREENISH_TAN: Color
+    r"""
+    GREENISH_TAN
+    """
+    LIGHT_BURGUNDY: Color
+    r"""
+    LIGHT_BURGUNDY
+    """
+    TURQUOISE_BLUE: Color
+    r"""
+    TURQUOISE_BLUE
+    """
+    UGLY_PINK: Color
+    r"""
+    UGLY_PINK
+    """
+    SANDY: Color
+    r"""
+    SANDY
+    """
+    ELECTRIC_PINK: Color
+    r"""
+    ELECTRIC_PINK
+    """
+    MUTED_PURPLE: Color
+    r"""
+    MUTED_PURPLE
+    """
+    MID_GREEN: Color
+    r"""
+    MID_GREEN
+    """
+    GREYISH: Color
+    r"""
+    GREYISH
+    """
+    NEON_YELLOW: Color
+    r"""
+    NEON_YELLOW
+    """
+    BANANA: Color
+    r"""
+    BANANA
+    """
+    CARNATION_PINK: Color
+    r"""
+    CARNATION_PINK
+    """
+    TOMATO: Color
+    r"""
+    TOMATO
+    """
+    SEA: Color
+    r"""
+    SEA
+    """
+    MUDDY_BROWN: Color
+    r"""
+    MUDDY_BROWN
+    """
+    TURQUOISE_GREEN: Color
+    r"""
+    TURQUOISE_GREEN
+    """
+    BUFF: Color
+    r"""
+    BUFF
+    """
+    FAWN: Color
+    r"""
+    FAWN
+    """
+    MUTED_BLUE: Color
+    r"""
+    MUTED_BLUE
+    """
+    PALE_ROSE: Color
+    r"""
+    PALE_ROSE
+    """
+    DARK_MINT_GREEN: Color
+    r"""
+    DARK_MINT_GREEN
+    """
+    AMETHYST: Color
+    r"""
+    AMETHYST
+    """
+    BLUE_GREEN: Color
+    r"""
+    BLUE_GREEN
+    """
+    CHESTNUT: Color
+    r"""
+    CHESTNUT
+    """
+    SICK_GREEN: Color
+    r"""
+    SICK_GREEN
+    """
+    PEA: Color
+    r"""
+    PEA
+    """
+    RUSTY_ORANGE: Color
+    r"""
+    RUSTY_ORANGE
+    """
+    STONE: Color
+    r"""
+    STONE
+    """
+    ROSE_RED: Color
+    r"""
+    ROSE_RED
+    """
+    PALE_AQUA: Color
+    r"""
+    PALE_AQUA
+    """
+    DEEP_ORANGE: Color
+    r"""
+    DEEP_ORANGE
+    """
+    EARTH: Color
+    r"""
+    EARTH
+    """
+    MOSSY_GREEN: Color
+    r"""
+    MOSSY_GREEN
+    """
+    GRASSY_GREEN: Color
+    r"""
+    GRASSY_GREEN
+    """
+    PALE_LIME_GREEN: Color
+    r"""
+    PALE_LIME_GREEN
+    """
+    LIGHT_GREY_BLUE: Color
+    r"""
+    LIGHT_GREY_BLUE
+    """
+    PALE_GREY: Color
+    r"""
+    PALE_GREY
+    """
+    ASPARAGUS: Color
+    r"""
+    ASPARAGUS
+    """
+    BLUEBERRY: Color
+    r"""
+    BLUEBERRY
+    """
+    PURPLE_RED: Color
+    r"""
+    PURPLE_RED
+    """
+    PALE_LIME: Color
+    r"""
+    PALE_LIME
+    """
+    GREENISH_TEAL: Color
+    r"""
+    GREENISH_TEAL
+    """
+    CARAMEL: Color
+    r"""
+    CARAMEL
+    """
+    DEEP_MAGENTA: Color
+    r"""
+    DEEP_MAGENTA
+    """
+    LIGHT_PEACH: Color
+    r"""
+    LIGHT_PEACH
+    """
+    MILK_CHOCOLATE: Color
+    r"""
+    MILK_CHOCOLATE
+    """
+    OCHER: Color
+    r"""
+    OCHER
+    """
+    OFF_GREEN: Color
+    r"""
+    OFF_GREEN
+    """
+    PURPLY_PINK: Color
+    r"""
+    PURPLY_PINK
+    """
+    LIGHTBLUE: Color
+    r"""
+    LIGHTBLUE
+    """
+    DUSKY_BLUE: Color
+    r"""
+    DUSKY_BLUE
+    """
+    GOLDEN: Color
+    r"""
+    GOLDEN
+    """
+    LIGHT_BEIGE: Color
+    r"""
+    LIGHT_BEIGE
+    """
+    BUTTER_YELLOW: Color
+    r"""
+    BUTTER_YELLOW
+    """
+    DUSKY_PURPLE: Color
+    r"""
+    DUSKY_PURPLE
+    """
+    FRENCH_BLUE: Color
+    r"""
+    FRENCH_BLUE
+    """
+    UGLY_YELLOW: Color
+    r"""
+    UGLY_YELLOW
+    """
+    GREENY_YELLOW: Color
+    r"""
+    GREENY_YELLOW
+    """
+    ORANGISH_RED: Color
+    r"""
+    ORANGISH_RED
+    """
+    SHAMROCK_GREEN: Color
+    r"""
+    SHAMROCK_GREEN
+    """
+    ORANGISH_BROWN: Color
+    r"""
+    ORANGISH_BROWN
+    """
+    TREE_GREEN: Color
+    r"""
+    TREE_GREEN
+    """
+    DEEP_VIOLET: Color
+    r"""
+    DEEP_VIOLET
+    """
+    GUNMETAL: Color
+    r"""
+    GUNMETAL
+    """
+    BLUE_PURPLE: Color
+    r"""
+    BLUE_PURPLE
+    """
+    CHERRY: Color
+    r"""
+    CHERRY
+    """
+    SANDY_BROWN: Color
+    r"""
+    SANDY_BROWN
+    """
+    WARM_GREY: Color
+    r"""
+    WARM_GREY
+    """
+    DARK_INDIGO: Color
+    r"""
+    DARK_INDIGO
+    """
+    MIDNIGHT: Color
+    r"""
+    MIDNIGHT
+    """
+    BLUEY_GREEN: Color
+    r"""
+    BLUEY_GREEN
+    """
+    GREY_PINK: Color
+    r"""
+    GREY_PINK
+    """
+    SOFT_PURPLE: Color
+    r"""
+    SOFT_PURPLE
+    """
+    BLOOD: Color
+    r"""
+    BLOOD
+    """
+    BROWN_RED: Color
+    r"""
+    BROWN_RED
+    """
+    MEDIUM_GREY: Color
+    r"""
+    MEDIUM_GREY
+    """
+    BERRY: Color
+    r"""
+    BERRY
+    """
+    POO: Color
+    r"""
+    POO
+    """
+    PURPLEY_PINK: Color
+    r"""
+    PURPLEY_PINK
+    """
+    LIGHT_SALMON: Color
+    r"""
+    LIGHT_SALMON
+    """
+    SNOT: Color
+    r"""
+    SNOT
+    """
+    EASTER_PURPLE: Color
+    r"""
+    EASTER_PURPLE
+    """
+    LIGHT_YELLOW_GREEN: Color
+    r"""
+    LIGHT_YELLOW_GREEN
+    """
+    DARK_NAVY_BLUE: Color
+    r"""
+    DARK_NAVY_BLUE
+    """
+    DRAB: Color
+    r"""
+    DRAB
+    """
+    LIGHT_ROSE: Color
+    r"""
+    LIGHT_ROSE
+    """
+    ROUGE: Color
+    r"""
+    ROUGE
+    """
+    PURPLISH_RED: Color
+    r"""
+    PURPLISH_RED
+    """
+    SLIME_GREEN: Color
+    r"""
+    SLIME_GREEN
+    """
+    BABY_POOP: Color
+    r"""
+    BABY_POOP
+    """
+    IRISH_GREEN: Color
+    r"""
+    IRISH_GREEN
+    """
+    PINK_PURPLE: Color
+    r"""
+    PINK_PURPLE
+    """
+    DARK_NAVY: Color
+    r"""
+    DARK_NAVY
+    """
+    GREENY_BLUE: Color
+    r"""
+    GREENY_BLUE
+    """
+    LIGHT_PLUM: Color
+    r"""
+    LIGHT_PLUM
+    """
+    PINKISH_GREY: Color
+    r"""
+    PINKISH_GREY
+    """
+    DIRTY_ORANGE: Color
+    r"""
+    DIRTY_ORANGE
+    """
+    RUST_RED: Color
+    r"""
+    RUST_RED
+    """
+    PALE_LILAC: Color
+    r"""
+    PALE_LILAC
+    """
+    ORANGEY_RED: Color
+    r"""
+    ORANGEY_RED
+    """
+    PRIMARY_BLUE: Color
+    r"""
+    PRIMARY_BLUE
+    """
+    KERMIT_GREEN: Color
+    r"""
+    KERMIT_GREEN
+    """
+    BROWNISH_PURPLE: Color
+    r"""
+    BROWNISH_PURPLE
+    """
+    MURKY_GREEN: Color
+    r"""
+    MURKY_GREEN
+    """
+    WHEAT: Color
+    r"""
+    WHEAT
+    """
+    VERY_DARK_PURPLE: Color
+    r"""
+    VERY_DARK_PURPLE
+    """
+    BOTTLE_GREEN: Color
+    r"""
+    BOTTLE_GREEN
+    """
+    WATERMELON: Color
+    r"""
+    WATERMELON
+    """
+    DEEP_SKY_BLUE: Color
+    r"""
+    DEEP_SKY_BLUE
+    """
+    FIRE_ENGINE_RED: Color
+    r"""
+    FIRE_ENGINE_RED
+    """
+    YELLOW_OCHRE: Color
+    r"""
+    YELLOW_OCHRE
+    """
+    PUMPKIN_ORANGE: Color
+    r"""
+    PUMPKIN_ORANGE
+    """
+    PALE_OLIVE: Color
+    r"""
+    PALE_OLIVE
+    """
+    LIGHT_LILAC: Color
+    r"""
+    LIGHT_LILAC
+    """
+    LIGHTISH_GREEN: Color
+    r"""
+    LIGHTISH_GREEN
+    """
+    CAROLINA_BLUE: Color
+    r"""
+    CAROLINA_BLUE
+    """
+    MULBERRY: Color
+    r"""
+    MULBERRY
+    """
+    SHOCKING_PINK: Color
+    r"""
+    SHOCKING_PINK
+    """
+    AUBURN: Color
+    r"""
+    AUBURN
+    """
+    BRIGHT_LIME_GREEN: Color
+    r"""
+    BRIGHT_LIME_GREEN
+    """
+    CELADON: Color
+    r"""
+    CELADON
+    """
+    PINKISH_BROWN: Color
+    r"""
+    PINKISH_BROWN
+    """
+    POO_BROWN: Color
+    r"""
+    POO_BROWN
+    """
+    BRIGHT_SKY_BLUE: Color
+    r"""
+    BRIGHT_SKY_BLUE
+    """
+    CELERY: Color
+    r"""
+    CELERY
+    """
+    DIRT_BROWN: Color
+    r"""
+    DIRT_BROWN
+    """
+    STRAWBERRY: Color
+    r"""
+    STRAWBERRY
+    """
+    DARK_LIME: Color
+    r"""
+    DARK_LIME
+    """
+    COPPER: Color
+    r"""
+    COPPER
+    """
+    MEDIUM_BROWN: Color
+    r"""
+    MEDIUM_BROWN
+    """
+    MUTED_GREEN: Color
+    r"""
+    MUTED_GREEN
+    """
+    ROBINS_EGG: Color
+    r"""
+    ROBINS_EGG
+    """
+    BRIGHT_AQUA: Color
+    r"""
+    BRIGHT_AQUA
+    """
+    BRIGHT_LAVENDER: Color
+    r"""
+    BRIGHT_LAVENDER
+    """
+    IVORY: Color
+    r"""
+    IVORY
+    """
+    VERY_LIGHT_PURPLE: Color
+    r"""
+    VERY_LIGHT_PURPLE
+    """
+    LIGHT_NAVY: Color
+    r"""
+    LIGHT_NAVY
+    """
+    PINK_RED: Color
+    r"""
+    PINK_RED
+    """
+    OLIVE_BROWN: Color
+    r"""
+    OLIVE_BROWN
+    """
+    POOP_BROWN: Color
+    r"""
+    POOP_BROWN
+    """
+    MUSTARD_GREEN: Color
+    r"""
+    MUSTARD_GREEN
+    """
+    OCEAN_GREEN: Color
+    r"""
+    OCEAN_GREEN
+    """
+    VERY_DARK_BLUE: Color
+    r"""
+    VERY_DARK_BLUE
+    """
+    DUSTY_GREEN: Color
+    r"""
+    DUSTY_GREEN
+    """
+    LIGHT_NAVY_BLUE: Color
+    r"""
+    LIGHT_NAVY_BLUE
+    """
+    MINTY_GREEN: Color
+    r"""
+    MINTY_GREEN
+    """
+    ADOBE: Color
+    r"""
+    ADOBE
+    """
+    BARNEY: Color
+    r"""
+    BARNEY
+    """
+    JADE_GREEN: Color
+    r"""
+    JADE_GREEN
+    """
+    BRIGHT_LIGHT_BLUE: Color
+    r"""
+    BRIGHT_LIGHT_BLUE
+    """
+    LIGHT_LIME: Color
+    r"""
+    LIGHT_LIME
+    """
+    DARK_KHAKI: Color
+    r"""
+    DARK_KHAKI
+    """
+    ORANGE_YELLOW: Color
+    r"""
+    ORANGE_YELLOW
+    """
+    OCRE: Color
+    r"""
+    OCRE
+    """
+    MAIZE: Color
+    r"""
+    MAIZE
+    """
+    FADED_PINK: Color
+    r"""
+    FADED_PINK
+    """
+    BRITISH_RACING_GREEN: Color
+    r"""
+    BRITISH_RACING_GREEN
+    """
+    SANDSTONE: Color
+    r"""
+    SANDSTONE
+    """
+    MUD_BROWN: Color
+    r"""
+    MUD_BROWN
+    """
+    LIGHT_SEA_GREEN: Color
+    r"""
+    LIGHT_SEA_GREEN
+    """
+    ROBIN_EGG_BLUE: Color
+    r"""
+    ROBIN_EGG_BLUE
+    """
+    AQUA_MARINE: Color
+    r"""
+    AQUA_MARINE
+    """
+    DARK_SEA_GREEN: Color
+    r"""
+    DARK_SEA_GREEN
+    """
+    SOFT_PINK: Color
+    r"""
+    SOFT_PINK
+    """
+    ORANGEY_BROWN: Color
+    r"""
+    ORANGEY_BROWN
+    """
+    CHERRY_RED: Color
+    r"""
+    CHERRY_RED
+    """
+    BURNT_YELLOW: Color
+    r"""
+    BURNT_YELLOW
+    """
+    BROWNISH_GREY: Color
+    r"""
+    BROWNISH_GREY
+    """
+    CAMEL: Color
+    r"""
+    CAMEL
+    """
+    PURPLISH_GREY: Color
+    r"""
+    PURPLISH_GREY
+    """
+    MARINE: Color
+    r"""
+    MARINE
+    """
+    GREYISH_PINK: Color
+    r"""
+    GREYISH_PINK
+    """
+    PALE_TURQUOISE: Color
+    r"""
+    PALE_TURQUOISE
+    """
+    PASTEL_YELLOW: Color
+    r"""
+    PASTEL_YELLOW
+    """
+    BLUEY_PURPLE: Color
+    r"""
+    BLUEY_PURPLE
+    """
+    CANARY_YELLOW: Color
+    r"""
+    CANARY_YELLOW
+    """
+    FADED_RED: Color
+    r"""
+    FADED_RED
+    """
+    SEPIA: Color
+    r"""
+    SEPIA
+    """
+    COFFEE: Color
+    r"""
+    COFFEE
+    """
+    BRIGHT_MAGENTA: Color
+    r"""
+    BRIGHT_MAGENTA
+    """
+    MOCHA: Color
+    r"""
+    MOCHA
+    """
+    ECRU: Color
+    r"""
+    ECRU
+    """
+    PURPLEISH: Color
+    r"""
+    PURPLEISH
+    """
+    CRANBERRY: Color
+    r"""
+    CRANBERRY
+    """
+    DARKISH_GREEN: Color
+    r"""
+    DARKISH_GREEN
+    """
+    BROWN_ORANGE: Color
+    r"""
+    BROWN_ORANGE
+    """
+    DUSKY_ROSE: Color
+    r"""
+    DUSKY_ROSE
+    """
+    MELON: Color
+    r"""
+    MELON
+    """
+    SICKLY_GREEN: Color
+    r"""
+    SICKLY_GREEN
+    """
+    SILVER: Color
+    r"""
+    SILVER
+    """
+    PURPLY_BLUE: Color
+    r"""
+    PURPLY_BLUE
+    """
+    PURPLEISH_BLUE: Color
+    r"""
+    PURPLEISH_BLUE
+    """
+    HOSPITAL_GREEN: Color
+    r"""
+    HOSPITAL_GREEN
+    """
+    SHIT_BROWN: Color
+    r"""
+    SHIT_BROWN
+    """
+    MID_BLUE: Color
+    r"""
+    MID_BLUE
+    """
+    AMBER: Color
+    r"""
+    AMBER
+    """
+    EASTER_GREEN: Color
+    r"""
+    EASTER_GREEN
+    """
+    SOFT_BLUE: Color
+    r"""
+    SOFT_BLUE
+    """
+    CERULEAN_BLUE: Color
+    r"""
+    CERULEAN_BLUE
+    """
+    GOLDEN_BROWN: Color
+    r"""
+    GOLDEN_BROWN
+    """
+    BRIGHT_TURQUOISE: Color
+    r"""
+    BRIGHT_TURQUOISE
+    """
+    RED_PINK: Color
+    r"""
+    RED_PINK
+    """
+    RED_PURPLE: Color
+    r"""
+    RED_PURPLE
+    """
+    GREYISH_BROWN: Color
+    r"""
+    GREYISH_BROWN
+    """
+    VERMILLION: Color
+    r"""
+    VERMILLION
+    """
+    RUSSET: Color
+    r"""
+    RUSSET
+    """
+    STEEL_GREY: Color
+    r"""
+    STEEL_GREY
+    """
+    LIGHTER_PURPLE: Color
+    r"""
+    LIGHTER_PURPLE
+    """
+    BRIGHT_VIOLET: Color
+    r"""
+    BRIGHT_VIOLET
+    """
+    PRUSSIAN_BLUE: Color
+    r"""
+    PRUSSIAN_BLUE
+    """
+    SLATE_GREEN: Color
+    r"""
+    SLATE_GREEN
+    """
+    DIRTY_PINK: Color
+    r"""
+    DIRTY_PINK
+    """
+    DARK_BLUE_GREEN: Color
+    r"""
+    DARK_BLUE_GREEN
+    """
+    PINE: Color
+    r"""
+    PINE
+    """
+    YELLOWY_GREEN: Color
+    r"""
+    YELLOWY_GREEN
+    """
+    DARK_GOLD: Color
+    r"""
+    DARK_GOLD
+    """
+    BLUISH: Color
+    r"""
+    BLUISH
+    """
+    DARKISH_BLUE: Color
+    r"""
+    DARKISH_BLUE
+    """
+    DULL_RED: Color
+    r"""
+    DULL_RED
+    """
+    PINKY_RED: Color
+    r"""
+    PINKY_RED
+    """
+    BRONZE: Color
+    r"""
+    BRONZE
+    """
+    PALE_TEAL: Color
+    r"""
+    PALE_TEAL
+    """
+    MILITARY_GREEN: Color
+    r"""
+    MILITARY_GREEN
+    """
+    BARBIE_PINK: Color
+    r"""
+    BARBIE_PINK
+    """
+    BUBBLEGUM_PINK: Color
+    r"""
+    BUBBLEGUM_PINK
+    """
+    PEA_SOUP_GREEN: Color
+    r"""
+    PEA_SOUP_GREEN
+    """
+    DARK_MUSTARD: Color
+    r"""
+    DARK_MUSTARD
+    """
+    SHIT: Color
+    r"""
+    SHIT
+    """
+    MEDIUM_PURPLE: Color
+    r"""
+    MEDIUM_PURPLE
+    """
+    VERY_DARK_GREEN: Color
+    r"""
+    VERY_DARK_GREEN
+    """
+    DIRT: Color
+    r"""
+    DIRT
+    """
+    DUSKY_PINK: Color
+    r"""
+    DUSKY_PINK
+    """
+    RED_VIOLET: Color
+    r"""
+    RED_VIOLET
+    """
+    LEMON_YELLOW: Color
+    r"""
+    LEMON_YELLOW
+    """
+    PISTACHIO: Color
+    r"""
+    PISTACHIO
+    """
+    DULL_YELLOW: Color
+    r"""
+    DULL_YELLOW
+    """
+    DARK_LIME_GREEN: Color
+    r"""
+    DARK_LIME_GREEN
+    """
+    DENIM_BLUE: Color
+    r"""
+    DENIM_BLUE
+    """
+    TEAL_BLUE: Color
+    r"""
+    TEAL_BLUE
+    """
+    LIGHTISH_BLUE: Color
+    r"""
+    LIGHTISH_BLUE
+    """
+    PURPLEY_BLUE: Color
+    r"""
+    PURPLEY_BLUE
+    """
+    LIGHT_INDIGO: Color
+    r"""
+    LIGHT_INDIGO
+    """
+    SWAMP_GREEN: Color
+    r"""
+    SWAMP_GREEN
+    """
+    BROWN_GREEN: Color
+    r"""
+    BROWN_GREEN
+    """
+    DARK_MAROON: Color
+    r"""
+    DARK_MAROON
+    """
+    HOT_PURPLE: Color
+    r"""
+    HOT_PURPLE
+    """
+    DARK_FOREST_GREEN: Color
+    r"""
+    DARK_FOREST_GREEN
+    """
+    FADED_BLUE: Color
+    r"""
+    FADED_BLUE
+    """
+    DRAB_GREEN: Color
+    r"""
+    DRAB_GREEN
+    """
+    LIGHT_LIME_GREEN: Color
+    r"""
+    LIGHT_LIME_GREEN
+    """
+    SNOT_GREEN: Color
+    r"""
+    SNOT_GREEN
+    """
+    YELLOWISH: Color
+    r"""
+    YELLOWISH
+    """
+    LIGHT_BLUE_GREEN: Color
+    r"""
+    LIGHT_BLUE_GREEN
+    """
+    BORDEAUX: Color
+    r"""
+    BORDEAUX
+    """
+    LIGHT_MAUVE: Color
+    r"""
+    LIGHT_MAUVE
+    """
+    OCEAN: Color
+    r"""
+    OCEAN
+    """
+    MARIGOLD: Color
+    r"""
+    MARIGOLD
+    """
+    MUDDY_GREEN: Color
+    r"""
+    MUDDY_GREEN
+    """
+    DULL_ORANGE: Color
+    r"""
+    DULL_ORANGE
+    """
+    STEEL: Color
+    r"""
+    STEEL
+    """
+    ELECTRIC_PURPLE: Color
+    r"""
+    ELECTRIC_PURPLE
+    """
+    FLUORESCENT_GREEN: Color
+    r"""
+    FLUORESCENT_GREEN
+    """
+    YELLOWISH_BROWN: Color
+    r"""
+    YELLOWISH_BROWN
+    """
+    BLUSH: Color
+    r"""
+    BLUSH
+    """
+    SOFT_GREEN: Color
+    r"""
+    SOFT_GREEN
+    """
+    BRIGHT_ORANGE: Color
+    r"""
+    BRIGHT_ORANGE
+    """
+    LEMON: Color
+    r"""
+    LEMON
+    """
+    PURPLE_GREY: Color
+    r"""
+    PURPLE_GREY
+    """
+    ACID_GREEN: Color
+    r"""
+    ACID_GREEN
+    """
+    PALE_LAVENDER: Color
+    r"""
+    PALE_LAVENDER
+    """
+    VIOLET_BLUE: Color
+    r"""
+    VIOLET_BLUE
+    """
+    LIGHT_FOREST_GREEN: Color
+    r"""
+    LIGHT_FOREST_GREEN
+    """
+    BURNT_RED: Color
+    r"""
+    BURNT_RED
+    """
+    KHAKI_GREEN: Color
+    r"""
+    KHAKI_GREEN
+    """
+    CERISE: Color
+    r"""
+    CERISE
+    """
+    FADED_PURPLE: Color
+    r"""
+    FADED_PURPLE
+    """
+    APRICOT: Color
+    r"""
+    APRICOT
+    """
+    DARK_OLIVE_GREEN: Color
+    r"""
+    DARK_OLIVE_GREEN
+    """
+    GREY_BROWN: Color
+    r"""
+    GREY_BROWN
+    """
+    GREEN_GREY: Color
+    r"""
+    GREEN_GREY
+    """
+    TRUE_BLUE: Color
+    r"""
+    TRUE_BLUE
+    """
+    PALE_VIOLET: Color
+    r"""
+    PALE_VIOLET
+    """
+    PERIWINKLE_BLUE: Color
+    r"""
+    PERIWINKLE_BLUE
+    """
+    LIGHT_SKY_BLUE: Color
+    r"""
+    LIGHT_SKY_BLUE
+    """
+    BLURPLE: Color
+    r"""
+    BLURPLE
+    """
+    GREEN_BROWN: Color
+    r"""
+    GREEN_BROWN
+    """
+    BLUEGREEN: Color
+    r"""
+    BLUEGREEN
+    """
+    BRIGHT_TEAL: Color
+    r"""
+    BRIGHT_TEAL
+    """
+    BROWNISH_YELLOW: Color
+    r"""
+    BROWNISH_YELLOW
+    """
+    PEA_SOUP: Color
+    r"""
+    PEA_SOUP
+    """
+    FOREST: Color
+    r"""
+    FOREST
+    """
+    BARNEY_PURPLE: Color
+    r"""
+    BARNEY_PURPLE
+    """
+    ULTRAMARINE: Color
+    r"""
+    ULTRAMARINE
+    """
+    PURPLISH: Color
+    r"""
+    PURPLISH
+    """
+    PUKE_YELLOW: Color
+    r"""
+    PUKE_YELLOW
+    """
+    BLUISH_GREY: Color
+    r"""
+    BLUISH_GREY
+    """
+    DARK_PERIWINKLE: Color
+    r"""
+    DARK_PERIWINKLE
+    """
+    DARK_LILAC: Color
+    r"""
+    DARK_LILAC
+    """
+    REDDISH: Color
+    r"""
+    REDDISH
+    """
+    LIGHT_MAROON: Color
+    r"""
+    LIGHT_MAROON
+    """
+    DUSTY_PURPLE: Color
+    r"""
+    DUSTY_PURPLE
+    """
+    TERRA_COTTA: Color
+    r"""
+    TERRA_COTTA
+    """
+    AVOCADO: Color
+    r"""
+    AVOCADO
+    """
+    MARINE_BLUE: Color
+    r"""
+    MARINE_BLUE
+    """
+    TEAL_GREEN: Color
+    r"""
+    TEAL_GREEN
+    """
+    SLATE_GREY: Color
+    r"""
+    SLATE_GREY
+    """
+    LIGHTER_GREEN: Color
+    r"""
+    LIGHTER_GREEN
+    """
+    ELECTRIC_GREEN: Color
+    r"""
+    ELECTRIC_GREEN
+    """
+    DUSTY_BLUE: Color
+    r"""
+    DUSTY_BLUE
+    """
+    GOLDEN_YELLOW: Color
+    r"""
+    GOLDEN_YELLOW
+    """
+    BRIGHT_YELLOW: Color
+    r"""
+    BRIGHT_YELLOW
+    """
+    LIGHT_LAVENDER: Color
+    r"""
+    LIGHT_LAVENDER
+    """
+    UMBER: Color
+    r"""
+    UMBER
+    """
+    POOP: Color
+    r"""
+    POOP
+    """
+    DARK_PEACH: Color
+    r"""
+    DARK_PEACH
+    """
+    JUNGLE_GREEN: Color
+    r"""
+    JUNGLE_GREEN
+    """
+    EGGSHELL: Color
+    r"""
+    EGGSHELL
+    """
+    DENIM: Color
+    r"""
+    DENIM
+    """
+    YELLOW_BROWN: Color
+    r"""
+    YELLOW_BROWN
+    """
+    DULL_PURPLE: Color
+    r"""
+    DULL_PURPLE
+    """
+    CHOCOLATE_BROWN: Color
+    r"""
+    CHOCOLATE_BROWN
+    """
+    WINE_RED: Color
+    r"""
+    WINE_RED
+    """
+    NEON_BLUE: Color
+    r"""
+    NEON_BLUE
+    """
+    DIRTY_GREEN: Color
+    r"""
+    DIRTY_GREEN
+    """
+    LIGHT_TAN: Color
+    r"""
+    LIGHT_TAN
+    """
+    ICE_BLUE: Color
+    r"""
+    ICE_BLUE
+    """
+    CADET_BLUE: Color
+    r"""
+    CADET_BLUE
+    """
+    DARK_MAUVE: Color
+    r"""
+    DARK_MAUVE
+    """
+    VERY_LIGHT_BLUE: Color
+    r"""
+    VERY_LIGHT_BLUE
+    """
+    GREY_PURPLE: Color
+    r"""
+    GREY_PURPLE
+    """
+    PASTEL_PINK: Color
+    r"""
+    PASTEL_PINK
+    """
+    VERY_LIGHT_GREEN: Color
+    r"""
+    VERY_LIGHT_GREEN
+    """
+    DARK_SKY_BLUE: Color
+    r"""
+    DARK_SKY_BLUE
+    """
+    EVERGREEN: Color
+    r"""
+    EVERGREEN
+    """
+    DULL_PINK: Color
+    r"""
+    DULL_PINK
+    """
+    AUBERGINE: Color
+    r"""
+    AUBERGINE
+    """
+    MAHOGANY: Color
+    r"""
+    MAHOGANY
+    """
+    REDDISH_ORANGE: Color
+    r"""
+    REDDISH_ORANGE
+    """
+    DEEP_GREEN: Color
+    r"""
+    DEEP_GREEN
+    """
+    VOMIT_GREEN: Color
+    r"""
+    VOMIT_GREEN
+    """
+    DUSTY_PINK: Color
+    r"""
+    DUSTY_PINK
+    """
+    FADED_GREEN: Color
+    r"""
+    FADED_GREEN
+    """
+    CAMO_GREEN: Color
+    r"""
+    CAMO_GREEN
+    """
+    PINKY_PURPLE: Color
+    r"""
+    PINKY_PURPLE
+    """
+    BROWNISH_RED: Color
+    r"""
+    BROWNISH_RED
+    """
+    DARK_ROSE: Color
+    r"""
+    DARK_ROSE
+    """
+    MUD: Color
+    r"""
+    MUD
+    """
+    BROWNISH: Color
+    r"""
+    BROWNISH
+    """
+    EMERALD_GREEN: Color
+    r"""
+    EMERALD_GREEN
+    """
+    PALE_BROWN: Color
+    r"""
+    PALE_BROWN
+    """
+    DULL_BLUE: Color
+    r"""
+    DULL_BLUE
+    """
+    BURNT_UMBER: Color
+    r"""
+    BURNT_UMBER
+    """
+    MEDIUM_GREEN: Color
+    r"""
+    MEDIUM_GREEN
+    """
+    CLAY: Color
+    r"""
+    CLAY
+    """
+    LIGHT_AQUA: Color
+    r"""
+    LIGHT_AQUA
+    """
+    LIGHT_OLIVE_GREEN: Color
+    r"""
+    LIGHT_OLIVE_GREEN
+    """
+    BROWNISH_ORANGE: Color
+    r"""
+    BROWNISH_ORANGE
+    """
+    DARK_AQUA: Color
+    r"""
+    DARK_AQUA
+    """
+    PURPLISH_PINK: Color
+    r"""
+    PURPLISH_PINK
+    """
+    DARK_SALMON: Color
+    r"""
+    DARK_SALMON
+    """
+    GREENISH_GREY: Color
+    r"""
+    GREENISH_GREY
+    """
+    JADE: Color
+    r"""
+    JADE
+    """
+    UGLY_GREEN: Color
+    r"""
+    UGLY_GREEN
+    """
+    DARK_BEIGE: Color
+    r"""
+    DARK_BEIGE
+    """
+    EMERALD: Color
+    r"""
+    EMERALD
+    """
+    PALE_RED: Color
+    r"""
+    PALE_RED
+    """
+    LIGHT_MAGENTA: Color
+    r"""
+    LIGHT_MAGENTA
+    """
+    SKY: Color
+    r"""
+    SKY
+    """
+    LIGHT_CYAN: Color
+    r"""
+    LIGHT_CYAN
+    """
+    YELLOW_ORANGE: Color
+    r"""
+    YELLOW_ORANGE
+    """
+    REDDISH_PURPLE: Color
+    r"""
+    REDDISH_PURPLE
+    """
+    REDDISH_PINK: Color
+    r"""
+    REDDISH_PINK
+    """
+    ORCHID: Color
+    r"""
+    ORCHID
+    """
+    DIRTY_YELLOW: Color
+    r"""
+    DIRTY_YELLOW
+    """
+    ORANGE_RED: Color
+    r"""
+    ORANGE_RED
+    """
+    DEEP_RED: Color
+    r"""
+    DEEP_RED
+    """
+    ORANGE_BROWN: Color
+    r"""
+    ORANGE_BROWN
+    """
+    COBALT_BLUE: Color
+    r"""
+    COBALT_BLUE
+    """
+    NEON_PINK: Color
+    r"""
+    NEON_PINK
+    """
+    ROSE_PINK: Color
+    r"""
+    ROSE_PINK
+    """
+    GREYISH_PURPLE: Color
+    r"""
+    GREYISH_PURPLE
+    """
+    RASPBERRY: Color
+    r"""
+    RASPBERRY
+    """
+    AQUA_GREEN: Color
+    r"""
+    AQUA_GREEN
+    """
+    SALMON_PINK: Color
+    r"""
+    SALMON_PINK
+    """
+    TANGERINE: Color
+    r"""
+    TANGERINE
+    """
+    BROWNISH_GREEN: Color
+    r"""
+    BROWNISH_GREEN
+    """
+    RED_BROWN: Color
+    r"""
+    RED_BROWN
+    """
+    GREENISH_BROWN: Color
+    r"""
+    GREENISH_BROWN
+    """
+    PUMPKIN: Color
+    r"""
+    PUMPKIN
+    """
+    PINE_GREEN: Color
+    r"""
+    PINE_GREEN
+    """
+    CHARCOAL: Color
+    r"""
+    CHARCOAL
+    """
+    BABY_PINK: Color
+    r"""
+    BABY_PINK
+    """
+    CORNFLOWER: Color
+    r"""
+    CORNFLOWER
+    """
+    BLUE_VIOLET: Color
+    r"""
+    BLUE_VIOLET
+    """
+    CHOCOLATE: Color
+    r"""
+    CHOCOLATE
+    """
+    GREYISH_GREEN: Color
+    r"""
+    GREYISH_GREEN
+    """
+    SCARLET: Color
+    r"""
+    SCARLET
+    """
+    DARK_OLIVE: Color
+    r"""
+    DARK_OLIVE
+    """
+    SIENNA: Color
+    r"""
+    SIENNA
+    """
+    PASTEL_PURPLE: Color
+    r"""
+    PASTEL_PURPLE
+    """
+    TERRACOTTA: Color
+    r"""
+    TERRACOTTA
+    """
+    AQUA_BLUE: Color
+    r"""
+    AQUA_BLUE
+    """
+    SAGE_GREEN: Color
+    r"""
+    SAGE_GREEN
+    """
+    BLOOD_RED: Color
+    r"""
+    BLOOD_RED
+    """
+    DEEP_PINK: Color
+    r"""
+    DEEP_PINK
+    """
+    GRASS: Color
+    r"""
+    GRASS
+    """
+    MOSS: Color
+    r"""
+    MOSS
+    """
+    PASTEL_BLUE: Color
+    r"""
+    PASTEL_BLUE
+    """
+    BLUISH_GREEN: Color
+    r"""
+    BLUISH_GREEN
+    """
+    DARK_TAN: Color
+    r"""
+    DARK_TAN
+    """
+    GREENISH_BLUE: Color
+    r"""
+    GREENISH_BLUE
+    """
+    PALE_ORANGE: Color
+    r"""
+    PALE_ORANGE
+    """
+    VOMIT: Color
+    r"""
+    VOMIT
+    """
+    FORREST_GREEN: Color
+    r"""
+    FORREST_GREEN
+    """
+    DARK_LAVENDER: Color
+    r"""
+    DARK_LAVENDER
+    """
+    DARK_VIOLET: Color
+    r"""
+    DARK_VIOLET
+    """
+    DARK_CYAN: Color
+    r"""
+    DARK_CYAN
+    """
+    OLIVE_DRAB: Color
+    r"""
+    OLIVE_DRAB
+    """
+    PINKISH: Color
+    r"""
+    PINKISH
+    """
+    COBALT: Color
+    r"""
+    COBALT
+    """
+    NEON_PURPLE: Color
+    r"""
+    NEON_PURPLE
+    """
+    LIGHT_TURQUOISE: Color
+    r"""
+    LIGHT_TURQUOISE
+    """
+    APPLE_GREEN: Color
+    r"""
+    APPLE_GREEN
+    """
+    DULL_GREEN: Color
+    r"""
+    DULL_GREEN
+    """
+    WINE: Color
+    r"""
+    WINE
+    """
+    POWDER_BLUE: Color
+    r"""
+    POWDER_BLUE
+    """
+    OFF_WHITE: Color
+    r"""
+    OFF_WHITE
+    """
+    ELECTRIC_BLUE: Color
+    r"""
+    ELECTRIC_BLUE
+    """
+    DARK_TURQUOISE: Color
+    r"""
+    DARK_TURQUOISE
+    """
+    AZURE: Color
+    r"""
+    AZURE
+    """
+    BRIGHT_RED: Color
+    r"""
+    BRIGHT_RED
+    """
+    PINKISH_RED: Color
+    r"""
+    PINKISH_RED
+    """
+    CORNFLOWER_BLUE: Color
+    r"""
+    CORNFLOWER_BLUE
+    """
+    LIGHT_OLIVE: Color
+    r"""
+    LIGHT_OLIVE
+    """
+    GRAPE: Color
+    r"""
+    GRAPE
+    """
+    GREYISH_BLUE: Color
+    r"""
+    GREYISH_BLUE
+    """
+    PURPLISH_BLUE: Color
+    r"""
+    PURPLISH_BLUE
+    """
+    YELLOWISH_GREEN: Color
+    r"""
+    YELLOWISH_GREEN
+    """
+    GREENISH_YELLOW: Color
+    r"""
+    GREENISH_YELLOW
+    """
+    MEDIUM_BLUE: Color
+    r"""
+    MEDIUM_BLUE
+    """
+    DUSTY_ROSE: Color
+    r"""
+    DUSTY_ROSE
+    """
+    LIGHT_VIOLET: Color
+    r"""
+    LIGHT_VIOLET
+    """
+    MIDNIGHT_BLUE: Color
+    r"""
+    MIDNIGHT_BLUE
+    """
+    BLUISH_PURPLE: Color
+    r"""
+    BLUISH_PURPLE
+    """
+    RED_ORANGE: Color
+    r"""
+    RED_ORANGE
+    """
+    DARK_MAGENTA: Color
+    r"""
+    DARK_MAGENTA
+    """
+    GREENISH: Color
+    r"""
+    GREENISH
+    """
+    OCEAN_BLUE: Color
+    r"""
+    OCEAN_BLUE
+    """
+    CORAL: Color
+    r"""
+    CORAL
+    """
+    CREAM: Color
+    r"""
+    CREAM
+    """
+    REDDISH_BROWN: Color
+    r"""
+    REDDISH_BROWN
+    """
+    BURNT_SIENNA: Color
+    r"""
+    BURNT_SIENNA
+    """
+    BRICK: Color
+    r"""
+    BRICK
+    """
+    SAGE: Color
+    r"""
+    SAGE
+    """
+    WHITE: Color
+    r"""
+    WHITE
+    """
+    ROBINS_EGG_BLUE: Color
+    r"""
+    ROBINS_EGG_BLUE
+    """
+    MOSS_GREEN: Color
+    r"""
+    MOSS_GREEN
+    """
+    STEEL_BLUE: Color
+    r"""
+    STEEL_BLUE
+    """
+    EGGPLANT: Color
+    r"""
+    EGGPLANT
+    """
+    LIGHT_YELLOW: Color
+    r"""
+    LIGHT_YELLOW
+    """
+    LEAF_GREEN: Color
+    r"""
+    LEAF_GREEN
+    """
+    LIGHT_GREY: Color
+    r"""
+    LIGHT_GREY
+    """
+    PUKE: Color
+    r"""
+    PUKE
+    """
+    PINKISH_PURPLE: Color
+    r"""
+    PINKISH_PURPLE
+    """
+    SEA_BLUE: Color
+    r"""
+    SEA_BLUE
+    """
+    PALE_PURPLE: Color
+    r"""
+    PALE_PURPLE
+    """
+    SLATE_BLUE: Color
+    r"""
+    SLATE_BLUE
+    """
+    HUNTER_GREEN: Color
+    r"""
+    HUNTER_GREEN
+    """
+    FUCHSIA: Color
+    r"""
+    FUCHSIA
+    """
+    CRIMSON: Color
+    r"""
+    CRIMSON
+    """
+    PALE_YELLOW: Color
+    r"""
+    PALE_YELLOW
+    """
+    OCHRE: Color
+    r"""
+    OCHRE
+    """
+    MUSTARD_YELLOW: Color
+    r"""
+    MUSTARD_YELLOW
+    """
+    LIGHT_RED: Color
+    r"""
+    LIGHT_RED
+    """
+    CERULEAN: Color
+    r"""
+    CERULEAN
+    """
+    PALE_PINK: Color
+    r"""
+    PALE_PINK
+    """
+    DEEP_BLUE: Color
+    r"""
+    DEEP_BLUE
+    """
+    RUST: Color
+    r"""
+    RUST
+    """
+    LIGHT_TEAL: Color
+    r"""
+    LIGHT_TEAL
+    """
+    SLATE: Color
+    r"""
+    SLATE
+    """
+    GOLDENROD: Color
+    r"""
+    GOLDENROD
+    """
+    DARK_YELLOW: Color
+    r"""
+    DARK_YELLOW
+    """
+    DARK_GREY: Color
+    r"""
+    DARK_GREY
+    """
+    ARMY_GREEN: Color
+    r"""
+    ARMY_GREEN
+    """
+    SEAFOAM: Color
+    r"""
+    SEAFOAM
+    """
+    PUCE: Color
+    r"""
+    PUCE
+    """
+    SPRING_GREEN: Color
+    r"""
+    SPRING_GREEN
+    """
+    DARK_ORANGE: Color
+    r"""
+    DARK_ORANGE
+    """
+    SAND: Color
+    r"""
+    SAND
+    """
+    PASTEL_GREEN: Color
+    r"""
+    PASTEL_GREEN
+    """
+    MINT: Color
+    r"""
+    MINT
+    """
+    LIGHT_ORANGE: Color
+    r"""
+    LIGHT_ORANGE
+    """
+    BRIGHT_PINK: Color
+    r"""
+    BRIGHT_PINK
+    """
+    CHARTREUSE: Color
+    r"""
+    CHARTREUSE
+    """
+    DEEP_PURPLE: Color
+    r"""
+    DEEP_PURPLE
+    """
+    DARK_BROWN: Color
+    r"""
+    DARK_BROWN
+    """
+    TAUPE: Color
+    r"""
+    TAUPE
+    """
+    PEA_GREEN: Color
+    r"""
+    PEA_GREEN
+    """
+    PUKE_GREEN: Color
+    r"""
+    PUKE_GREEN
+    """
+    KELLY_GREEN: Color
+    r"""
+    KELLY_GREEN
+    """
+    SEAFOAM_GREEN: Color
+    r"""
+    SEAFOAM_GREEN
+    """
+    KHAKI: Color
+    r"""
+    KHAKI
+    """
+    BURGUNDY: Color
+    r"""
+    BURGUNDY
+    """
+    DARK_TEAL: Color
+    r"""
+    DARK_TEAL
+    """
+    BRICK_RED: Color
+    r"""
+    BRICK_RED
+    """
+    ROYAL_PURPLE: Color
+    r"""
+    ROYAL_PURPLE
+    """
+    PLUM: Color
+    r"""
+    PLUM
+    """
+    MINT_GREEN: Color
+    r"""
+    MINT_GREEN
+    """
+    GOLD: Color
+    r"""
+    GOLD
+    """
+    BABY_BLUE: Color
+    r"""
+    BABY_BLUE
+    """
+    BRIGHT_PURPLE: Color
+    r"""
+    BRIGHT_PURPLE
+    """
+    DARK_RED: Color
+    r"""
+    DARK_RED
+    """
+    PALE_BLUE: Color
+    r"""
+    PALE_BLUE
+    """
+    GRASS_GREEN: Color
+    r"""
+    GRASS_GREEN
+    """
+    NAVY: Color
+    r"""
+    NAVY
+    """
+    AQUAMARINE: Color
+    r"""
+    AQUAMARINE
+    """
+    BURNT_ORANGE: Color
+    r"""
+    BURNT_ORANGE
+    """
+    NEON_GREEN: Color
+    r"""
+    NEON_GREEN
+    """
+    BRIGHT_BLUE: Color
+    r"""
+    BRIGHT_BLUE
+    """
+    ROSE: Color
+    r"""
+    ROSE
+    """
+    LIGHT_PINK: Color
+    r"""
+    LIGHT_PINK
+    """
+    MUSTARD: Color
+    r"""
+    MUSTARD
+    """
+    INDIGO: Color
+    r"""
+    INDIGO
+    """
+    LIME: Color
+    r"""
+    LIME
+    """
+    SEA_GREEN: Color
+    r"""
+    SEA_GREEN
+    """
+    PERIWINKLE: Color
+    r"""
+    PERIWINKLE
+    """
+    DARK_PINK: Color
+    r"""
+    DARK_PINK
+    """
+    OLIVE_GREEN: Color
+    r"""
+    OLIVE_GREEN
+    """
+    PEACH: Color
+    r"""
+    PEACH
+    """
+    PALE_GREEN: Color
+    r"""
+    PALE_GREEN
+    """
+    LIGHT_BROWN: Color
+    r"""
+    LIGHT_BROWN
+    """
+    HOT_PINK: Color
+    r"""
+    HOT_PINK
+    """
+    BLACK: Color
+    r"""
+    BLACK
+    """
+    LILAC: Color
+    r"""
+    LILAC
+    """
+    NAVY_BLUE: Color
+    r"""
+    NAVY_BLUE
+    """
+    ROYAL_BLUE: Color
+    r"""
+    ROYAL_BLUE
+    """
+    BEIGE: Color
+    r"""
+    BEIGE
+    """
+    SALMON: Color
+    r"""
+    SALMON
+    """
+    OLIVE: Color
+    r"""
+    OLIVE
+    """
+    MAROON: Color
+    r"""
+    MAROON
+    """
+    BRIGHT_GREEN: Color
+    r"""
+    BRIGHT_GREEN
+    """
+    DARK_PURPLE: Color
+    r"""
+    DARK_PURPLE
+    """
+    MAUVE: Color
+    r"""
+    MAUVE
+    """
+    FOREST_GREEN: Color
+    r"""
+    FOREST_GREEN
+    """
+    AQUA: Color
+    r"""
+    AQUA
+    """
+    CYAN: Color
+    r"""
+    CYAN
+    """
+    TAN: Color
+    r"""
+    TAN
+    """
+    DARK_BLUE: Color
+    r"""
+    DARK_BLUE
+    """
+    LAVENDER: Color
+    r"""
+    LAVENDER
+    """
+    TURQUOISE: Color
+    r"""
+    TURQUOISE
+    """
+    DARK_GREEN: Color
+    r"""
+    DARK_GREEN
+    """
+    VIOLET: Color
+    r"""
+    VIOLET
+    """
+    LIGHT_PURPLE: Color
+    r"""
+    LIGHT_PURPLE
+    """
+    LIME_GREEN: Color
+    r"""
+    LIME_GREEN
+    """
+    GREY: Color
+    r"""
+    GREY
+    """
+    SKY_BLUE: Color
+    r"""
+    SKY_BLUE
+    """
+    YELLOW: Color
+    r"""
+    YELLOW
+    """
+    MAGENTA: Color
+    r"""
+    MAGENTA
+    """
+    LIGHT_GREEN: Color
+    r"""
+    LIGHT_GREEN
+    """
+    ORANGE: Color
+    r"""
+    ORANGE
+    """
+    TEAL: Color
+    r"""
+    TEAL
+    """
+    LIGHT_BLUE: Color
+    r"""
+    LIGHT_BLUE
+    """
+    RED: Color
+    r"""
+    RED
+    """
+    BROWN: Color
+    r"""
+    BROWN
+    """
+    PINK: Color
+    r"""
+    PINK
+    """
+    BLUE: Color
+    r"""
+    BLUE
+    """
+    GREEN: Color
+    r"""
+    GREEN
+    """
+    PURPLE: Color
+    r"""
+    PURPLE
+    """
+    GRAY_TEAL: Color
+    r"""
+    GRAY_TEAL
+    """
+    PURPLEY_GRAY: Color
+    r"""
+    PURPLEY_GRAY
+    """
+    LIGHT_GRAY_GREEN: Color
+    r"""
+    LIGHT_GRAY_GREEN
+    """
+    REDDISH_GRAY: Color
+    r"""
+    REDDISH_GRAY
+    """
+    BATTLESHIP_GRAY: Color
+    r"""
+    BATTLESHIP_GRAY
+    """
+    CHARCOAL_GRAY: Color
+    r"""
+    CHARCOAL_GRAY
+    """
+    GRAYISH_TEAL: Color
+    r"""
+    GRAYISH_TEAL
+    """
+    GRAY_GREEN: Color
+    r"""
+    GRAY_GREEN
+    """
+    COOL_GRAY: Color
+    r"""
+    COOL_GRAY
+    """
+    DARK_BLUE_GRAY: Color
+    r"""
+    DARK_BLUE_GRAY
+    """
+    BLUEY_GRAY: Color
+    r"""
+    BLUEY_GRAY
+    """
+    GREENY_GRAY: Color
+    r"""
+    GREENY_GRAY
+    """
+    BLUEGRAY: Color
+    r"""
+    BLUEGRAY
+    """
+    LIGHT_BLUE_GRAY: Color
+    r"""
+    LIGHT_BLUE_GRAY
+    """
+    GRAY_BLUE: Color
+    r"""
+    GRAY_BLUE
+    """
+    BROWN_GRAY: Color
+    r"""
+    BROWN_GRAY
+    """
+    BLUE_GRAY: Color
+    r"""
+    BLUE_GRAY
+    """
+    GRAYBLUE: Color
+    r"""
+    GRAYBLUE
+    """
+    DARK_GRAY_BLUE: Color
+    r"""
+    DARK_GRAY_BLUE
+    """
+    GRAYISH: Color
+    r"""
+    GRAYISH
+    """
+    LIGHT_GRAY_BLUE: Color
+    r"""
+    LIGHT_GRAY_BLUE
+    """
+    PALE_GRAY: Color
+    r"""
+    PALE_GRAY
+    """
+    WARM_GRAY: Color
+    r"""
+    WARM_GRAY
+    """
+    GRAY_PINK: Color
+    r"""
+    GRAY_PINK
+    """
+    MEDIUM_GRAY: Color
+    r"""
+    MEDIUM_GRAY
+    """
+    PINKISH_GRAY: Color
+    r"""
+    PINKISH_GRAY
+    """
+    BROWNISH_GRAY: Color
+    r"""
+    BROWNISH_GRAY
+    """
+    PURPLISH_GRAY: Color
+    r"""
+    PURPLISH_GRAY
+    """
+    GRAYISH_PINK: Color
+    r"""
+    GRAYISH_PINK
+    """
+    GRAYISH_BROWN: Color
+    r"""
+    GRAYISH_BROWN
+    """
+    STEEL_GRAY: Color
+    r"""
+    STEEL_GRAY
+    """
+    PURPLE_GRAY: Color
+    r"""
+    PURPLE_GRAY
+    """
+    GRAY_BROWN: Color
+    r"""
+    GRAY_BROWN
+    """
+    GREEN_GRAY: Color
+    r"""
+    GREEN_GRAY
+    """
+    BLUISH_GRAY: Color
+    r"""
+    BLUISH_GRAY
+    """
+    SLATE_GRAY: Color
+    r"""
+    SLATE_GRAY
+    """
+    GRAY_PURPLE: Color
+    r"""
+    GRAY_PURPLE
+    """
+    GREENISH_GRAY: Color
+    r"""
+    GREENISH_GRAY
+    """
+    GRAYISH_PURPLE: Color
+    r"""
+    GRAYISH_PURPLE
+    """
+    GRAYISH_GREEN: Color
+    r"""
+    GRAYISH_GREEN
+    """
+    GRAYISH_BLUE: Color
+    r"""
+    GRAYISH_BLUE
+    """
+    LIGHT_GRAY: Color
+    r"""
+    LIGHT_GRAY
+    """
+    DARK_GRAY: Color
+    r"""
+    DARK_GRAY
+    """
+    GRAY: Color
+    r"""
+    GRAY
+    """
+    ALICEBLUE: Color
+    r"""
+    ALICEBLUE
+    """
+    ANTIQUEWHITE: Color
+    r"""
+    ANTIQUEWHITE
+    """
+    BISQUE: Color
+    r"""
+    BISQUE
+    """
+    BLANCHEDALMOND: Color
+    r"""
+    BLANCHEDALMOND
+    """
+    BLUEVIOLET: Color
+    r"""
+    BLUEVIOLET
+    """
+    BURLYWOOD: Color
+    r"""
+    BURLYWOOD
+    """
+    CADETBLUE: Color
+    r"""
+    CADETBLUE
+    """
+    CORNFLOWERBLUE: Color
+    r"""
+    CORNFLOWERBLUE
+    """
+    CORNSILK: Color
+    r"""
+    CORNSILK
+    """
+    DARKCYAN: Color
+    r"""
+    DARKCYAN
+    """
+    DARKGOLDENROD: Color
+    r"""
+    DARKGOLDENROD
+    """
+    DARKGRAY: Color
+    r"""
+    DARKGRAY
+    """
+    DARKGREY: Color
+    r"""
+    DARKGREY
+    """
+    DARKKHAKI: Color
+    r"""
+    DARKKHAKI
+    """
+    DARKMAGENTA: Color
+    r"""
+    DARKMAGENTA
+    """
+    DARKOLIVEGREEN: Color
+    r"""
+    DARKOLIVEGREEN
+    """
+    DARKORANGE: Color
+    r"""
+    DARKORANGE
+    """
+    DARKORCHID: Color
+    r"""
+    DARKORCHID
+    """
+    DARKRED: Color
+    r"""
+    DARKRED
+    """
+    DARKSALMON: Color
+    r"""
+    DARKSALMON
+    """
+    DARKSEAGREEN: Color
+    r"""
+    DARKSEAGREEN
+    """
+    DARKSLATEBLUE: Color
+    r"""
+    DARKSLATEBLUE
+    """
+    DARKSLATEGRAY: Color
+    r"""
+    DARKSLATEGRAY
+    """
+    DARKSLATEGREY: Color
+    r"""
+    DARKSLATEGREY
+    """
+    DARKTURQUOISE: Color
+    r"""
+    DARKTURQUOISE
+    """
+    DARKVIOLET: Color
+    r"""
+    DARKVIOLET
+    """
+    DEEPPINK: Color
+    r"""
+    DEEPPINK
+    """
+    DEEPSKYBLUE: Color
+    r"""
+    DEEPSKYBLUE
+    """
+    DIMGRAY: Color
+    r"""
+    DIMGRAY
+    """
+    DIMGREY: Color
+    r"""
+    DIMGREY
+    """
+    DODGERBLUE: Color
+    r"""
+    DODGERBLUE
+    """
+    FIREBRICK: Color
+    r"""
+    FIREBRICK
+    """
+    FLORALWHITE: Color
+    r"""
+    FLORALWHITE
+    """
+    FORESTGREEN: Color
+    r"""
+    FORESTGREEN
+    """
+    GAINSBORO: Color
+    r"""
+    GAINSBORO
+    """
+    GHOSTWHITE: Color
+    r"""
+    GHOSTWHITE
+    """
+    GREENYELLOW: Color
+    r"""
+    GREENYELLOW
+    """
+    HONEYDEW: Color
+    r"""
+    HONEYDEW
+    """
+    HOTPINK: Color
+    r"""
+    HOTPINK
+    """
+    INDIANRED: Color
+    r"""
+    INDIANRED
+    """
+    LAVENDERBLUSH: Color
+    r"""
+    LAVENDERBLUSH
+    """
+    LAWNGREEN: Color
+    r"""
+    LAWNGREEN
+    """
+    LEMONCHIFFON: Color
+    r"""
+    LEMONCHIFFON
+    """
+    LIGHTCORAL: Color
+    r"""
+    LIGHTCORAL
+    """
+    LIGHTCYAN: Color
+    r"""
+    LIGHTCYAN
+    """
+    LIGHTGOLDENRODYELLOW: Color
+    r"""
+    LIGHTGOLDENRODYELLOW
+    """
+    LIGHTGRAY: Color
+    r"""
+    LIGHTGRAY
+    """
+    LIGHTGREY: Color
+    r"""
+    LIGHTGREY
+    """
+    LIGHTPINK: Color
+    r"""
+    LIGHTPINK
+    """
+    LIGHTSALMON: Color
+    r"""
+    LIGHTSALMON
+    """
+    LIGHTSEAGREEN: Color
+    r"""
+    LIGHTSEAGREEN
+    """
+    LIGHTSKYBLUE: Color
+    r"""
+    LIGHTSKYBLUE
+    """
+    LIGHTSLATEGRAY: Color
+    r"""
+    LIGHTSLATEGRAY
+    """
+    LIGHTSLATEGREY: Color
+    r"""
+    LIGHTSLATEGREY
+    """
+    LIGHTSTEELBLUE: Color
+    r"""
+    LIGHTSTEELBLUE
+    """
+    LIGHTYELLOW: Color
+    r"""
+    LIGHTYELLOW
+    """
+    LIMEGREEN: Color
+    r"""
+    LIMEGREEN
+    """
+    LINEN: Color
+    r"""
+    LINEN
+    """
+    MEDIUMAQUAMARINE: Color
+    r"""
+    MEDIUMAQUAMARINE
+    """
+    MEDIUMBLUE: Color
+    r"""
+    MEDIUMBLUE
+    """
+    MEDIUMORCHID: Color
+    r"""
+    MEDIUMORCHID
+    """
+    MEDIUMPURPLE: Color
+    r"""
+    MEDIUMPURPLE
+    """
+    MEDIUMSEAGREEN: Color
+    r"""
+    MEDIUMSEAGREEN
+    """
+    MEDIUMSLATEBLUE: Color
+    r"""
+    MEDIUMSLATEBLUE
+    """
+    MEDIUMSPRINGGREEN: Color
+    r"""
+    MEDIUMSPRINGGREEN
+    """
+    MEDIUMTURQUOISE: Color
+    r"""
+    MEDIUMTURQUOISE
+    """
+    MEDIUMVIOLETRED: Color
+    r"""
+    MEDIUMVIOLETRED
+    """
+    MIDNIGHTBLUE: Color
+    r"""
+    MIDNIGHTBLUE
+    """
+    MINTCREAM: Color
+    r"""
+    MINTCREAM
+    """
+    MISTYROSE: Color
+    r"""
+    MISTYROSE
+    """
+    MOCCASIN: Color
+    r"""
+    MOCCASIN
+    """
+    NAVAJOWHITE: Color
+    r"""
+    NAVAJOWHITE
+    """
+    OLDLACE: Color
+    r"""
+    OLDLACE
+    """
+    OLIVEDRAB: Color
+    r"""
+    OLIVEDRAB
+    """
+    PALEGOLDENROD: Color
+    r"""
+    PALEGOLDENROD
+    """
+    PALEGREEN: Color
+    r"""
+    PALEGREEN
+    """
+    PALETURQUOISE: Color
+    r"""
+    PALETURQUOISE
+    """
+    PALEVIOLETRED: Color
+    r"""
+    PALEVIOLETRED
+    """
+    PAPAYAWHIP: Color
+    r"""
+    PAPAYAWHIP
+    """
+    PEACHPUFF: Color
+    r"""
+    PEACHPUFF
+    """
+    PERU: Color
+    r"""
+    PERU
+    """
+    POWDERBLUE: Color
+    r"""
+    POWDERBLUE
+    """
+    REBECCAPURPLE: Color
+    r"""
+    REBECCAPURPLE
+    """
+    ROSYBROWN: Color
+    r"""
+    ROSYBROWN
+    """
+    ROYALBLUE: Color
+    r"""
+    ROYALBLUE
+    """
+    SADDLEBROWN: Color
+    r"""
+    SADDLEBROWN
+    """
+    SANDYBROWN: Color
+    r"""
+    SANDYBROWN
+    """
+    SEAGREEN: Color
+    r"""
+    SEAGREEN
+    """
+    SEASHELL: Color
+    r"""
+    SEASHELL
+    """
+    SKYBLUE: Color
+    r"""
+    SKYBLUE
+    """
+    SLATEBLUE: Color
+    r"""
+    SLATEBLUE
+    """
+    SLATEGRAY: Color
+    r"""
+    SLATEGRAY
+    """
+    SLATEGREY: Color
+    r"""
+    SLATEGREY
+    """
+    SNOW: Color
+    r"""
+    SNOW
+    """
+    SPRINGGREEN: Color
+    r"""
+    SPRINGGREEN
+    """
+    STEELBLUE: Color
+    r"""
+    STEELBLUE
+    """
+    THISTLE: Color
+    r"""
+    THISTLE
+    """
+    WHITESMOKE: Color
+    r"""
+    WHITESMOKE
+    """
     @property
-    def r(self) -> builtins.float: ...
+    def r(self) -> builtins.float:
+        r"""
+        red channel. ranges from 0.0 to 1.0
+        """
     @r.setter
-    def r(self, value: builtins.float) -> None: ...
+    def r(self, value: builtins.float) -> None:
+        r"""
+        red channel. ranges from 0.0 to 1.0
+        """
     @property
-    def g(self) -> builtins.float: ...
+    def g(self) -> builtins.float:
+        r"""
+        green channel. ranges from 0.0 to 1.0
+        """
     @g.setter
-    def g(self, value: builtins.float) -> None: ...
+    def g(self, value: builtins.float) -> None:
+        r"""
+        green channel. ranges from 0.0 to 1.0
+        """
     @property
-    def b(self) -> builtins.float: ...
+    def b(self) -> builtins.float:
+        r"""
+        blue channel. ranges from 0.0 to 1.0
+        """
     @b.setter
-    def b(self, value: builtins.float) -> None: ...
+    def b(self, value: builtins.float) -> None:
+        r"""
+        blue channel. ranges from 0.0 to 1.0
+        """
     @property
-    def a(self) -> builtins.float: ...
+    def a(self) -> builtins.float:
+        r"""
+        alpha channel. ranges from 0.0 to 1.0
+        """
     @a.setter
-    def a(self, value: builtins.float) -> None: ...
-    def __new__(cls, r:builtins.float, g:builtins.float, b:builtins.float, a:builtins.float) -> Color: ...
-    def __repr__(self) -> builtins.str: ...
+    def a(self, value: builtins.float) -> None:
+        r"""
+        alpha channel. ranges from 0.0 to 1.0
+        """
+    def __new__(cls, r:builtins.float, g:builtins.float, b:builtins.float, a:builtins.float) -> Color:
+        r"""
+        create a new color.
+        inputs range from:
+        (0.0, 0.0, 0.0, 1.0) -> BLACK
+        to
+        (1.0, 1.0, 1.0, 1.0) -> WHITE
+        """
 
 class Config:
     @property
@@ -298,6 +4835,66 @@ class Vec2:
     def normalize(self) -> Vec2: ...
 
 class Vec3:
+    ZERO: Vec3
+    r"""
+    A vector with all elements set to `0.0`.
+    """
+    ONE: Vec3
+    r"""
+    A vector with all elements set to `1.0`.
+    """
+    NEG_ONE: Vec3
+    r"""
+    A vector with all elements set to `-1.0`.
+    """
+    MIN: Vec3
+    r"""
+    A vector with all elements set to `f32::MIN`.
+    """
+    MAX: Vec3
+    r"""
+    A vector with all elements set to `f32::MAX`.
+    """
+    NAN: Vec3
+    r"""
+    A vector with all elements set to `f32::NAN`.
+    """
+    INFINITY: Vec3
+    r"""
+    A vector with all elements set to `f32::INFINITY`.
+    """
+    NEG_INFINITY: Vec3
+    r"""
+    A vector with all elements set to `f32::NEG_INFINITY`.
+    """
+    X: Vec3
+    r"""
+    The unit vector in the X direction `(1.0, 0.0, 0.0)`.
+    """
+    Y: Vec3
+    r"""
+    The unit vector in the Y direction `(0.0, 1.0, 0.0)`.
+    """
+    Z: Vec3
+    r"""
+    The unit vector in the Z direction `(0.0, 0.0, 1.0)`.
+    """
+    NEG_X: Vec3
+    r"""
+    The unit vector in the negative X direction `(-1.0, 0.0, 0.0)`.
+    """
+    NEG_Y: Vec3
+    r"""
+    The unit vector in the negative Y direction `(0.0, -1.0, 0.0)`.
+    """
+    NEG_Z: Vec3
+    r"""
+    The unit vector in the negative Z direction `(0.0, 0.0, -1.0)`.
+    """
+    AXES: builtins.list[Vec3]
+    r"""
+    The X, Y, and Z unit vectors as a list `[X, Y, Z]`.
+    """
     @property
     def x(self) -> builtins.float: ...
     @x.setter
@@ -310,6 +4907,465 @@ class Vec3:
     def z(self) -> builtins.float: ...
     @z.setter
     def z(self, value: builtins.float) -> None: ...
+    def __new__(cls, x:builtins.float, y:builtins.float, z:builtins.float) -> Vec3: ...
+    @staticmethod
+    def select(mask:BVec3, if_true:Vec3, if_false:Vec3) -> Vec3:
+        r"""
+        Creates a vector from the elements in `if_true` and `if_false`, selecting which to use
+        for each element of `self`.
+        
+        A true element in the mask uses the corresponding element from `if_true`, and false
+        uses the element from `if_false`.
+        """
+    @staticmethod
+    def from_array(a:typing.Sequence[builtins.float]) -> Vec3:
+        r"""
+        Creates a new vector from an array.
+        """
+    def to_array(self) -> builtins.list[builtins.float]:
+        r"""
+        `[x, y, z]`
+        """
+    def truncate(self) -> Vec2: ...
+    def with_x(self, x:builtins.float) -> Vec3:
+        r"""
+        Creates a 3D vector from `self` with the given value of `x`.
+        """
+    def with_y(self, y:builtins.float) -> Vec3:
+        r"""
+        Creates a 3D vector from `self` with the given value of `y`.
+        """
+    def with_z(self, z:builtins.float) -> Vec3:
+        r"""
+        Creates a 3D vector from `self` with the given value of `z`.
+        """
+    def dot(self, rhs:Vec3) -> builtins.float: ...
+    def dot_into_vec(self, rhs:Vec3) -> Vec3:
+        r"""
+        Returns a vector where every component is the dot product of `self` and `rhs`.
+        """
+    def cross(self, rhs:Vec3) -> Vec3:
+        r"""
+        Computes the cross product of `self` and `rhs`.
+        """
+    def min(self, rhs:Vec3) -> Vec3:
+        r"""
+        Returns a vector containing the minimum values for each element of `self` and `rhs`.
+        
+        In other words this computes `[self.x.min(rhs.x), self.y.min(rhs.y), ..]`.
+        """
+    def max(self, rhs:Vec3) -> Vec3:
+        r"""
+        Returns a vector containing the maximum values for each element of `self` and `rhs`.
+        
+        In other words this computes `[self.x.max(rhs.x), self.y.max(rhs.y), ..]`.
+        """
+    def clamp(self, min:Vec3, max:Vec3) -> Vec3:
+        r"""
+        Component-wise clamping of values, similar to [`f32::clamp`].
+        
+        Each element in `min` must be less-or-equal to the corresponding element in `max`.
+        
+        # Panics
+        
+        Will panic if `min` is greater than `max` when `glam_assert` is enabled.
+        """
+    def min_element(self) -> builtins.float:
+        r"""
+        Returns the horizontal minimum of `self`.
+        
+        In other words this computes `min(x, y, ..)`.
+        """
+    def max_element(self) -> builtins.float:
+        r"""
+        Returns the horizontal maximum of `self`.
+        
+        In other words this computes `max(x, y, ..)`.
+        """
+    def element_sum(self) -> builtins.float:
+        r"""
+        Returns the sum of all elements of `self`.
+        
+        In other words, this computes `self.x + self.y + ..`.
+        """
+    def element_product(self) -> builtins.float:
+        r"""
+        Returns the product of all elements of `self`.
+        
+        In other words, this computes `self.x * self.y * ..`.
+        """
+    def cmpeq(self, rhs:Vec3) -> BVec3:
+        r"""
+        Returns a vector mask containing the result of a `==` comparison for each element of
+        `self` and `rhs`.
+        
+        In other words, this computes `[self.x == rhs.x, self.y == rhs.y, ..]` for all
+        elements.
+        """
+    def cmpne(self, rhs:Vec3) -> BVec3:
+        r"""
+        Returns a vector mask containing the result of a `!=` comparison for each element of
+        `self` and `rhs`.
+        
+        In other words this computes `[self.x != rhs.x, self.y != rhs.y, ..]` for all
+        elements.
+        """
+    def cmpge(self, rhs:Vec3) -> BVec3:
+        r"""
+        Returns a vector mask containing the result of a `>=` comparison for each element of
+        `self` and `rhs`.
+        
+        In other words this computes `[self.x >= rhs.x, self.y >= rhs.y, ..]` for all
+        elements.
+        """
+    def cmpgt(self, rhs:Vec3) -> BVec3:
+        r"""
+        Returns a vector mask containing the result of a `>` comparison for each element of
+        `self` and `rhs`.
+        
+        In other words this computes `[self.x > rhs.x, self.y > rhs.y, ..]` for all
+        elements.
+        """
+    def cmple(self, rhs:Vec3) -> BVec3:
+        r"""
+        Returns a vector mask containing the result of a `<=` comparison for each element of
+        `self` and `rhs`.
+        
+        In other words this computes `[self.x <= rhs.x, self.y <= rhs.y, ..]` for all
+        elements.
+        """
+    def cmplt(self, rhs:Vec3) -> BVec3:
+        r"""
+        Returns a vector mask containing the result of a `<` comparison for each element of
+        `self` and `rhs`.
+        
+        In other words this computes `[self.x < rhs.x, self.y < rhs.y, ..]` for all
+        elements.
+        """
+    def abs(self) -> Vec3:
+        r"""
+        Returns a vector containing the absolute value of each element of `self`.
+        """
+    def signum(self) -> Vec3:
+        r"""
+        Returns a vector with elements representing the sign of `self`.
+        
+        - `1.0` if the number is positive, `+0.0` or `INFINITY`
+        - `-1.0` if the number is negative, `-0.0` or `NEG_INFINITY`
+        - `NAN` if the number is `NAN`
+        """
+    def copysign(self, rhs:Vec3) -> Vec3:
+        r"""
+        Returns a vector with signs of `rhs` and the magnitudes of `self`.
+        """
+    def is_negative_bitmask(self) -> builtins.int:
+        r"""
+        Returns a bitmask with the lowest 3 bits set to the sign bits from the elements of `self`.
+        
+        A negative element results in a `1` bit and a positive element in a `0` bit.  Element `x` goes
+        into the first lowest bit, element `y` into the second, etc.
+        """
+    def is_finite(self) -> builtins.bool:
+        r"""
+        Returns `true` if, and only if, all elements are finite.  If any element is either
+        `NaN`, positive or negative infinity, this will return `false`.
+        """
+    def is_nan(self) -> builtins.bool:
+        r"""
+        Returns `true` if any elements are `NaN`.
+        """
+    def is_nan_mask(self) -> BVec3:
+        r"""
+        Performs `is_nan` on each element of self, returning a vector mask of the results.
+        
+        In other words, this computes `[x.is_nan(), y.is_nan(), z.is_nan(), w.is_nan()]`.
+        """
+    def length(self) -> builtins.float:
+        r"""
+        Computes the length of `self`.
+        """
+    def length_squared(self) -> builtins.float:
+        r"""
+        Computes the squared length of `self`.
+        
+        This is faster than `length()` as it avoids a square root operation.
+        """
+    def length_recip(self) -> builtins.float:
+        r"""
+        Computes `1.0 / length()`.
+        
+        For valid results, `self` must _not_ be of length zero.
+        """
+    def distance(self, rhs:Vec3) -> builtins.float:
+        r"""
+        Computes the Euclidean distance between two points in space.
+        """
+    def distance_squared(self, rhs:Vec3) -> builtins.float:
+        r"""
+        Compute the squared euclidean distance between two points in space.
+        """
+    def div_euclid(self, rhs:Vec3) -> Vec3:
+        r"""
+        Returns the element-wise quotient of [Euclidean division] of `self` by `rhs`.
+        """
+    def rem_euclid(self, rhs:Vec3) -> Vec3:
+        r"""
+        Returns the element-wise remainder of [Euclidean division] of `self` by `rhs`.
+        
+        [Euclidean division]: f32::rem_euclid
+        """
+    def normalize(self) -> Vec3:
+        r"""
+        Returns `self` normalized to length 1.0.
+        
+        For valid results, `self` must _not_ be of length zero, nor very close to zero.
+        
+        See also [`Self::try_normalize()`] and [`Self::normalize_or_zero()`].
+        
+        Panics
+        
+        Will panic if `self` is zero length when `glam_assert` is enabled.
+        """
+    def try_normalize(self) -> typing.Optional[Vec3]:
+        r"""
+        Returns `self` normalized to length 1.0 if possible, else returns `None`.
+        
+        In particular, if the input is zero (or very close to zero), or non-finite,
+        the result of this operation will be `None`.
+        
+        See also [`Self::normalize_or_zero()`].
+        """
+    def normalize_or(self, fallback:Vec3) -> Vec3:
+        r"""
+        Returns `self` normalized to length 1.0 if possible, else returns a
+        fallback value.
+        
+        In particular, if the input is zero (or very close to zero), or non-finite,
+        the result of this operation will be the fallback value.
+        
+        See also [`Self::try_normalize()`].
+        """
+    def normalize_or_zero(self) -> Vec3:
+        r"""
+        Returns `self` normalized to length 1.0 if possible, else returns zero.
+        
+        In particular, if the input is zero (or very close to zero), or non-finite,
+        the result of this operation will be zero.
+        
+        See also [`Self::try_normalize()`].
+        """
+    def is_normalized(self) -> builtins.bool:
+        r"""
+        Returns whether `self` is length `1.0` or not.
+        
+        Uses a precision threshold of approximately `1e-4`.
+        """
+    def project_onto(self, rhs:Vec3) -> Vec3:
+        r"""
+        Returns the vector projection of `self` onto `rhs`.
+        
+        `rhs` must be of non-zero length.
+        
+        # Panics
+        
+        Will panic if `rhs` is zero length when `glam_assert` is enabled.
+        """
+    def reject_from(self, rhs:Vec3) -> Vec3:
+        r"""
+        Returns the vector rejection of `self` from `rhs`.
+        
+        The vector rejection is the vector perpendicular to the projection of `self` onto
+        `rhs`, in rhs words the result of `self - self.project_onto(rhs)`.
+        
+        `rhs` must be of non-zero length.
+        
+        # Panics
+        
+        Will panic if `rhs` has a length of zero when `glam_assert` is enabled.
+        """
+    def project_onto_normalized(self, rhs:Vec3) -> Vec3:
+        r"""
+        Returns the vector projection of `self` onto `rhs`.
+        
+        `rhs` must be normalized.
+        
+        # Panics
+        
+        Will panic if `rhs` is not normalized when `glam_assert` is enabled.
+        """
+    def reject_from_normalized(self, rhs:Vec3) -> Vec3:
+        r"""
+        Returns the vector rejection of `self` from `rhs`.
+        
+        The vector rejection is the vector perpendicular to the projection of `self` onto
+        `rhs`, in rhs words the result of `self - self.project_onto(rhs)`.
+        
+        `rhs` must be normalized.
+        
+        # Panics
+        
+        Will panic if `rhs` is not normalized when `glam_assert` is enabled.
+        """
+    def round(self) -> Vec3:
+        r"""
+        Returns a vector containing the nearest integer to a number for each element of `self`.
+        Round half-way cases away from 0.0.
+        """
+    def floor(self) -> Vec3:
+        r"""
+        Returns a vector containing the largest integer less than or equal to a number for each
+        element of `self`.
+        """
+    def ceil(self) -> Vec3:
+        r"""
+        Returns a vector containing the smallest integer greater than or equal to a number for
+        each element of `self`.
+        """
+    def trunc(self) -> Vec3:
+        r"""
+        Returns a vector containing the integer part each element of `self`. This means numbers are
+        always truncated towards zero.
+        """
+    def fract(self) -> Vec3:
+        r"""
+        Returns a vector containing the fractional part of the vector as `self - self.trunc()`.
+        
+        Note that this differs from the GLSL implementation of `fract` which returns
+        `self - self.floor()`.
+        
+        Note that this is fast but not precise for large numbers.
+        """
+    def fract_gl(self) -> Vec3:
+        r"""
+        Returns a vector containing the fractional part of the vector as `self - self.floor()`.
+        
+        Note that this differs from the Rust implementation of `fract` which returns
+        `self - self.trunc()`.
+        
+        Note that this is fast but not precise for large numbers.
+        """
+    def exp(self) -> Vec3:
+        r"""
+        Returns a vector containing `e^self` (the exponential function) for each element of
+        `self`.
+        """
+    def powf(self, n:builtins.float) -> Vec3:
+        r"""
+        Returns a vector containing each element of `self` raised to the power of `n`.
+        """
+    def recip(self) -> Vec3:
+        r"""
+        Returns a vector containing the reciprocal `1.0/n` of each element of `self`.
+        """
+    def lerp(self, rhs:Vec3, s:builtins.float) -> Vec3:
+        r"""
+        Performs a linear interpolation between `self` and `rhs` based on the value `s`.
+        
+        When `s` is `0.0`, the result will be equal to `self`.  When `s` is `1.0`, the result
+        will be equal to `rhs`. When `s` is outside of range `[0, 1]`, the result is linearly
+        extrapolated.
+        """
+    def move_towards(self, rhs:Vec3, d:builtins.float) -> Vec3:
+        r"""
+        Moves towards `rhs` based on the value `d`.
+        
+        When `d` is `0.0`, the result will be equal to `self`. When `d` is equal to
+        `self.distance(rhs)`, the result will be equal to `rhs`. Will not go past `rhs`.
+        """
+    def midpoint(self, rhs:Vec3) -> Vec3:
+        r"""
+        Calculates the midpoint between `self` and `rhs`.
+        
+        The midpoint is the average of, or halfway point between, two vectors.
+        `a.midpoint(b)` should yield the same result as `a.lerp(b, 0.5)`
+        while being slightly cheaper to compute.
+        """
+    def abs_diff_eq(self, rhs:Vec3, max_abs_diff:builtins.float) -> builtins.bool:
+        r"""
+        Returns true if the absolute difference of all elements between `self` and `rhs` is
+        less than or equal to `max_abs_diff`.
+        
+        This can be used to compare if two vectors contain similar elements. It works best when
+        comparing with a known value. The `max_abs_diff` that should be used used depends on
+        the values being compared against.
+        
+        For more see
+        [comparing floating point numbers](https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/).
+        """
+    def clamp_length(self, min:builtins.float, max:builtins.float) -> Vec3:
+        r"""
+        Returns a vector with a length no less than `min` and no more than `max`
+        
+        # Panics
+        
+        Will panic if `min` is greater than `max` when `glam_assert` is enabled.
+        """
+    def clamp_length_max(self, max:builtins.float) -> Vec3:
+        r"""
+        Returns a vector with a length no more than `max`
+        """
+    def clamp_length_min(self, min:builtins.float) -> Vec3:
+        r"""
+        Returns a vector with a length no less than `min`
+        """
+    def mul_add(self, a:Vec3, b:Vec3) -> Vec3:
+        r"""
+        Fused multiply-add. Computes `(self * a) + b` element-wise with only one rounding
+        error, yielding a more accurate result than an unfused multiply-add.
+        
+        Using `mul_add` *may* be more performant than an unfused multiply-add if the target
+        architecture has a dedicated fma CPU instruction. However, this is not always true,
+        and will be heavily dependant on designing algorithms with specific target hardware in
+        mind.
+        """
+    def angle_between(self, rhs:Vec3) -> builtins.float:
+        r"""
+        Returns the angle (in radians) between two vectors.
+        
+        The inputs do not need to be unit vectors however they must be non-zero.
+        """
+    def any_orthogonal_vector(self) -> Vec3:
+        r"""
+        Returns some vector that is orthogonal to the given one.
+        
+        The input vector must be finite and non-zero.
+        
+        The output vector is not necessarily unit length. For that use
+        [`Self::any_orthonormal_vector()`] instead.
+        """
+    def any_orthonormal_vector(self) -> Vec3:
+        r"""
+        Returns any unit vector that is orthogonal to the given one.
+        
+        The input vector must be unit length.
+        
+        # Panics
+        
+        Will panic if `self` is not normalized when `glam_assert` is enabled.
+        """
+    def any_orthonormal_pair(self) -> tuple[Vec3, Vec3]:
+        r"""
+        Given a unit vector return two other vectors that together form an orthonormal
+        basis. That is, all three vectors are orthogonal to each other and are normalized.
+        
+        # Panics
+        
+        Will panic if `self` is not normalized when `glam_assert` is enabled.
+        """
+    @staticmethod
+    def zero() -> Vec3:
+        r"""
+        The default `Vec3` is `[0.0, 0.0, 0.0]`.
+        """
+    def __truediv__(self, rhs:typing.Any) -> Vec3: ...
+    def __mul__(self, rhs:typing.Any) -> Vec3: ...
+    def __rmul__(self, lhs:builtins.float) -> Vec3: ...
+    def __add__(self, rhs:typing.Any) -> Vec3: ...
+    def __radd__(self, lhs:builtins.float) -> Vec3: ...
+    def __sub__(self, rhs:typing.Any) -> Vec3: ...
+    def __rsub__(self, lhs:builtins.float) -> Vec3: ...
+    def __mod__(self, rhs:typing.Any) -> Vec3: ...
+    def __rmod__(self, lhs:builtins.float) -> Vec3: ...
 
 class KeyCode(Enum):
     Space = ...
@@ -435,6 +5491,8 @@ class KeyCode(Enum):
     Back = ...
     Unknown = ...
 
+def activate_engine(conf:typing.Optional[Config]=None) -> None: ...
+
 def clear_background(color:Color) -> None: ...
 
 def draw_circle(x:builtins.float, y:builtins.float, r:builtins.float, color:Color) -> None: ...
@@ -461,5 +5519,13 @@ def get_keys_pressed() -> KeyCodeSet: ...
 
 def get_keys_released() -> KeyCodeSet: ...
 
+def get_mouse_position() -> tuple[builtins.float, builtins.float]: ...
+
 def next_frame() -> None: ...
+
+def set_cursor_grab(option:builtins.bool) -> None: ...
+
+def set_default_camera() -> None: ...
+
+def show_mouse(option:builtins.bool) -> None: ...
 

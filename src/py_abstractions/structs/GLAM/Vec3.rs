@@ -40,6 +40,7 @@ impl Vec3 {
     }
 }
 
+#[gen_stub_pymethods]
 #[pymethods]
 impl Vec3 {
     #[new]
@@ -47,64 +48,95 @@ impl Vec3 {
         Self { x, y, z }
     }
 
+    /// A vector with all elements set to `0.0`.
     #[classattr]
-    pub const ZERO: Self = Self::splat(0.0);
+    fn ZERO() -> Vec3 {
+        Self::splat(0.0)
+    }
 
-
+    /// A vector with all elements set to `1.0`.
     #[classattr]
-    pub const ONE: Self = Self::splat(1.0);
+    fn ONE() -> Vec3 {
+        Self::splat(1.0)
+    }
 
-
+    /// A vector with all elements set to `-1.0`.
     #[classattr]
-    pub const NEG_ONE: Self = Self::splat(-1.0);
+    fn NEG_ONE() -> Vec3 {
+        Self::splat(-1.0)
+    }
 
-
+    /// A vector with all elements set to `f32::MIN`.
     #[classattr]
-    pub const MIN: Self = Self::splat(f32::MIN);
+    fn MIN() -> Vec3 {
+        Self::splat(f32::MIN)
+    }
 
-
+    /// A vector with all elements set to `f32::MAX`.
     #[classattr]
-    pub const MAX: Self = Self::splat(f32::MAX);
+    fn MAX() -> Vec3 {
+        Self::splat(f32::MAX)
+    }
 
-
+    /// A vector with all elements set to `f32::NAN`.
     #[classattr]
-    pub const NAN: Self = Self::splat(f32::NAN);
+    fn NAN() -> Vec3 {
+        Self::splat(f32::NAN)
+    }
 
-
+    /// A vector with all elements set to `f32::INFINITY`.
     #[classattr]
-    pub const INFINITY: Self = Self::splat(f32::INFINITY);
+    fn INFINITY() -> Vec3 {
+        Self::splat(f32::INFINITY)
+    }
 
-
+    /// A vector with all elements set to `f32::NEG_INFINITY`.
     #[classattr]
-    pub const NEG_INFINITY: Self = Self::splat(f32::NEG_INFINITY);
+    fn NEG_INFINITY() -> Vec3 {
+        Self::splat(f32::NEG_INFINITY)
+    }
 
-
+    /// The unit vector in the X direction `(1.0, 0.0, 0.0)`.
     #[classattr]
-    pub const X: Self = Self::const_new(1.0, 0.0, 0.0);
+    fn X() -> Vec3 {
+        Self::new(1.0, 0.0, 0.0)
+    }
 
-
+    /// The unit vector in the Y direction `(0.0, 1.0, 0.0)`.
     #[classattr]
-    pub const Y: Self = Self::const_new(0.0, 1.0, 0.0);
+    fn Y() -> Vec3 {
+        Self::new(0.0, 1.0, 0.0)
+    }
 
-
+    /// The unit vector in the Z direction `(0.0, 0.0, 1.0)`.
     #[classattr]
-    pub const Z: Self = Self::const_new(0.0, 0.0, 1.0);
+    fn Z() -> Vec3 {
+        Self::new(0.0, 0.0, 1.0)
+    }
 
-
+    /// The unit vector in the negative X direction `(-1.0, 0.0, 0.0)`.
     #[classattr]
-    pub const NEG_X: Self = Self::const_new(-1.0, 0.0, 0.0);
+    fn NEG_X() -> Vec3 {
+        Self::new(-1.0, 0.0, 0.0)
+    }
 
-
+    /// The unit vector in the negative Y direction `(0.0, -1.0, 0.0)`.
     #[classattr]
-    pub const NEG_Y: Self = Self::const_new(0.0, -1.0, 0.0);
+    fn NEG_Y() -> Vec3 {
+        Self::new(0.0, -1.0, 0.0)
+    }
 
-
+    /// The unit vector in the negative Z direction `(0.0, 0.0, -1.0)`.
     #[classattr]
-    pub const NEG_Z: Self = Self::const_new(0.0, 0.0, -1.0);
+    fn NEG_Z() -> Vec3 {
+        Self::new(0.0, 0.0, -1.0)
+    }
 
-
+    /// The X, Y, and Z unit vectors as a list `[X, Y, Z]`.
     #[classattr]
-    pub const AXES: [Self; 3] = [Self::X, Self::Y, Self::Z];
+    fn AXES() -> Vec<Vec3> {
+        vec![Self::X(), Self::Y(), Self::Z()]
+    }
 
 
 
@@ -793,7 +825,7 @@ impl Vec3 {
     ///
     /// Will panic if `self` is not normalized when `glam_assert` is enabled.
     #[inline]
-    pub fn any_orthonormal_pair(&self) -> (Self, Self) {
+    pub fn any_orthonormal_pair(&self) -> (Vec3, Vec3) {
         let a: gl = (*self).into();
         let (b, c) = a.any_orthonormal_pair();
         (b.into(), c.into())
@@ -807,6 +839,7 @@ impl Vec3 {
         let a: gl = gl::default();
         a.into()
     }
+
 
     #[pyo3(name = "__truediv__")]
     #[inline]
@@ -1035,4 +1068,16 @@ impl From<gl> for Vec3 {
 enum Vec3OrF32 {
     Vec3(Vec3),
     F32(f32),
+}
+
+
+use pyo3_stub_gen::{PyStubType, TypeInfo};
+
+impl PyStubType for Vec3OrF32 {
+    fn type_input() -> TypeInfo {
+        TypeInfo::any()
+    }
+    fn type_output() -> TypeInfo {
+        TypeInfo::any()
+    }
 }

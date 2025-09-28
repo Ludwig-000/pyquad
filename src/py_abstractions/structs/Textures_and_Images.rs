@@ -8,6 +8,7 @@ use std::sync::mpsc;
 use crate::COMMAND_QUEUE;
 use crate::Command;
 use pyo3::exceptions::PyValueError;use pyo3_stub_gen::{derive::gen_stub_pyfunction, define_stub_info_gatherer,derive::*};
+use crate::py_abstractions::Color::*;
 
 /// Image, data stored in CPU memory
 #[gen_stub_pyclass]

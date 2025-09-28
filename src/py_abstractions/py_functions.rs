@@ -23,6 +23,7 @@ use crate::COMMAND_QUEUE;
 use crate::Command;
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::py_abstractions::structs::GLAM::Vec2::Vec2;
+use crate::py_abstractions::Color::*;
 
 #[gen_stub_pyfunction]
 #[pyfunction]
