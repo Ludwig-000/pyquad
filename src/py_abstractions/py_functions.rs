@@ -24,7 +24,11 @@ use crate::Command;
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::py_abstractions::structs::GLAM::Vec2::Vec2;
 use crate::py_abstractions::Color::*;
+use crate::py_abstractions::structs::KeyCode::*;
 
+/// draws a rectangle with a given color.
+/// viewing the rectangle required a 2D Camera ( default )
+///
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_rectangle(x: f32, y: f32, w: f32, h: f32, color: Color) {
@@ -32,6 +36,9 @@ pub fn draw_rectangle(x: f32, y: f32, w: f32, h: f32, color: Color) {
     COMMAND_QUEUE.push(Command::DrawRect { x, y, w, h,color:c});
 }
 
+/// draws a basic grid in 3d space.
+/// requires a 3d camera to be seen.
+///
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_grid(slices: u32, spacing: f32, axes_color: Color, other_color: Color) {
@@ -42,6 +49,9 @@ pub fn draw_grid(slices: u32, spacing: f32, axes_color: Color, other_color: Colo
     COMMAND_QUEUE.push(c );
 }
 
+/// draws a flat plane in 3d space.
+/// requires a 3d camera to be seen.
+///
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_plane(center: Vec3, size: Vec2, color: Color, texture: Option<Texture2D>)  {
@@ -58,6 +68,9 @@ pub fn draw_plane(center: Vec3, size: Vec2, color: Color, texture: Option<Textur
     COMMAND_QUEUE.push(c );
 }
 
+/// draws a basic 3d cube.
+/// requires a 3d camera to be seen.
+///
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_cube(position: Vec3, size: Vec3, color: Color) {
@@ -69,6 +82,9 @@ pub fn draw_cube(position: Vec3, size: Vec3, color: Color) {
     COMMAND_QUEUE.push(  Command::DrawCube{pos: pos, size: siz, texture, color: c} );
 }
 
+/// fills the entire screen with a single color.
+/// this is usually used at the start of a frame.
+///
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn clear_background(color: Color) {
@@ -76,6 +92,9 @@ pub fn clear_background(color: Color) {
     COMMAND_QUEUE.push(Command::ClearBackground { color: col});
 }
 
+/// processes all drawing commands that have accumulated.
+/// blocks until the frame has been drawn.
+///
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn next_frame() {
@@ -86,6 +105,9 @@ pub fn next_frame() {
     let _ = receiver.recv();
 }
 
+/// draws a text in 2d space.
+/// requires a 2d camera to be seen.
+///
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_text(text: String, x: f32, y: f32, font_size: f32, color: Color) {
@@ -93,14 +115,23 @@ pub fn draw_text(text: String, x: f32, y: f32, font_size: f32, color: Color) {
     COMMAND_QUEUE.push(Command::DrawText {text, x, y, font_size, color:c});
 }
 
+/// draws very basic circle in 2d space.
+/// requires a 2d camera to be seen.
+///
+/// note that this function simply draws a 20-sided polygon.
+/// for a more "round" circle, simply call `draw_poly()` with a greater ammount of sides.
+///
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_circle(x: f32, y: f32, r: f32, color: Color) {
-    // "circle" in macroquad is just a 20 sided polygon so we skip calling "draw_circle"
     let c = mq::Color::new(color.r,color.g,color.b,color.a);
     COMMAND_QUEUE.push(Command::DrawPoly{ x, y, sides:20, radius:r, rotation:0.0, color:c});
 }
 
+/// draws n-sided polygon in 2d space. 
+/// increasing the polygon count will simply make it a circle.
+/// requires a 2d camera to be seen.
+///
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_poly(x: f32, y: f32, sides: u8, radius: f32, rotation: f32, color: Color) {
@@ -108,6 +139,11 @@ pub fn draw_poly(x: f32, y: f32, sides: u8, radius: f32, rotation: f32, color: C
     COMMAND_QUEUE.push(Command::DrawPoly{ x, y, sides, radius, rotation, color: c});
 }
 
+/// draws a texture in 2d space.
+/// requires a 2d-camera to be seen.
+/// 
+/// a texture gets created by calling `Texture2D.from_image( image )`
+///
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_texture(texture: Texture2D,x: f32, y: f32, color: Color ) {
@@ -117,8 +153,7 @@ pub fn draw_texture(texture: Texture2D,x: f32, y: f32, color: Color ) {
    
 }
 
-
-
+/// returns the current frames per second
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_fps() -> PyResult<i32> {
@@ -133,10 +168,12 @@ pub fn get_fps() -> PyResult<i32> {
 }
 
 
-
+/// returns an list of all keys that have been pressed since the last check.
+/// pressed = key down + key up
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_keys_pressed() -> PyResult<KeyCodeSet> {
+    //actually, i am not 100% sure how get_keys_pressed() works, so might wanna look into that.
     let (sender, receiver) = mpsc::sync_channel(1);
     COMMAND_QUEUE.push(Command::Get_Keys_Pressed(sender));
 
@@ -154,9 +191,13 @@ pub fn get_keys_pressed() -> PyResult<KeyCodeSet> {
         Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to get keyset")),
     }
 }
+
+
+/// returns an list of all keys that have been released since the last check.
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_keys_released() -> PyResult<KeyCodeSet> {
+    //actually, i am not 100% sure how get_keys_released() works, so might wanna look into that.
     let (sender, receiver) = mpsc::sync_channel(1);
     COMMAND_QUEUE.push(Command::Get_Keys_Released(sender));
 
@@ -174,6 +215,9 @@ pub fn get_keys_released() -> PyResult<KeyCodeSet> {
         Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to get keyset")),
     }
 }
+
+
+/// returns an list of all keys that are currently in the process of being pressed.
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_keys_down() -> PyResult<KeyCodeSet> {

@@ -1,5 +1,6 @@
 /target
 .vs/
+.vscode/
 target/
 pyvv/
 .venv/

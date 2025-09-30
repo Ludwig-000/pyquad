@@ -4572,6 +4572,7 @@ class Color:
     def __new__(cls, r:builtins.float, g:builtins.float, b:builtins.float, a:builtins.float) -> Color:
         r"""
         create a new color.
+        
         inputs range from:
         (0.0, 0.0, 0.0, 1.0) -> BLACK
         to
@@ -4752,22 +4753,6 @@ class Image:
         """
     @staticmethod
     def from_file(path:builtins.str) -> Image: ...
-
-class Image:
-    @property
-    def bytes(self) -> builtins.list[builtins.int]: ...
-    @bytes.setter
-    def bytes(self, value: builtins.list[builtins.int]) -> None: ...
-    @property
-    def width(self) -> builtins.int: ...
-    @width.setter
-    def width(self, value: builtins.int) -> None: ...
-    @property
-    def height(self) -> builtins.int: ...
-    @height.setter
-    def height(self, value: builtins.int) -> None: ...
-    def __new__(cls, bytes:typing.Sequence[builtins.int], width:builtins.int, height:builtins.int) -> Image: ...
-    def __repr__(self) -> builtins.str: ...
 
 class KeyCodeSet:
     @property
@@ -5491,37 +5476,103 @@ class KeyCode(Enum):
     Back = ...
     Unknown = ...
 
-def activate_engine(conf:typing.Optional[Config]=None) -> None: ...
+def activate_engine(conf:typing.Optional[Config]=None) -> None:
+    r"""
+    [!] This should generally be the first function call.
+    
+    Turns on the pyquad engine, creates an open-gl window and allows for engine-calls to be processed.
+    """
 
-def clear_background(color:Color) -> None: ...
+def clear_background(color:Color) -> None:
+    r"""
+    fills the entire screen with a single color.
+    this is usually used at the start of a frame.
+    """
 
-def draw_circle(x:builtins.float, y:builtins.float, r:builtins.float, color:Color) -> None: ...
+def draw_circle(x:builtins.float, y:builtins.float, r:builtins.float, color:Color) -> None:
+    r"""
+    draws very basic circle in 2d space.
+    requires a 2d camera to be seen.
+    
+    note that this function simply draws a 20-sided polygon.
+    for a more "round" circle, simply call `draw_poly()` with a greater ammount of sides.
+    """
 
-def draw_cube(position:Vec3, size:Vec3, color:Color) -> None: ...
+def draw_cube(position:Vec3, size:Vec3, color:Color) -> None:
+    r"""
+    draws a basic 3d cube.
+    requires a 3d camera to be seen.
+    """
 
-def draw_grid(slices:builtins.int, spacing:builtins.float, axes_color:Color, other_color:Color) -> None: ...
+def draw_cubemap(texture:Texture2D) -> None: ...
 
-def draw_plane(center:Vec3, size:Vec2, color:Color, texture:typing.Optional[Texture2D]) -> None: ...
+def draw_grid(slices:builtins.int, spacing:builtins.float, axes_color:Color, other_color:Color) -> None:
+    r"""
+    draws a basic grid in 3d space.
+    requires a 3d camera to be seen.
+    """
 
-def draw_poly(x:builtins.float, y:builtins.float, sides:builtins.int, radius:builtins.float, rotation:builtins.float, color:Color) -> None: ...
+def draw_plane(center:Vec3, size:Vec2, color:Color, texture:typing.Optional[Texture2D]) -> None:
+    r"""
+    draws a flat plane in 3d space.
+    requires a 3d camera to be seen.
+    """
 
-def draw_rectangle(x:builtins.float, y:builtins.float, w:builtins.float, h:builtins.float, color:Color) -> None: ...
+def draw_poly(x:builtins.float, y:builtins.float, sides:builtins.int, radius:builtins.float, rotation:builtins.float, color:Color) -> None:
+    r"""
+    draws n-sided polygon in 2d space. 
+    increasing the polygon count will simply make it a circle.
+    requires a 2d camera to be seen.
+    """
 
-def draw_text(text:builtins.str, x:builtins.float, y:builtins.float, font_size:builtins.float, color:Color) -> None: ...
+def draw_rectangle(x:builtins.float, y:builtins.float, w:builtins.float, h:builtins.float, color:Color) -> None:
+    r"""
+    draws a rectangle with a given color.
+    viewing the rectangle required a 2D Camera ( default )
+    """
 
-def draw_texture(texture:Texture2D, x:builtins.float, y:builtins.float, color:Color) -> None: ...
+def draw_text(text:builtins.str, x:builtins.float, y:builtins.float, font_size:builtins.float, color:Color) -> None:
+    r"""
+    draws a text in 2d space.
+    requires a 2d camera to be seen.
+    """
 
-def get_fps() -> builtins.int: ...
+def draw_texture(texture:Texture2D, x:builtins.float, y:builtins.float, color:Color) -> None:
+    r"""
+    draws a texture in 2d space.
+    requires a 2d-camera to be seen.
+    
+    a texture gets created by calling `Texture2D.from_image( image )`
+    """
 
-def get_keys_down() -> KeyCodeSet: ...
+def get_fps() -> builtins.int:
+    r"""
+    returns the current frames per second
+    """
 
-def get_keys_pressed() -> KeyCodeSet: ...
+def get_keys_down() -> KeyCodeSet:
+    r"""
+    returns an list of all keys that are currently in the process of being pressed.
+    """
 
-def get_keys_released() -> KeyCodeSet: ...
+def get_keys_pressed() -> KeyCodeSet:
+    r"""
+    returns an list of all keys that have been pressed since the last check.
+    pressed = key down + key up
+    """
+
+def get_keys_released() -> KeyCodeSet:
+    r"""
+    returns an list of all keys that have been released since the last check.
+    """
 
 def get_mouse_position() -> tuple[builtins.float, builtins.float]: ...
 
-def next_frame() -> None: ...
+def next_frame() -> None:
+    r"""
+    processes all drawing commands that have accumulated.
+    blocks until the frame has been drawn.
+    """
 
 def set_cursor_grab(option:builtins.bool) -> None: ...
 

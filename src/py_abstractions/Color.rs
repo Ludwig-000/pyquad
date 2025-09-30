@@ -32,6 +32,7 @@ pub struct Color {
 impl Color {
 
     /// create a new color.
+    ///
     /// inputs range from:
     /// (0.0, 0.0, 0.0, 1.0) -> BLACK
     /// to

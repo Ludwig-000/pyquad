@@ -4,17 +4,30 @@ This is a Python abstraction for the Rust engine [macroquad](https://github.com/
 
 The project is in early development and the repository exists for documentation purposes.
 
-
-Featuring 2D:  
+#
+## Featuring 2D:  
 ![2D Screenshot](./docs/2d_screenshot.png)
-
-Featuring 3D:  
+#
+## and 3D:
 ![3D Screenshot](./docs/3d_screenshot.png)
 
+#
+#
+**Hello rectangle:**
+```python
+from pyquad import *
 
+activate_engine()
+
+while True:
+    draw_rectangle(100, 100, 600, 300, Color.GREEN)
+    draw_text("Hello rectangle", 200, 200, 50, Color.RED)
+    next_frame()
+```
+#
 How to build:
 
-1) Create and activate a python virtual enviroment.
+1) Create and activate a python virtual environment.
 
 2) Run `cargo run --bin stub_gen` to update `pyquad.pyi` and gennerate an up-to-date python stub.
 

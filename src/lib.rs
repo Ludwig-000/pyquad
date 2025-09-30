@@ -29,6 +29,7 @@ use crate::py_abstractions::Color::*;
 
 lazy_static! {
     pub static ref COMMAND_QUEUE: Arc<SegQueue<Command>> = Arc::new(SegQueue::new());
+    
 }
 
 
@@ -84,6 +85,11 @@ pub enum Command {
     
 }
 
+
+lazy_static! {
+    pub static ref ComputationTime: Arc<Vec<u128>> = Arc::new(Vec::new());
+
+}
 
 async fn process_commands() {
     // processes commands that rely on the macroquad engine
@@ -201,7 +207,10 @@ async fn process_commands() {
 
    
 }
-
+/// [!] This should generally be the first function call.
+///
+/// Turns on the pyquad engine, creates an open-gl window and allows for engine-calls to be processed.
+///
 #[gen_stub_pyfunction]
 #[pyfunction]
 #[pyo3(signature = (conf = None))] // overloads activate_engine with config
@@ -232,13 +241,11 @@ fn activate_engine(_py: Python, conf: Option<Config>) {
                 draw_call_vertex_capacity: 10000,
                 draw_call_index_capacity: 5000,
             };
-            
-            
+
 
             std::thread::spawn(move || {
                 macroquad::Window::from_config(macroConf, async {
-                    
-                    engine::SHADERS::shaderLoader::shader_load();
+                    engine::EngineSetup::setup_engine();
                     loop { 
                         process_commands().await;
                     }
@@ -247,15 +254,12 @@ fn activate_engine(_py: Python, conf: Option<Config>) {
                     println!("Pyquad window closed. Exiting process.");
                     process::exit(0);
                 }
-              
             });
         }
         None => {
             std::thread::spawn(|| {
                 macroquad::Window::new("pyquad", async {
-
-                    
-                    engine::SHADERS::shaderLoader::shader_load();
+                    engine::EngineSetup::setup_engine();
                     loop {
                         process_commands().await;
                     }
@@ -300,10 +304,7 @@ fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes
     m.add_class::<Camera::Camera2D>()?;
     m.add_class::<Camera::Camera3D>()?;
 
-    // Register all classes
-    {
     m.add_class::<Config>()?;
-
     m.add_class::<DVec2>()?;
     m.add_class::<DVec3>()?;
     m.add_class::<DVec4>()?;
@@ -319,16 +320,13 @@ fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes
     m.add_class::<py_abstractions::structs::GLAM::BVec3::BVec3>()?;
     m.add_class::<py_abstractions::structs::GLAM::Vec3::Vec3>()?;
     m.add_class::<py_abstractions::structs::GLAM::Vec2::Vec2>()?;
-}
 
-    // colors
-    {
-        //all_colors(m,py);
-    }
+
+
 
     //extra
-    m.add_class::<KeyCode>()?;
-    m.add_class::<KeyCodeSet>()?;
+    m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCode>()?;
+    m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCodeSet>()?;
 
 
     Ok(())
