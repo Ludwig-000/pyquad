@@ -119,10 +119,42 @@ class Camera2D:
         Displacement from target.
         """
     @property
-    def viewport(self) -> typing.Optional[tuple[builtins.int, builtins.int, builtins.int, builtins.int]]: ...
+    def render_target(self) -> typing.Optional[RenderTarget]:
+        r"""
+        If "render_target" is set - camera will render to texture.
+        
+        Otherwise to the screen.
+        """
+    @render_target.setter
+    def render_target(self, value: typing.Optional[RenderTarget]) -> None:
+        r"""
+        If "render_target" is set - camera will render to texture.
+        
+        Otherwise to the screen.
+        """
+    @property
+    def viewport(self) -> typing.Optional[tuple[builtins.int, builtins.int, builtins.int, builtins.int]]:
+        r"""
+        Part of the screen to render to.
+        
+        None means the whole screen.
+        
+        Viewport do not affect camera space, just the render position on the screen.
+        
+        Useful for things like splitscreen.
+        """
     @viewport.setter
-    def viewport(self, value: typing.Optional[tuple[builtins.int, builtins.int, builtins.int, builtins.int]]) -> None: ...
-    def __new__(cls) -> Camera2D: ...
+    def viewport(self, value: typing.Optional[tuple[builtins.int, builtins.int, builtins.int, builtins.int]]) -> None:
+        r"""
+        Part of the screen to render to.
+        
+        None means the whole screen.
+        
+        Viewport do not affect camera space, just the render position on the screen.
+        
+        Useful for things like splitscreen.
+        """
+    def __new__(cls, rotation:builtins.float=0.0, zoom:Vec2=..., target:Vec2=..., offset:Vec2=..., render_target:typing.Optional[RenderTarget]=None, viewport:typing.Optional[tuple[builtins.int, builtins.int, builtins.int, builtins.int]]=None) -> Camera2D: ...
     @staticmethod
     def from_display_rect(rect:Rect) -> Camera2D:
         r"""
@@ -131,26 +163,52 @@ class Camera2D:
     @staticmethod
     def set_camera(camera:Camera2D) -> None:
         r"""
-        Set active 2D or 3D camera.
+        Set active 2D camera.
         """
 
 class Camera3D:
     @property
-    def position(self) -> Vec3: ...
+    def position(self) -> Vec3:
+        r"""
+        Camera position.
+        """
     @position.setter
-    def position(self, value: Vec3) -> None: ...
+    def position(self, value: Vec3) -> None:
+        r"""
+        Camera position.
+        """
     @property
-    def target(self) -> Vec3: ...
+    def target(self) -> Vec3:
+        r"""
+        Camera target it looks-at.
+        """
     @target.setter
-    def target(self, value: Vec3) -> None: ...
+    def target(self, value: Vec3) -> None:
+        r"""
+        Camera target it looks-at.
+        """
     @property
-    def up(self) -> Vec3: ...
+    def up(self) -> Vec3:
+        r"""
+        Camera up vector (rotation over its axis).
+        """
     @up.setter
-    def up(self, value: Vec3) -> None: ...
+    def up(self, value: Vec3) -> None:
+        r"""
+        Camera up vector (rotation over its axis).
+        """
     @property
-    def fovy(self) -> builtins.float: ...
+    def fovy(self) -> builtins.float:
+        r"""
+        Camera field-of-view aperture in Y (radians)
+        in perspective, used as near plane width in orthographic.
+        """
     @fovy.setter
-    def fovy(self, value: builtins.float) -> None: ...
+    def fovy(self, value: builtins.float) -> None:
+        r"""
+        Camera field-of-view aperture in Y (radians)
+        in perspective, used as near plane width in orthographic.
+        """
     @property
     def aspect(self) -> typing.Optional[builtins.float]:
         r"""
@@ -164,6 +222,52 @@ class Camera3D:
         Screen aspect ratio.
         
         By default aspect is calculated with screen_width() / screen_height() on each frame.
+        """
+    @property
+    def projection(self) -> Projection:
+        r"""
+        Camera projection type, perspective or orthographics.
+        """
+    @projection.setter
+    def projection(self, value: Projection) -> None:
+        r"""
+        Camera projection type, perspective or orthographics.
+        """
+    @property
+    def render_target(self) -> typing.Optional[RenderTarget]:
+        r"""
+        If "render_target" is set - camera will render to texture.
+        
+        Otherwise to the screen.
+        """
+    @render_target.setter
+    def render_target(self, value: typing.Optional[RenderTarget]) -> None:
+        r"""
+        If "render_target" is set - camera will render to texture.
+        
+        Otherwise to the screen.
+        """
+    @property
+    def viewport(self) -> typing.Optional[tuple[builtins.int, builtins.int, builtins.int, builtins.int]]:
+        r"""
+        Part of the screen to render to.
+        
+        None means the whole screen.
+        
+        Viewport do not affect camera space, just the render position on the screen.
+        
+        Useful for things like splitscreen.
+        """
+    @viewport.setter
+    def viewport(self, value: typing.Optional[tuple[builtins.int, builtins.int, builtins.int, builtins.int]]) -> None:
+        r"""
+        Part of the screen to render to.
+        
+        None means the whole screen.
+        
+        Viewport do not affect camera space, just the render position on the screen.
+        
+        Useful for things like splitscreen.
         """
     @property
     def z_near(self) -> builtins.float:
@@ -185,7 +289,7 @@ class Camera3D:
         r"""
         Camera far plane
         """
-    def __new__(cls) -> Camera3D: ...
+    def __new__(cls, position:Vec3=..., target:Vec3=..., aspect:typing.Optional[builtins.float]=None, up:Vec3=..., fovy:builtins.float=0.7853981852531433, projection:Projection=..., render_target:typing.Optional[RenderTarget]=None, viewport:typing.Optional[tuple[builtins.int, builtins.int, builtins.int, builtins.int]]=None, z_near:builtins.float=0.009999999776482582, z_far:builtins.float=10000.0) -> Camera3D: ...
     @staticmethod
     def set_camera(camera:Camera3D) -> None:
         r"""
@@ -4581,25 +4685,69 @@ class Color:
 
 class Config:
     @property
-    def window_title(self) -> builtins.str: ...
+    def window_title(self) -> builtins.str:
+        r"""
+        Name of the window which the engine runs in.
+        """
     @window_title.setter
-    def window_title(self, value: builtins.str) -> None: ...
+    def window_title(self, value: builtins.str) -> None:
+        r"""
+        Name of the window which the engine runs in.
+        """
     @property
-    def window_width(self) -> builtins.int: ...
+    def window_width(self) -> builtins.int:
+        r"""
+        width in pixels. "fullscreen = true" will overwrite this.
+        """
     @window_width.setter
-    def window_width(self, value: builtins.int) -> None: ...
+    def window_width(self, value: builtins.int) -> None:
+        r"""
+        width in pixels. "fullscreen = true" will overwrite this.
+        """
     @property
-    def window_height(self) -> builtins.int: ...
+    def window_height(self) -> builtins.int:
+        r"""
+        height in pixels. "fullscreen = true" will overwrite this.
+        """
     @window_height.setter
-    def window_height(self, value: builtins.int) -> None: ...
+    def window_height(self, value: builtins.int) -> None:
+        r"""
+        height in pixels. "fullscreen = true" will overwrite this.
+        """
     @property
-    def fullscreen(self) -> builtins.bool: ...
+    def fullscreen(self) -> builtins.bool:
+        r"""
+        false -> creates a window with the before above selected width and heigt.
+        true -> creates a "windowed fullscreen" window with a resultion equal to the monitor resolution.
+        """
     @fullscreen.setter
-    def fullscreen(self, value: builtins.bool) -> None: ...
+    def fullscreen(self, value: builtins.bool) -> None:
+        r"""
+        false -> creates a window with the before above selected width and heigt.
+        true -> creates a "windowed fullscreen" window with a resultion equal to the monitor resolution.
+        """
     @property
-    def vsync(self) -> builtins.bool: ...
-    @vsync.setter
-    def vsync(self, value: builtins.bool) -> None: ...
+    def swap_interval(self) -> builtins.int:
+        r"""
+        Optional swap interval (vertical sync).
+        Set to 0, the framerate will be uncapped.
+        
+        Note that this is highly platform- and driver-dependent.
+        There is no guarantee the FPS will match the specified `swap_interval`.
+        In other words, `swap_interval` is only a hint to the GPU driver and
+        not a reliable way to limit the game's FPS.
+        """
+    @swap_interval.setter
+    def swap_interval(self, value: builtins.int) -> None:
+        r"""
+        Optional swap interval (vertical sync).
+        Set to 0, the framerate will be uncapped.
+        
+        Note that this is highly platform- and driver-dependent.
+        There is no guarantee the FPS will match the specified `swap_interval`.
+        In other words, `swap_interval` is only a hint to the GPU driver and
+        not a reliable way to limit the game's FPS.
+        """
     @property
     def sample_count(self) -> builtins.int: ...
     @sample_count.setter
@@ -4609,10 +4757,16 @@ class Config:
     @window_resizable.setter
     def window_resizable(self, value: builtins.bool) -> None: ...
     @property
-    def stop_pyton_when_closing_window(self) -> builtins.bool: ...
+    def stop_pyton_when_closing_window(self) -> builtins.bool:
+        r"""
+        once the window gets closed ( not minimized ) the python script gets terminated.
+        """
     @stop_pyton_when_closing_window.setter
-    def stop_pyton_when_closing_window(self, value: builtins.bool) -> None: ...
-    def __new__(cls, window_title:builtins.str, window_width:builtins.int, window_height:builtins.int, fullscreen:builtins.bool, vsync:builtins.bool, sample_count:builtins.int, window_resizable:builtins.bool, stop_pyton_when_closing_window:builtins.bool) -> Config: ...
+    def stop_pyton_when_closing_window(self, value: builtins.bool) -> None:
+        r"""
+        once the window gets closed ( not minimized ) the python script gets terminated.
+        """
+    def __new__(cls, window_title:builtins.str, window_width:builtins.int, window_height:builtins.int, fullscreen:builtins.bool, swap_interval:builtins.int, sample_count:builtins.int, window_resizable:builtins.bool, stop_pyton_when_closing_window:builtins.bool) -> Config: ...
 
 class DMat2:
     @property
@@ -4798,6 +4952,36 @@ class Rect:
     def h(self, value: builtins.float) -> None: ...
     def __new__(cls, x:builtins.float, y:builtins.float, w:builtins.float, h:builtins.float) -> Rect: ...
     def __repr__(self) -> builtins.str: ...
+
+class RenderTarget:
+    ...
+
+class RenderTargetParams:
+    @property
+    def sample_count(self) -> builtins.int:
+        r"""
+        1 means no multi sampling.
+        Note that sample_count > 1 is not supported on GL2, GLES2 and WebGL1
+        """
+    @sample_count.setter
+    def sample_count(self, value: builtins.int) -> None:
+        r"""
+        1 means no multi sampling.
+        Note that sample_count > 1 is not supported on GL2, GLES2 and WebGL1
+        """
+    @property
+    def depth(self) -> builtins.bool:
+        r"""
+        depth: true creates a depth render target attachment and allows
+        such a render target being used for a depth-testing cameras
+        """
+    @depth.setter
+    def depth(self, value: builtins.bool) -> None:
+        r"""
+        depth: true creates a depth render target attachment and allows
+        such a render target being used for a depth-testing cameras
+        """
+    def __new__(cls, sample_count:builtins.int=1, depth:builtins.bool=False) -> RenderTargetParams: ...
 
 class Texture2D:
     r"""
@@ -5951,6 +6135,10 @@ class KeyCode(Enum):
     Back = ...
     Unknown = ...
 
+class Projection(Enum):
+    Perspective = ...
+    Orthographics = ...
+
 def activate_engine(conf:typing.Optional[Config]=None) -> None:
     r"""
     [!] This should generally be the first function call.
@@ -6049,9 +6237,19 @@ def next_frame() -> None:
     blocks until the frame has been drawn.
     """
 
+def render_target(width:builtins.int, height:builtins.int, params:typing.Optional[RenderTargetParams]=None) -> RenderTarget: ...
+
+def render_target_msaa(width:builtins.int, height:builtins.int, params:typing.Optional[RenderTargetParams]=None) -> RenderTarget:
+    r"""
+    A shortcut to create a render target with no depth buffer and `sample_count: 4`
+    """
+
 def set_cursor_grab(option:builtins.bool) -> None: ...
 
-def set_default_camera() -> None: ...
+def set_default_camera() -> None:
+    r"""
+    default 2D Camera
+    """
 
 def show_mouse(option:builtins.bool) -> None: ...
 

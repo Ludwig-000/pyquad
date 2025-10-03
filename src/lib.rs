@@ -1,6 +1,7 @@
 #![allow(warnings)]
 
 use crossbeam::queue::SegQueue;
+use macroquad::texture::RenderTarget;
 use std::process;
 use std::panic;
 
@@ -222,7 +223,7 @@ async fn process_commands() {
 #[gen_stub_pyfunction]
 #[pyfunction]
 #[pyo3(signature = (conf = None))] // overloads activate_engine with config
-fn activate_engine(_py: Python, conf: Option<Config>) {
+pub fn activate_engine(_py: Python, conf: Option<Config>) {
     match conf {
         Some(config) => {
 
@@ -288,6 +289,12 @@ fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes
     m.add_class::<structs::Image>()?;
     m.add_class::<Camera::Camera2D>()?;
     m.add_class::<Camera::Camera3D>()?;
+
+    m.add_class::<crate::py_abstractions::structs::RenderTarget::RenderTarget>()?;
+    m.add_class::<crate::py_abstractions::structs::RenderTarget::RenderTargetParams>()?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::structs::RenderTarget::render_target_msaa, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::structs::RenderTarget::render_target, m)?)?;
+
 
     m.add_class::<Config>()?;
     m.add_class::<DVec2>()?;

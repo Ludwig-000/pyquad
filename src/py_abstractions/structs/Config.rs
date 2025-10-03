@@ -14,20 +14,32 @@ use pyo3_stub_gen::derive::gen_stub_pyclass_enum;
 #[derive(Clone, PartialEq, Debug)]
 pub struct Config {
 
+    /// Name of the window which the engine runs in.
     #[pyo3(get, set)]
     pub window_title: String,
 
+    /// width in pixels. "fullscreen = true" will overwrite this.
     #[pyo3(get, set)] 
     pub window_width: i32,
 
+    /// height in pixels. "fullscreen = true" will overwrite this.
     #[pyo3(get, set)] 
     pub window_height: i32,
 
+    /// false -> creates a window with the before above selected width and heigt.
+    /// true -> creates a "windowed fullscreen" window with a resultion equal to the monitor resolution.
     #[pyo3(get, set)] 
     pub fullscreen: bool,
 
+    /// Optional swap interval (vertical sync).
+    /// Set to 0, the framerate will be uncapped.
+    ///
+    /// Note that this is highly platform- and driver-dependent.
+    /// There is no guarantee the FPS will match the specified `swap_interval`.
+    /// In other words, `swap_interval` is only a hint to the GPU driver and
+    /// not a reliable way to limit the game's FPS.
     #[pyo3(get, set)] 
-    pub vsync: bool,
+    pub swap_interval: i32,
 
     #[pyo3(get, set)]
     pub sample_count: i32,
@@ -35,6 +47,7 @@ pub struct Config {
     #[pyo3(get, set)] 
     pub window_resizable: bool,
 
+    /// once the window gets closed ( not minimized ) the python script gets terminated.
     #[pyo3(get, set)] 
     pub stop_pyton_when_closing_window: bool    
 }
@@ -49,7 +62,7 @@ impl Config {
         window_width: i32,
         window_height: i32,
         fullscreen: bool,
-        vsync: bool,
+        swap_interval: i32,
         sample_count: i32,
         window_resizable: bool,
         stop_pyton_when_closing_window: bool,
@@ -59,7 +72,7 @@ impl Config {
             window_width,
             window_height,
             fullscreen,
-            vsync,
+            swap_interval,
             sample_count,
             window_resizable,
             stop_pyton_when_closing_window,
@@ -80,13 +93,7 @@ impl Config{
                     ..Default::default()
             };
 
-            /// Optional swap interval (vertical sync).
-            ///
-            /// Note that this is highly platform- and driver-dependent.
-            /// There is no guarantee the FPS will match the specified `swap_interval`.
-            /// In other words, `swap_interval` is only a hint to the GPU driver and
-            /// not a reliable way to limit the game's FPS.
-            if !config.vsync {  miniConf.platform.swap_interval = Some(0);}
+            miniConf.platform.swap_interval = Some(config.swap_interval);
 
             macroquad::conf::Conf {
                 miniquad_conf: miniConf,
