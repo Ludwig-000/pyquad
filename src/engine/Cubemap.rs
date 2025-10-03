@@ -23,3 +23,21 @@ pub fn draw_cubemap(texture: Texture2D) {
     let texture_unpacked = texture.texture;
     COMMAND_QUEUE.push(  Command::DrawCubemap{pos: pos, size: siz, texture: Some(texture_unpacked), color: col} );
 }
+
+
+
+pub fn draw_fullscreen_quad(){
+
+    let vertices = vec![
+        mq::Vertex::new(-1., -1., 0., 0., 0.,  mq::RED),
+        mq::Vertex::new( 1., -1., 0., 1., 0.,  mq::RED),
+        mq::Vertex::new( 1.,  1., 0., 1., 1.,  mq::RED),
+        mq::Vertex::new(-1.,  1., 0., 0., 1.,  mq::RED),
+        
+    ];
+    
+    let indices = vec![0,1,2, 0,2,3];
+    let mesh  =mq::Mesh { vertices, indices, texture: None };
+    mq::draw_mesh(&mesh);
+    //mq::render_target(width, height)
+}

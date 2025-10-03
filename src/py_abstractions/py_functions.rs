@@ -175,7 +175,7 @@ pub fn get_fps() -> PyResult<i32> {
 pub fn get_keys_pressed() -> PyResult<KeyCodeSet> {
     //actually, i am not 100% sure how get_keys_pressed() works, so might wanna look into that.
     let (sender, receiver) = mpsc::sync_channel(1);
-    COMMAND_QUEUE.push(Command::Get_Keys_Pressed(sender));
+    COMMAND_QUEUE.push(Command::GetKeysPressed(sender));
 
     match receiver.recv() {
         Ok(keyset) => {
@@ -199,7 +199,7 @@ pub fn get_keys_pressed() -> PyResult<KeyCodeSet> {
 pub fn get_keys_released() -> PyResult<KeyCodeSet> {
     //actually, i am not 100% sure how get_keys_released() works, so might wanna look into that.
     let (sender, receiver) = mpsc::sync_channel(1);
-    COMMAND_QUEUE.push(Command::Get_Keys_Released(sender));
+    COMMAND_QUEUE.push(Command::GetKeysReleased(sender));
 
     match receiver.recv() {
         Ok(keyset) => {
@@ -222,7 +222,7 @@ pub fn get_keys_released() -> PyResult<KeyCodeSet> {
 #[pyfunction]
 pub fn get_keys_down() -> PyResult<KeyCodeSet> {
     let (sender, receiver) = mpsc::sync_channel(1);
-    COMMAND_QUEUE.push(Command::Get_Keys_Down(sender));
+    COMMAND_QUEUE.push(Command::GetKeysDown(sender));
 
     match receiver.recv() {
         Ok(keyset) => {

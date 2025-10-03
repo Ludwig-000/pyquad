@@ -13,8 +13,7 @@ macro_rules! make_basic_pyclass {
     ($name:ident, { $($field:ident : $ty:ty),* $(,)? }) => {
         #[gen_stub_pyclass]
         #[pyclass]
-        #[derive(Clone)]
-        #[derive(Debug)]
+        #[derive(Clone, PartialEq, Debug)]
         pub struct $name {
             $(#[pyo3(get, set)]
             pub $field: $ty),*
@@ -37,7 +36,7 @@ macro_rules! make_basic_pyclass {
     };
 }
 
-make_basic_pyclass!(Config, { window_title: String, window_width: i32, window_height: i32, fullscreen: bool, vsync: bool,sample_count: i32, window_resizable: bool, stop_pyton_when_closing_window: bool});
+
 make_basic_pyclass!(DVec2, { x: f32,y: f32});
 make_basic_pyclass!(DVec3, { x: f32,y: f32,z: f32});
 make_basic_pyclass!(DVec4, { x: f32,y: f32,z: f32,w: f32});

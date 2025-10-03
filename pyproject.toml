@@ -7,6 +7,7 @@ requires-python = ">=3.10"
 
 [tool.maturin]
 include = ["pyquad.pyi"]
+abi3 = true
 
 [build-system]
 requires = ["maturin>=1.0"]

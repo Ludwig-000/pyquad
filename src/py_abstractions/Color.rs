@@ -27,6 +27,12 @@ pub struct Color {
 
 }
 
+
+enum Confirmation {
+    No,
+    Yes { time: f32 },
+}
+
 #[gen_stub_pymethods]
 #[pymethods]
 impl Color {

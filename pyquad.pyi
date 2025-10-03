@@ -4613,7 +4613,6 @@ class Config:
     @stop_pyton_when_closing_window.setter
     def stop_pyton_when_closing_window(self, value: builtins.bool) -> None: ...
     def __new__(cls, window_title:builtins.str, window_width:builtins.int, window_height:builtins.int, fullscreen:builtins.bool, vsync:builtins.bool, sample_count:builtins.int, window_resizable:builtins.bool, stop_pyton_when_closing_window:builtins.bool) -> Config: ...
-    def __repr__(self) -> builtins.str: ...
 
 class DMat2:
     @property
@@ -4808,6 +4807,58 @@ class Texture2D:
     def from_image(image:Image) -> Texture2D: ...
 
 class Vec2:
+    ZERO: Vec2
+    r"""
+    A vector with all elements set to `0.0`.
+    """
+    ONE: Vec2
+    r"""
+    A vector with all elements set to `1.0`.
+    """
+    NEG_ONE: Vec2
+    r"""
+    A vector with all elements set to `-1.0`.
+    """
+    MIN: Vec2
+    r"""
+    A vector with all elements set to `f32::MIN`.
+    """
+    MAX: Vec2
+    r"""
+    A vector with all elements set to `f32::MAX`.
+    """
+    NAN: Vec2
+    r"""
+    A vector with all elements set to `f32::NAN`.
+    """
+    INFINITY: Vec2
+    r"""
+    A vector with all elements set to `f32::INFINITY`.
+    """
+    NEG_INFINITY: Vec2
+    r"""
+    A vector with all elements set to `f32::NEG_INFINITY`.
+    """
+    X: Vec2
+    r"""
+    The unit vector in the X direction `(1.0, 0.0)`.
+    """
+    Y: Vec2
+    r"""
+    The unit vector in the Y direction `(0.0, 1.0)`.
+    """
+    NEG_X: Vec2
+    r"""
+    The unit vector in the negative X direction `(-1.0, 0.0)`.
+    """
+    NEG_Y: Vec2
+    r"""
+    The unit vector in the negative Y direction `(0.0, -1.0)`.
+    """
+    AXES: builtins.list[Vec2]
+    r"""
+    The X, Y, and Z unit vectors as a list `[X, Y, Z]`.
+    """
     @property
     def x(self) -> builtins.float: ...
     @x.setter
@@ -4817,7 +4868,431 @@ class Vec2:
     @y.setter
     def y(self, value: builtins.float) -> None: ...
     def __new__(cls, x:builtins.float, y:builtins.float) -> Vec2: ...
-    def normalize(self) -> Vec2: ...
+    @staticmethod
+    def select(mask:BVec2, if_true:Vec2, if_false:Vec2) -> Vec2:
+        r"""
+        Creates a vector from the elements in `if_true` and `if_false`, selecting which to use
+        for each element of `self`.
+        
+        A true element in the mask uses the corresponding element from `if_true`, and false
+        uses the element from `if_false`.
+        """
+    @staticmethod
+    def from_array(a:typing.Sequence[builtins.float]) -> Vec2:
+        r"""
+        Creates a new vector from an array.
+        """
+    def to_array(self) -> builtins.list[builtins.float]:
+        r"""
+        `[x, y, z]`
+        """
+    def with_x(self, x:builtins.float) -> Vec2:
+        r"""
+        Creates a 3D vector from `self` with the given value of `x`.
+        """
+    def with_y(self, y:builtins.float) -> Vec2:
+        r"""
+        Creates a 3D vector from `self` with the given value of `y`.
+        """
+    def with_z(self, y:builtins.float) -> Vec2:
+        r"""
+        Creates a 2D vector from `self` with the given value of `y`.
+        """
+    def dot(self, rhs:Vec2) -> builtins.float: ...
+    def dot_into_vec(self, rhs:Vec2) -> Vec2:
+        r"""
+        Returns a vector where every component is the dot product of `self` and `rhs`.
+        """
+    def min(self, rhs:Vec2) -> Vec2:
+        r"""
+        Returns a vector containing the minimum values for each element of `self` and `rhs`.
+        
+        In other words this computes `[self.x.min(rhs.x), self.y.min(rhs.y), ..]`.
+        """
+    def max(self, rhs:Vec2) -> Vec2:
+        r"""
+        Returns a vector containing the maximum values for each element of `self` and `rhs`.
+        
+        In other words this computes `[self.x.max(rhs.x), self.y.max(rhs.y), ..]`.
+        """
+    def clamp(self, min:Vec2, max:Vec2) -> Vec2:
+        r"""
+        Component-wise clamping of values, similar to [`f32::clamp`].
+        
+        Each element in `min` must be less-or-equal to the corresponding element in `max`.
+        
+        # Panics
+        
+        Will panic if `min` is greater than `max` when `glam_assert` is enabled.
+        """
+    def min_element(self) -> builtins.float:
+        r"""
+        Returns the horizontal minimum of `self`.
+        
+        In other words this computes `min(x, y, ..)`.
+        """
+    def max_element(self) -> builtins.float:
+        r"""
+        Returns the horizontal maximum of `self`.
+        
+        In other words this computes `max(x, y, ..)`.
+        """
+    def element_sum(self) -> builtins.float:
+        r"""
+        Returns the sum of all elements of `self`.
+        
+        In other words, this computes `self.x + self.y + ..`.
+        """
+    def element_product(self) -> builtins.float:
+        r"""
+        Returns the product of all elements of `self`.
+        
+        In other words, this computes `self.x * self.y * ..`.
+        """
+    def cmpeq(self, rhs:Vec2) -> BVec2:
+        r"""
+        Returns a vector mask containing the result of a `==` comparison for each element of
+        `self` and `rhs`.
+        
+        In other words, this computes `[self.x == rhs.x, self.y == rhs.y, ..]` for all
+        elements.
+        """
+    def cmpne(self, rhs:Vec2) -> BVec2:
+        r"""
+        Returns a vector mask containing the result of a `!=` comparison for each element of
+        `self` and `rhs`.
+        
+        In other words this computes `[self.x != rhs.x, self.y != rhs.y, ..]` for all
+        elements.
+        """
+    def cmpge(self, rhs:Vec2) -> BVec2:
+        r"""
+        Returns a vector mask containing the result of a `>=` comparison for each element of
+        `self` and `rhs`.
+        
+        In other words this computes `[self.x >= rhs.x, self.y >= rhs.y, ..]` for all
+        elements.
+        """
+    def cmpgt(self, rhs:Vec2) -> BVec2:
+        r"""
+        Returns a vector mask containing the result of a `>` comparison for each element of
+        `self` and `rhs`.
+        
+        In other words this computes `[self.x > rhs.x, self.y > rhs.y, ..]` for all
+        elements.
+        """
+    def cmple(self, rhs:Vec2) -> BVec2:
+        r"""
+        Returns a vector mask containing the result of a `<=` comparison for each element of
+        `self` and `rhs`.
+        
+        In other words this computes `[self.x <= rhs.x, self.y <= rhs.y, ..]` for all
+        elements.
+        """
+    def cmplt(self, rhs:Vec2) -> BVec2:
+        r"""
+        Returns a vector mask containing the result of a `<` comparison for each element of
+        `self` and `rhs`.
+        
+        In other words this computes `[self.x < rhs.x, self.y < rhs.y, ..]` for all
+        elements.
+        """
+    def abs(self) -> Vec2:
+        r"""
+        Returns a vector containing the absolute value of each element of `self`.
+        """
+    def signum(self) -> Vec2:
+        r"""
+        Returns a vector with elements representing the sign of `self`.
+        
+        - `1.0` if the number is positive, `+0.0` or `INFINITY`
+        - `-1.0` if the number is negative, `-0.0` or `NEG_INFINITY`
+        - `NAN` if the number is `NAN`
+        """
+    def copysign(self, rhs:Vec2) -> Vec2:
+        r"""
+        Returns a vector with signs of `rhs` and the magnitudes of `self`.
+        """
+    def is_negative_bitmask(self) -> builtins.int:
+        r"""
+        Returns a bitmask with the lowest 3 bits set to the sign bits from the elements of `self`.
+        
+        A negative element results in a `1` bit and a positive element in a `0` bit.  Element `x` goes
+        into the first lowest bit, element `y` into the second, etc.
+        """
+    def is_finite(self) -> builtins.bool:
+        r"""
+        Returns `true` if, and only if, all elements are finite.  If any element is either
+        `NaN`, positive or negative infinity, this will return `false`.
+        """
+    def is_nan(self) -> builtins.bool:
+        r"""
+        Returns `true` if any elements are `NaN`.
+        """
+    def is_nan_mask(self) -> BVec2:
+        r"""
+        Performs `is_nan` on each element of self, returning a vector mask of the results.
+        
+        In other words, this computes `[x.is_nan(), y.is_nan(), z.is_nan(), w.is_nan()]`.
+        """
+    def length(self) -> builtins.float:
+        r"""
+        Computes the length of `self`.
+        """
+    def length_squared(self) -> builtins.float:
+        r"""
+        Computes the squared length of `self`.
+        
+        This is faster than `length()` as it avoids a square root operation.
+        """
+    def length_recip(self) -> builtins.float:
+        r"""
+        Computes `1.0 / length()`.
+        
+        For valid results, `self` must _not_ be of length zero.
+        """
+    def distance(self, rhs:Vec2) -> builtins.float:
+        r"""
+        Computes the Euclidean distance between two points in space.
+        """
+    def distance_squared(self, rhs:Vec2) -> builtins.float:
+        r"""
+        Compute the squared euclidean distance between two points in space.
+        """
+    def div_euclid(self, rhs:Vec2) -> Vec2:
+        r"""
+        Returns the element-wise quotient of [Euclidean division] of `self` by `rhs`.
+        """
+    def rem_euclid(self, rhs:Vec2) -> Vec2:
+        r"""
+        Returns the element-wise remainder of [Euclidean division] of `self` by `rhs`.
+        
+        [Euclidean division]: f32::rem_euclid
+        """
+    def normalize(self) -> Vec2:
+        r"""
+        Returns `self` normalized to length 1.0.
+        
+        For valid results, `self` must _not_ be of length zero, nor very close to zero.
+        
+        See also [`Self::try_normalize()`] and [`Self::normalize_or_zero()`].
+        
+        Panics
+        
+        Will panic if `self` is zero length when `glam_assert` is enabled.
+        """
+    def try_normalize(self) -> typing.Optional[Vec2]:
+        r"""
+        Returns `self` normalized to length 1.0 if possible, else returns `None`.
+        
+        In particular, if the input is zero (or very close to zero), or non-finite,
+        the result of this operation will be `None`.
+        
+        See also [`Self::normalize_or_zero()`].
+        """
+    def normalize_or(self, fallback:Vec2) -> Vec2:
+        r"""
+        Returns `self` normalized to length 1.0 if possible, else returns a
+        fallback value.
+        
+        In particular, if the input is zero (or very close to zero), or non-finite,
+        the result of this operation will be the fallback value.
+        
+        See also [`Self::try_normalize()`].
+        """
+    def normalize_or_zero(self) -> Vec2:
+        r"""
+        Returns `self` normalized to length 1.0 if possible, else returns zero.
+        
+        In particular, if the input is zero (or very close to zero), or non-finite,
+        the result of this operation will be zero.
+        
+        See also [`Self::try_normalize()`].
+        """
+    def is_normalized(self) -> builtins.bool:
+        r"""
+        Returns whether `self` is length `1.0` or not.
+        
+        Uses a precision threshold of approximately `1e-4`.
+        """
+    def project_onto(self, rhs:Vec2) -> Vec2:
+        r"""
+        Returns the vector projection of `self` onto `rhs`.
+        
+        `rhs` must be of non-zero length.
+        
+        # Panics
+        
+        Will panic if `rhs` is zero length when `glam_assert` is enabled.
+        """
+    def reject_from(self, rhs:Vec2) -> Vec2:
+        r"""
+        Returns the vector rejection of `self` from `rhs`.
+        
+        The vector rejection is the vector perpendicular to the projection of `self` onto
+        `rhs`, in rhs words the result of `self - self.project_onto(rhs)`.
+        
+        `rhs` must be of non-zero length.
+        
+        # Panics
+        
+        Will panic if `rhs` has a length of zero when `glam_assert` is enabled.
+        """
+    def project_onto_normalized(self, rhs:Vec2) -> Vec2:
+        r"""
+        Returns the vector projection of `self` onto `rhs`.
+        
+        `rhs` must be normalized.
+        
+        # Panics
+        
+        Will panic if `rhs` is not normalized when `glam_assert` is enabled.
+        """
+    def reject_from_normalized(self, rhs:Vec2) -> Vec2:
+        r"""
+        Returns the vector rejection of `self` from `rhs`.
+        
+        The vector rejection is the vector perpendicular to the projection of `self` onto
+        `rhs`, in rhs words the result of `self - self.project_onto(rhs)`.
+        
+        `rhs` must be normalized.
+        
+        # Panics
+        
+        Will panic if `rhs` is not normalized when `glam_assert` is enabled.
+        """
+    def round(self) -> Vec2:
+        r"""
+        Returns a vector containing the nearest integer to a number for each element of `self`.
+        Round half-way cases away from 0.0.
+        """
+    def floor(self) -> Vec2:
+        r"""
+        Returns a vector containing the largest integer less than or equal to a number for each
+        element of `self`.
+        """
+    def ceil(self) -> Vec2:
+        r"""
+        Returns a vector containing the smallest integer greater than or equal to a number for
+        each element of `self`.
+        """
+    def trunc(self) -> Vec2:
+        r"""
+        Returns a vector containing the integer part each element of `self`. This means numbers are
+        always truncated towards zero.
+        """
+    def fract(self) -> Vec2:
+        r"""
+        Returns a vector containing the fractional part of the vector as `self - self.trunc()`.
+        
+        Note that this differs from the GLSL implementation of `fract` which returns
+        `self - self.floor()`.
+        
+        Note that this is fast but not precise for large numbers.
+        """
+    def fract_gl(self) -> Vec2:
+        r"""
+        Returns a vector containing the fractional part of the vector as `self - self.floor()`.
+        
+        Note that this differs from the Rust implementation of `fract` which returns
+        `self - self.trunc()`.
+        
+        Note that this is fast but not precise for large numbers.
+        """
+    def exp(self) -> Vec2:
+        r"""
+        Returns a vector containing `e^self` (the exponential function) for each element of
+        `self`.
+        """
+    def powf(self, n:builtins.float) -> Vec2:
+        r"""
+        Returns a vector containing each element of `self` raised to the power of `n`.
+        """
+    def recip(self) -> Vec2:
+        r"""
+        Returns a vector containing the reciprocal `1.0/n` of each element of `self`.
+        """
+    def lerp(self, rhs:Vec2, s:builtins.float) -> Vec2:
+        r"""
+        Performs a linear interpolation between `self` and `rhs` based on the value `s`.
+        
+        When `s` is `0.0`, the result will be equal to `self`.  When `s` is `1.0`, the result
+        will be equal to `rhs`. When `s` is outside of range `[0, 1]`, the result is linearly
+        extrapolated.
+        """
+    def move_towards(self, rhs:Vec2, d:builtins.float) -> Vec2:
+        r"""
+        Moves towards `rhs` based on the value `d`.
+        
+        When `d` is `0.0`, the result will be equal to `self`. When `d` is equal to
+        `self.distance(rhs)`, the result will be equal to `rhs`. Will not go past `rhs`.
+        """
+    def midpoint(self, rhs:Vec2) -> Vec2:
+        r"""
+        Calculates the midpoint between `self` and `rhs`.
+        
+        The midpoint is the average of, or halfway point between, two vectors.
+        `a.midpoint(b)` should yield the same result as `a.lerp(b, 0.5)`
+        while being slightly cheaper to compute.
+        """
+    def abs_diff_eq(self, rhs:Vec2, max_abs_diff:builtins.float) -> builtins.bool:
+        r"""
+        Returns true if the absolute difference of all elements between `self` and `rhs` is
+        less than or equal to `max_abs_diff`.
+        
+        This can be used to compare if two vectors contain similar elements. It works best when
+        comparing with a known value. The `max_abs_diff` that should be used used depends on
+        the values being compared against.
+        
+        For more see
+        [comparing floating point numbers](https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/).
+        """
+    def clamp_length(self, min:builtins.float, max:builtins.float) -> Vec2:
+        r"""
+        Returns a vector with a length no less than `min` and no more than `max`
+        
+        # Panics
+        
+        Will panic if `min` is greater than `max` when `glam_assert` is enabled.
+        """
+    def clamp_length_max(self, max:builtins.float) -> Vec2:
+        r"""
+        Returns a vector with a length no more than `max`
+        """
+    def clamp_length_min(self, min:builtins.float) -> Vec2:
+        r"""
+        Returns a vector with a length no less than `min`
+        """
+    def mul_add(self, a:Vec2, b:Vec2) -> Vec2:
+        r"""
+        Fused multiply-add. Computes `(self * a) + b` element-wise with only one rounding
+        error, yielding a more accurate result than an unfused multiply-add.
+        
+        Using `mul_add` *may* be more performant than an unfused multiply-add if the target
+        architecture has a dedicated fma CPU instruction. However, this is not always true,
+        and will be heavily dependant on designing algorithms with specific target hardware in
+        mind.
+        """
+    def angle_between(self, rhs:Vec2) -> builtins.float:
+        r"""
+        Returns the angle (in radians) between two vectors.
+        
+        The inputs do not need to be unit vectors however they must be non-zero.
+        """
+    @staticmethod
+    def zero() -> Vec2:
+        r"""
+        The default `Vec2` is `[0.0, 0.0, 0.0]`.
+        """
+    def __truediv__(self, rhs:typing.Any) -> Vec2: ...
+    def __mul__(self, rhs:typing.Any) -> Vec2: ...
+    def __rmul__(self, lhs:builtins.float) -> Vec2: ...
+    def __add__(self, rhs:typing.Any) -> Vec2: ...
+    def __radd__(self, lhs:builtins.float) -> Vec2: ...
+    def __sub__(self, rhs:typing.Any) -> Vec2: ...
+    def __rsub__(self, lhs:builtins.float) -> Vec2: ...
+    def __mod__(self, rhs:typing.Any) -> Vec2: ...
+    def __rmod__(self, lhs:builtins.float) -> Vec2: ...
 
 class Vec3:
     ZERO: Vec3

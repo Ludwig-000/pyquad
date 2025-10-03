@@ -6,10 +6,10 @@ The project is in early development and the repository exists for documentation 
 
 #
 ## Featuring 2D:  
-![2D Screenshot](./docs/2d_screenshot.png)
+![2D Screenshot](https://raw.githubusercontent.com/Ludwig-000/pyquad/refs/heads/main/docs/2d_screenshot.png)
 #
 ## and 3D:
-![3D Screenshot](./docs/3d_screenshot.png)
+![3D Screenshot](https://raw.githubusercontent.com/Ludwig-000/pyquad/refs/heads/main/docs/3d_screenshot.png)
 
 #
 #

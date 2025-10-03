@@ -1,0 +1,99 @@
+use macroquad::conf::Conf;
+use pyo3::prelude::*;
+use pyo3::wrap_pyfunction; 
+//use pyo3::type_gen::generate_type;
+//use pyo3::type_gen::generate_type_as_function;
+use macroquad::prelude as mq;
+use crate::py_abstractions::Color::*;
+
+use pyo3_stub_gen::{derive::gen_stub_pyfunction, define_stub_info_gatherer,derive::*} ;
+use pyo3_stub_gen::derive::gen_stub_pyclass_enum;
+
+#[gen_stub_pyclass]
+#[pyclass]
+#[derive(Clone, PartialEq, Debug)]
+pub struct Config {
+
+    #[pyo3(get, set)]
+    pub window_title: String,
+
+    #[pyo3(get, set)] 
+    pub window_width: i32,
+
+    #[pyo3(get, set)] 
+    pub window_height: i32,
+
+    #[pyo3(get, set)] 
+    pub fullscreen: bool,
+
+    #[pyo3(get, set)] 
+    pub vsync: bool,
+
+    #[pyo3(get, set)]
+    pub sample_count: i32,
+
+    #[pyo3(get, set)] 
+    pub window_resizable: bool,
+
+    #[pyo3(get, set)] 
+    pub stop_pyton_when_closing_window: bool    
+}
+
+
+#[gen_stub_pymethods]
+#[pymethods]
+impl Config {
+    #[new]
+    pub fn new(
+        window_title: String,
+        window_width: i32,
+        window_height: i32,
+        fullscreen: bool,
+        vsync: bool,
+        sample_count: i32,
+        window_resizable: bool,
+        stop_pyton_when_closing_window: bool,
+    ) -> Self {
+        Config {
+            window_title,
+            window_width,
+            window_height,
+            fullscreen,
+            vsync,
+            sample_count,
+            window_resizable,
+            stop_pyton_when_closing_window,
+        }
+    }
+}
+
+
+
+impl Config{
+    pub fn to_window_config(config: Config) -> macroquad::conf::Conf {
+       let mut miniConf = mq::miniquad::conf::Conf {
+                    window_title: config.window_title,
+                    window_width: config.window_width,
+                    window_height: config.window_height,
+                    fullscreen: config.fullscreen,
+
+                    ..Default::default()
+            };
+
+            /// Optional swap interval (vertical sync).
+            ///
+            /// Note that this is highly platform- and driver-dependent.
+            /// There is no guarantee the FPS will match the specified `swap_interval`.
+            /// In other words, `swap_interval` is only a hint to the GPU driver and
+            /// not a reliable way to limit the game's FPS.
+            if !config.vsync {  miniConf.platform.swap_interval = Some(0);}
+
+            macroquad::conf::Conf {
+                miniquad_conf: miniConf,
+                update_on: Some(macroquad::conf::UpdateTrigger::default()),
+                default_filter_mode: macroquad::prelude::FilterMode::Linear,
+                draw_call_vertex_capacity: 10000,
+                draw_call_index_capacity: 5000,
+            }
+    }
+}

@@ -4,3 +4,4 @@ pub mod GLAM;
 pub mod Mesh;
 pub mod RenderTarget;
 pub mod KeyCode;
+pub mod Config;

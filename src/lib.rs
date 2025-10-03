@@ -2,10 +2,12 @@
 
 use crossbeam::queue::SegQueue;
 use std::process;
-use lazy_static::*;
+use std::panic;
 
 use pyo3::prelude::*;
 use pyo3_stub_gen::{derive::gen_stub_pyfunction, define_stub_info_gatherer,derive::*};
+
+use lazy_static::*;
 
 use std::sync::Mutex;
 use macroquad::prelude as mq;
@@ -26,6 +28,7 @@ use crate::py_abstractions::Mouse as Mouse;
 use crate::engine::SHADERS::shaderLoader;
 use crate::engine::SHADERS::shader_manager as sm;
 use crate::py_abstractions::Color::*;
+use crate::py_abstractions::structs::Config::*;
 
 lazy_static! {
     pub static ref COMMAND_QUEUE: Arc<SegQueue<Command>> = Arc::new(SegQueue::new());
@@ -59,11 +62,11 @@ pub enum Command {
 
     GetMousePosition(mpsc::SyncSender<(f32,f32)>),
     
-    Get_Keys_Pressed(mpsc::SyncSender<HashSet<mq::KeyCode>>),
+    GetKeysPressed(mpsc::SyncSender<HashSet<mq::KeyCode>>),
 
-    Get_Keys_Down(mpsc::SyncSender<HashSet<mq::KeyCode>>),
+    GetKeysDown(mpsc::SyncSender<HashSet<mq::KeyCode>>),
 
-    Get_Keys_Released(mpsc::SyncSender<HashSet<mq::KeyCode>>),
+    GetKeysReleased(mpsc::SyncSender<HashSet<mq::KeyCode>>),
 
     NextFrame(mpsc::SyncSender<()>),
 
@@ -122,7 +125,9 @@ async fn process_commands() {
             }
             Command::DrawCubemap {pos,size,texture,color} => {
                 sm::switch_to_desired_shader(sm::ShaderKind::None);
-                mq::draw_cube(pos,size,texture.as_ref(),color)
+                mq::draw_cube(pos,size,texture.as_ref(),color);
+                crate::engine::Cubemap::draw_fullscreen_quad();
+
             }
             
             Command::LoadImage { path,sender} => {
@@ -171,15 +176,15 @@ async fn process_commands() {
             let pos = mq::mouse_position();
             let _ = sender.send(pos);
             }
-            Command::Get_Keys_Pressed(sender) => {
+            Command::GetKeysPressed(sender) => {
             let keyset = mq::get_keys_pressed();
             let _ = sender.send(keyset);
             }
-            Command::Get_Keys_Released(sender) => {
+            Command::GetKeysReleased(sender) => {
             let keyset = mq::get_keys_released();
             let _ = sender.send(keyset);
             }
-            Command::Get_Keys_Down(sender) => {
+            Command::GetKeysDown(sender) => {
             let keyset = mq::get_keys_down();
             let _ = sender.send(keyset);
             }
@@ -207,6 +212,9 @@ async fn process_commands() {
 
    
 }
+
+
+
 /// [!] This should generally be the first function call.
 ///
 /// Turns on the pyquad engine, creates an open-gl window and allows for engine-calls to be processed.
@@ -217,31 +225,8 @@ async fn process_commands() {
 fn activate_engine(_py: Python, conf: Option<Config>) {
     match conf {
         Some(config) => {
-            let mut miniConf = mq::miniquad::conf::Conf {
-                    window_title: config.window_title,
-                    window_width: config.window_width,
-                    window_height: config.window_height,
-                    fullscreen: config.fullscreen,
 
-                    ..Default::default()
-            };
-
-            /// Optional swap interval (vertical sync).
-            ///
-            /// Note that this is highly platform- and driver-dependent.
-            /// There is no guarantee the FPS will match the specified `swap_interval`.
-            /// In other words, `swap_interval` is only a hint to the GPU driver and
-            /// not a reliable way to limit the game's FPS.
-            if !config.vsync {  miniConf.platform.swap_interval = Some(0);}
-
-            let mut macroConf = macroquad::conf::Conf {
-                miniquad_conf: miniConf,
-                update_on: Some(macroquad::conf::UpdateTrigger::default()),
-                default_filter_mode: macroquad::prelude::FilterMode::Linear,
-                draw_call_vertex_capacity: 10000,
-                draw_call_index_capacity: 5000,
-            };
-
+            let mut macroConf = Config::to_window_config(config.clone());
 
             std::thread::spawn(move || {
                 macroquad::Window::from_config(macroConf, async {
