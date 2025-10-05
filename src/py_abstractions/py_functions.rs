@@ -10,6 +10,7 @@ use super::py_structs::*;
 use crate::py_abstractions::structs::Textures_and_Images::*;
 use macroquad::prelude as mq;
 
+use macroquad::text;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction; 
 use pyo3_stub_gen::{derive::gen_stub_pyfunction};
@@ -35,6 +36,99 @@ pub fn draw_rectangle(x: f32, y: f32, w: f32, h: f32, color: Color) {
     let c = mq::Color::new(color.r,color.g,color.b,color.a);
     COMMAND_QUEUE.push(Command::DrawRect { x, y, w, h,color:c});
 }
+
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn draw_affine_parallelepiped(offset: Vec3, e1: Vec3,e2: Vec3,e3: Vec3,texture: Option<Texture2D>,color: Color) {
+    
+    COMMAND_QUEUE.push(Command::DrawAfflineParallelpiped { offset: offset.into(), e1: e1.into(), e2: e2.into(), e3: e3.into(), texture: texture.map(Into::into), color: color.into() });
+}
+
+
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn draw_arc( x: f32,
+    y: f32,
+    sides: u8,
+    radius: f32,
+    rotation: f32,
+    thickness: f32,
+    arc: f32,
+    color: Color) {
+    
+    COMMAND_QUEUE.push(Command::DrawArc { x, y, sides, radius, rotation, thickness, arc, color: color.into() });
+}
+
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn draw_cube_wires( position: Vec3, size: Vec3, color: Color) {
+    
+    COMMAND_QUEUE.push(Command::DrawCubeWires {position: position.into(),size: size.into(),color: color.into()});
+}
+
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn draw_cylinder( position: Vec3,
+    radius_top: f32,
+    radius_bottom: f32,
+    height: f32,
+    texture: Option<Texture2D>,
+    color: Color ) {
+    
+    COMMAND_QUEUE.push(Command::DrawCylinder {position: position.into(), radius_top: radius_top, radius_bottom: radius_bottom, 
+        height, texture: texture.map(Into::into),color: color.into()});
+}
+
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn draw_cylinder_wires( position: Vec3,
+    radius_top: f32,
+    radius_bottom: f32,
+    height: f32,
+    texture: Option<Texture2D>,
+    color: Color) {
+    
+    COMMAND_QUEUE.push(Command::DrawCylinderWires {position: position.into(), radius_top: radius_top.into(), radius_bottom: radius_bottom.into(), 
+        height, texture: texture.map(Into::into),color: color.into()});
+}
+
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn draw_ellipse( x: f32, y: f32, w: f32, h: f32, rotation: f32, color: Color){
+    COMMAND_QUEUE.push(Command::DrawEllipse { x, y, w, h, rotation, color: color.into()});
+}
+
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn draw_ellipse_lines( x: f32,
+    y: f32,
+    w: f32,
+    h: f32,
+    rotation: f32,
+    thickness: f32,
+    color: Color){
+    COMMAND_QUEUE.push(Command::DrawEllipseLines { x, y, w, h, rotation, thickness, color: color.into()});
+}
+
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn draw_hexagon( x: f32,
+    y: f32,
+    size: f32,
+    border: f32,
+    vertical: bool,
+    border_color: Color,
+    fill_color: Color){
+    COMMAND_QUEUE.push(Command::DrawHexagon { x, y, size, border, vertical, border_color: border_color.into(), fill_color: fill_color.into()});
+}
+
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn draw_line_3d( start: Vec3, end: Vec3, color: Color){
+    COMMAND_QUEUE.push(Command::DrawLine3D { start: start.into(), end: end.into(), color: color.into()});
+}
+
+
 
 /// draws a basic grid in 3d space.
 /// requires a 3d camera to be seen.
@@ -221,6 +315,7 @@ pub fn get_keys_released() -> PyResult<KeyCodeSet> {
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_keys_down() -> PyResult<KeyCodeSet> {
+
     let (sender, receiver) = mpsc::sync_channel(1);
     COMMAND_QUEUE.push(Command::GetKeysDown(sender));
 
@@ -237,7 +332,11 @@ pub fn get_keys_down() -> PyResult<KeyCodeSet> {
         }
         Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to get keyset")),
     }
+
 }
+
+
+
 //none yet here
 
 /*

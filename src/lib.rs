@@ -30,6 +30,7 @@ use crate::engine::SHADERS::shaderLoader;
 use crate::engine::SHADERS::shader_manager as sm;
 use crate::py_abstractions::Color::*;
 use crate::py_abstractions::structs::Config::*;
+use pyo3::exceptions::PyUnicodeWarning;
 
 lazy_static! {
     pub static ref COMMAND_QUEUE: Arc<SegQueue<Command>> = Arc::new(SegQueue::new());
@@ -39,6 +40,47 @@ lazy_static! {
 
 pub enum Command {
 
+    DrawArc{ x: f32,
+    y: f32,
+    sides: u8,
+    radius: f32,
+    rotation: f32,
+    thickness: f32,
+    arc: f32,
+    color: mq::Color,},
+    DrawCubeWires{position: mq::Vec3, size: mq::Vec3, color: mq::Color},
+    DrawCylinder{ position: mq::Vec3,
+    radius_top: f32,
+    radius_bottom: f32,
+    height: f32,
+    texture: Option<mq::Texture2D>,
+    color: mq::Color,},
+    DrawCylinderWires{ position: mq::Vec3,
+        radius_top: f32,
+        radius_bottom: f32,
+        height: f32,
+        texture: Option<mq::Texture2D>,
+        color: mq::Color,},
+
+    DrawEllipse{x: f32, y: f32, w: f32, h: f32, rotation: f32, color: mq::Color},
+    DrawEllipseLines{x: f32,
+            y: f32,
+            w: f32,
+            h: f32,
+            rotation: f32,
+            thickness: f32,
+            color: mq::Color,},
+    DrawHexagon{x: f32,
+                y: f32,
+                size: f32,
+                border: f32,
+                vertical: bool,
+                border_color: mq::Color,
+                fill_color: mq::Color,},
+    DrawLine3D{start: mq::Vec3, end: mq::Vec3, color: mq::Color},
+
+
+    DrawAfflineParallelpiped{offset: mq::Vec3, e1: mq::Vec3,e2: mq::Vec3,e3: mq::Vec3,texture: Option<mq::Texture2D>,color: mq::Color},
     SetDefaultCamera(),
 
     DrawRect { x: f32, y: f32, w: f32, h: f32, color: mq::Color },
@@ -96,6 +138,7 @@ lazy_static! {
 }
 
 async fn process_commands() {
+
     // processes commands that rely on the macroquad engine
     // commands that do not rely on it's core (openGL) components are found elsewhere.
 
@@ -130,7 +173,46 @@ async fn process_commands() {
                 crate::engine::Cubemap::draw_fullscreen_quad();
 
             }
+
+            //todo: implement the pyabastraction for these.
+
+            Command::DrawAfflineParallelpiped { offset, e1, e2, e3, texture, color } => {
+                mq::draw_affine_parallelepiped(offset, e1, e2, e3, texture.as_ref(), color);
+            }
+            Command::DrawArc { x, y, sides, radius, rotation, thickness, arc, color } => {
+                mq::draw_arc(x, y, sides, radius, rotation, thickness, arc, color);
+            }
+
+            Command::DrawCubeWires { position, size, color } => {
+                mq::draw_cube_wires(position, size, color);
+            }
+            Command::DrawCylinder { position, radius_top, radius_bottom, height, texture, color } => {
+                mq::draw_cylinder(position, radius_top, radius_bottom, height, texture.as_ref(), color);
+            }
+
+            Command::DrawCylinderWires { position, radius_top, radius_bottom, height, texture, color } => {
+                mq::draw_cylinder_wires(position, radius_top, radius_bottom, height, texture.as_ref(), color);
+            }
+
+            Command::DrawEllipse { x, y, w, h, rotation, color }    => {
+                mq::draw_ellipse(x, y, w, h, rotation, color);  
+            }
             
+            Command::DrawEllipseLines { x, y, w, h, rotation, thickness, color }    => {
+                mq::draw_ellipse_lines(x, y, w, h, rotation, thickness, color);
+            }
+
+            Command::DrawHexagon { x, y, size, border, vertical, border_color, fill_color } => {
+                mq::draw_hexagon(x, y, size, border, vertical, border_color, fill_color);
+            }
+
+            Command::DrawLine3D { start, end, color } =>{
+                mq::draw_line_3d(start, end, color);    
+            }
+            
+            // end of todo
+
+
             Command::LoadImage { path,sender} => {
                 let result = async {
                 let bytes = mq::load_file(&path).await?;
@@ -260,12 +342,23 @@ pub fn activate_engine(_py: Python, conf: Option<Config>) {
 
 #[pymodule]
 fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes all functionality to python
-
-    // functions
     m.add_function(wrap_pyfunction!(activate_engine, m)?)?;
+    // functions
+
     m.add_function(wrap_pyfunction!(draw_rectangle, m)?)?;
     m.add_function(wrap_pyfunction!(draw_poly, m)?)?;
     m.add_function(wrap_pyfunction!(draw_circle, m)?)?;
+    m.add_function(wrap_pyfunction!(draw_affine_parallelepiped, m)?)?;
+    m.add_function(wrap_pyfunction!(draw_arc, m)?)?;
+    m.add_function(wrap_pyfunction!(draw_cube_wires, m)?)?;
+    m.add_function(wrap_pyfunction!(draw_cylinder, m)?)?;
+    m.add_function(wrap_pyfunction!(draw_cylinder_wires, m)?)?;
+    m.add_function(wrap_pyfunction!(draw_ellipse, m)?)?;
+    m.add_function(wrap_pyfunction!(draw_ellipse_lines, m)?)?;
+    m.add_function(wrap_pyfunction!(draw_hexagon, m)?)?;
+    m.add_function(wrap_pyfunction!(draw_line_3d, m)?)?;
+
+
     m.add_function(wrap_pyfunction!(next_frame, m)?)?;
     m.add_function(wrap_pyfunction!(clear_background, m)?)?;
     m.add_function(wrap_pyfunction!(draw_text, m)?)?;

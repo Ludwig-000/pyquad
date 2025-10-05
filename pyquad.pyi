@@ -293,7 +293,7 @@ class Camera3D:
     @staticmethod
     def set_camera(camera:Camera3D) -> None:
         r"""
-        Set active 2D or 3D camera.
+        Set active 3D camera.
         """
 
 class Circle:
@@ -4730,6 +4730,7 @@ class Config:
     def swap_interval(self) -> builtins.int:
         r"""
         Optional swap interval (vertical sync).
+        
         Set to 0, the framerate will be uncapped.
         
         Note that this is highly platform- and driver-dependent.
@@ -4741,6 +4742,7 @@ class Config:
     def swap_interval(self, value: builtins.int) -> None:
         r"""
         Optional swap interval (vertical sync).
+        
         Set to 0, the framerate will be uncapped.
         
         Note that this is highly platform- and driver-dependent.
@@ -6152,6 +6154,10 @@ def clear_background(color:Color) -> None:
     this is usually used at the start of a frame.
     """
 
+def draw_affine_parallelepiped(offset:Vec3, e1:Vec3, e2:Vec3, e3:Vec3, texture:typing.Optional[Texture2D], color:Color) -> None: ...
+
+def draw_arc(x:builtins.float, y:builtins.float, sides:builtins.int, radius:builtins.float, rotation:builtins.float, thickness:builtins.float, arc:builtins.float, color:Color) -> None: ...
+
 def draw_circle(x:builtins.float, y:builtins.float, r:builtins.float, color:Color) -> None:
     r"""
     draws very basic circle in 2d space.
@@ -6167,13 +6173,27 @@ def draw_cube(position:Vec3, size:Vec3, color:Color) -> None:
     requires a 3d camera to be seen.
     """
 
+def draw_cube_wires(position:Vec3, size:Vec3, color:Color) -> None: ...
+
 def draw_cubemap(texture:Texture2D) -> None: ...
+
+def draw_cylinder(position:Vec3, radius_top:builtins.float, radius_bottom:builtins.float, height:builtins.float, texture:typing.Optional[Texture2D], color:Color) -> None: ...
+
+def draw_cylinder_wires(position:Vec3, radius_top:builtins.float, radius_bottom:builtins.float, height:builtins.float, texture:typing.Optional[Texture2D], color:Color) -> None: ...
+
+def draw_ellipse(x:builtins.float, y:builtins.float, w:builtins.float, h:builtins.float, rotation:builtins.float, color:Color) -> None: ...
+
+def draw_ellipse_lines(x:builtins.float, y:builtins.float, w:builtins.float, h:builtins.float, rotation:builtins.float, thickness:builtins.float, color:Color) -> None: ...
 
 def draw_grid(slices:builtins.int, spacing:builtins.float, axes_color:Color, other_color:Color) -> None:
     r"""
     draws a basic grid in 3d space.
     requires a 3d camera to be seen.
     """
+
+def draw_hexagon(x:builtins.float, y:builtins.float, size:builtins.float, border:builtins.float, vertical:builtins.bool, border_color:Color, fill_color:Color) -> None: ...
+
+def draw_line_3d(start:Vec3, end:Vec3, color:Color) -> None: ...
 
 def draw_plane(center:Vec3, size:Vec2, color:Color, texture:typing.Optional[Texture2D]) -> None:
     r"""

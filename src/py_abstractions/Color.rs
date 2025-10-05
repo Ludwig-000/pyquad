@@ -1,3 +1,4 @@
+use macroquad::prelude;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction; 
 use pyo3_stub_gen::{derive::gen_stub_pyfunction};
@@ -25,12 +26,6 @@ pub struct Color {
     #[pyo3(get, set)]
     pub a: f32,
 
-}
-
-
-enum Confirmation {
-    No,
-    Yes { time: f32 },
 }
 
 #[gen_stub_pymethods]
@@ -6532,4 +6527,20 @@ impl Color {
 
 
 
+}
+
+
+
+
+
+impl From<macroquad::prelude::Color> for Color {
+    fn from(t: macroquad::prelude::Color) -> Self {
+        Color { r: t.r, g: t.g, b: t.b, a: t.a }
+    }
+}
+
+impl From<Color> for macroquad::prelude::Color {
+    fn from(t: Color) -> Self {
+        macroquad::prelude::Color {  r: t.r, g: t.g, b: t.b, a: t.a  }
+    }
 }

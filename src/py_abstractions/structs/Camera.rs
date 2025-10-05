@@ -287,7 +287,7 @@ impl Camera3D {
     }
 
     #[staticmethod]
-    /// Set active 2D or 3D camera.
+    /// Set active 3D camera.
     pub fn set_camera(camera: Camera3D) {
         let cam: mq::Camera3D = camera.into();
         COMMAND_QUEUE.push(Command::SetCamera { camera_2d: None, camera_3d: Some(cam) });

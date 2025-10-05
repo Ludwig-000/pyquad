@@ -32,6 +32,7 @@ pub struct Config {
     pub fullscreen: bool,
 
     /// Optional swap interval (vertical sync).
+    /// 
     /// Set to 0, the framerate will be uncapped.
     ///
     /// Note that this is highly platform- and driver-dependent.

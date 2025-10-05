@@ -13,7 +13,7 @@ use crate::py_abstractions::Color::*;
 /// Image, data stored in CPU memory
 #[gen_stub_pyclass]
 #[pyclass(name = "Image")]
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq, Eq,)]
 pub struct Image {
     #[pyo3(get, set)]
     pub bytes: Vec<u8>, 
@@ -205,3 +205,16 @@ impl Texture2D {
 
 }
     
+
+impl From<mq::Texture2D> for Texture2D {
+    fn from(t: mq::Texture2D) -> Self {
+        Texture2D { texture: t }
+    }
+}
+
+
+impl From<Texture2D> for mq::Texture2D {
+    fn from(t: Texture2D) -> Self {
+        t.texture
+    }
+}
