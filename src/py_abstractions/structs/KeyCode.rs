@@ -30,6 +30,7 @@ impl KeyCodeSet {
     pub fn __repr__(&self) -> String {
         format!("KeyCodeSet(inner={:?}, )", self.inner)
     }
+    
     pub fn __contains__(&self, key: KeyCode) -> bool {
         self.inner.contains(&key)
     }
@@ -103,6 +104,7 @@ impl KeyCodeSet {
         let new_set: HashSet<KeyCode> = self.inner.symmetric_difference(&other.inner).cloned().collect();
         KeyCodeSet { inner: new_set }
     }
+
 }
 
 #[gen_stub_pyclass_enum]

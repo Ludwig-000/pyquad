@@ -6530,9 +6530,6 @@ impl Color {
 }
 
 
-
-
-
 impl From<macroquad::prelude::Color> for Color {
     fn from(t: macroquad::prelude::Color) -> Self {
         Color { r: t.r, g: t.g, b: t.b, a: t.a }

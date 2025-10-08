@@ -2,8 +2,12 @@ use macroquad::prelude as mq;
 use pyo3::{pyclass, pyfunction,pymethods};
 use pyo3_stub_gen::derive::gen_stub_pyfunction;
 use crate::py_abstractions::structs::Textures_and_Images::Texture2D;
-
+use std::sync::mpsc;
 use pyo3_stub_gen::{define_stub_info_gatherer,derive::*};
+use crate::COMMAND_QUEUE;
+use crate::Command;
+use pyo3::prelude::*;
+use pyo3::wrap_pyfunction; 
 
 #[gen_stub_pyclass]
 #[pyclass]
@@ -36,32 +40,38 @@ impl From<RenderTarget> for mq::RenderTarget{
 /// A shortcut to create a render target with no depth buffer and `sample_count: 4`
 #[gen_stub_pyfunction]
 #[pyfunction]
-#[pyo3(signature = (width, height, params = None))]
-pub fn render_target_msaa(width: u32, height: u32, params: Option<RenderTargetParams>) -> RenderTarget {
-    match params{
-        Some(p) => mq::render_target_ex(width, height, p.into()).into(),
-        None => mq::render_target(width, height).into(),
-    }
+pub fn render_target_msaa(width: u32, height: u32) -> PyResult<RenderTarget> {
+    let (sender, receiver) = mpsc::sync_channel(1);
+    COMMAND_QUEUE.push( Command::RenderTargetMsaa{width,height,sender} );
 
+    match receiver.recv() {
+        Ok(render_target) => Ok(render_target.into()),
+        Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to receive RenderTarget")),
+    }
 }
+
 
 #[gen_stub_pyfunction]
 #[pyfunction]
 #[pyo3(signature = (width, height, params = None))]
-pub fn render_target(width: u32, height: u32, params: Option<RenderTargetParams>) -> RenderTarget {
-    match params {
-        Some(p) => mq::render_target_ex(width, height, p.into()).into(),
-        None => mq::render_target(width, height).into(),
+pub fn render_target(width: u32, height: u32, params: Option<RenderTargetParams>) -> PyResult<RenderTarget> {
+
+    let (sender, receiver) = mpsc::sync_channel(1);
+
+    COMMAND_QUEUE.push( Command::RenderTargetEx { width, height, params: params.map(Into::into), sender});
+
+    match receiver.recv() {
+        Ok(render_target) => Ok(render_target.into()),
+        Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to receive RenderTarget")),
     }
 }
-
 
 
 
 
 #[gen_stub_pyclass]
 #[pyclass]
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone,Copy, PartialEq, Debug)]
 pub struct RenderTargetParams {
     /// 1 means no multi sampling.
     /// Note that sample_count > 1 is not supported on GL2, GLES2 and WebGL1

@@ -12,6 +12,7 @@ use lazy_static::*;
 
 use std::sync::Mutex;
 use macroquad::prelude as mq;
+use macroquad::audio as au;
 
 mod engine;
 use engine::load_ressources as eng;
@@ -40,6 +41,21 @@ lazy_static! {
 
 pub enum Command {
 
+    LoadFile{ path: String, sender: mpsc::SyncSender<Result<Vec<u8>, macroquad::Error>> },
+    LoadSound{ path: String, sender: mpsc::SyncSender<Result<au::Sound, macroquad::Error>> },
+    
+    LoadSoundFromBytes{data: Vec<u8>, sender: mpsc::SyncSender<Result<au::Sound, macroquad::Error>> },
+
+    PlaySound{ sound: au::Sound, params: au::PlaySoundParams },
+
+    PlaySoundOnce{ sound: au::Sound },
+
+    SetSoundVolume{ sound: au::Sound, volume: f32 },
+
+    StopSound{ sound: au::Sound },
+
+    RenderTargetMsaa{ width: u32, height: u32, sender: mpsc::SyncSender<mq::RenderTarget> },
+    RenderTargetEx{ width: u32, height: u32, params: Option<mq::RenderTargetParams>, sender: mpsc::SyncSender<mq::RenderTarget> },
     DrawArc{ x: f32,
     y: f32,
     sides: u8,
@@ -289,6 +305,69 @@ async fn process_commands() {
             Command::ShowMouse(i) =>{
                 mq::show_mouse(i);
             }
+            Command::RenderTargetMsaa{ width, height, sender } => {
+                let render_target = mq::render_target_msaa(width, height);
+                let _ = sender.send(render_target);
+            }
+            Command::RenderTargetEx{ width, height, params, sender } => {
+                match (params){
+                    Some(p) => {
+                        let render_target = mq::render_target_ex(width, height, p);
+                        let _ = sender.send(render_target);
+                    }
+                    None => {
+                        let render_target = mq::render_target_ex(width, height, mq::RenderTargetParams::default());
+                       let _ = sender.send(render_target);
+                    }
+                }
+
+            }
+            Command::LoadSound { path ,sender} => {
+                let result = async {
+                    let data = macroquad::prelude::load_file(&path).await?;
+
+                    //converts .mp3 to .wav
+                    let secured_data  = engine::AudioConverter::ensure_wav(data)?;
+
+                    let sound = au::load_sound_from_bytes(&secured_data).await?;
+                    Ok(sound)
+                }.await;
+            
+                let _ = sender.send(result);
+            }
+            Command::LoadSoundFromBytes { data ,sender} => {
+
+                 let result = async {
+                    //converts .mp3 to .wav
+                    let secured_data  = engine::AudioConverter::ensure_wav(data)?;
+
+                    let sound = au::load_sound_from_bytes(&secured_data).await?;
+                    Ok(sound)
+                }.await;
+            
+                let _ = sender.send(result);
+            }
+            
+            Command::PlaySound { sound, params } => {
+                au::play_sound(&sound, params);
+            }
+            Command::PlaySoundOnce { sound } => {
+                au::play_sound_once(&sound);
+            }
+            Command::StopSound { sound } => {
+                au::stop_sound(&sound);
+            }
+            Command::SetSoundVolume { sound, volume  } => {
+                au::set_sound_volume(&sound, volume);
+            }
+
+            Command::LoadFile { path ,sender} => {
+
+                let result = mq::load_file(&path).await;
+                let _ = sender.send(result);
+
+            }
+
             
         }
     }
@@ -370,6 +449,7 @@ fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes
     m.add_function(wrap_pyfunction!(draw_texture, m)?)?;
     m.add_function(wrap_pyfunction!(draw_plane, m)?)?;
     m.add_function(wrap_pyfunction!(engine::Cubemap::draw_cubemap, m)?)?;
+    m.add_function(wrap_pyfunction!(py_abstractions::py_functions::load_file, m)?)?;
 
     m.add_function(wrap_pyfunction!(draw_cube, m)?)?;
     m.add_function(wrap_pyfunction!(Mouse::get_mouse_position, m)?)?;
@@ -383,11 +463,15 @@ fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes
     m.add_class::<Camera::Camera2D>()?;
     m.add_class::<Camera::Camera3D>()?;
 
+
     m.add_class::<crate::py_abstractions::structs::RenderTarget::RenderTarget>()?;
     m.add_class::<crate::py_abstractions::structs::RenderTarget::RenderTargetParams>()?;
     m.add_function(wrap_pyfunction!(crate::py_abstractions::structs::RenderTarget::render_target_msaa, m)?)?;
     m.add_function(wrap_pyfunction!(crate::py_abstractions::structs::RenderTarget::render_target, m)?)?;
 
+
+    m.add_class::<crate::py_abstractions::structs::Audio::PlaySoundParams>()?;
+    m.add_class::<crate::py_abstractions::structs::Audio::Sound>()?;
 
     m.add_class::<Config>()?;
     m.add_class::<DVec2>()?;

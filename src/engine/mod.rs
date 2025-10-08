@@ -6,4 +6,5 @@ pub mod Cubemap;
 
 pub mod EngineSetup;
 pub mod random;
+pub mod AudioConverter;
 //pub use structures::Drawable;

@@ -4915,6 +4915,17 @@ class KeyCodeSet:
     @inner.setter
     def inner(self, value: builtins.set[KeyCode]) -> None: ...
 
+class PlaySoundParams:
+    @property
+    def looped(self) -> builtins.bool: ...
+    @looped.setter
+    def looped(self, value: builtins.bool) -> None: ...
+    @property
+    def volume(self) -> builtins.float: ...
+    @volume.setter
+    def volume(self, value: builtins.float) -> None: ...
+    def __new__(cls, looped:builtins.bool=False, volume:builtins.float=1.0) -> PlaySoundParams: ...
+
 class Quat:
     @property
     def x(self) -> builtins.float: ...
@@ -4984,6 +4995,28 @@ class RenderTargetParams:
         such a render target being used for a depth-testing cameras
         """
     def __new__(cls, sample_count:builtins.int=1, depth:builtins.bool=False) -> RenderTargetParams: ...
+
+class Sound:
+    @staticmethod
+    def load_sound(path:builtins.str) -> Sound:
+        r"""
+        Load audio file.
+        
+        Attempts to automatically detect the format of the source of data.
+        
+        supported filetypes: ".wav"
+        """
+    @staticmethod
+    def load_sound_from_bytes(data:typing.Sequence[builtins.int]) -> Sound:
+        r"""
+        Load audio data.
+        
+        Attempts to automatically detect the format of the source of data.
+        """
+    def play_sound(self, params:PlaySoundParams) -> None: ...
+    def play_sound_once(self) -> None: ...
+    def set_sound_volume(self, volume:builtins.float) -> None: ...
+    def stop_sound(self) -> None: ...
 
 class Texture2D:
     r"""
@@ -6259,7 +6292,7 @@ def next_frame() -> None:
 
 def render_target(width:builtins.int, height:builtins.int, params:typing.Optional[RenderTargetParams]=None) -> RenderTarget: ...
 
-def render_target_msaa(width:builtins.int, height:builtins.int, params:typing.Optional[RenderTargetParams]=None) -> RenderTarget:
+def render_target_msaa(width:builtins.int, height:builtins.int) -> RenderTarget:
     r"""
     A shortcut to create a render target with no depth buffer and `sample_count: 4`
     """

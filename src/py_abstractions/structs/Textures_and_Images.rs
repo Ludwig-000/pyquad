@@ -10,6 +10,10 @@ use crate::Command;
 use pyo3::exceptions::PyValueError;use pyo3_stub_gen::{derive::gen_stub_pyfunction, define_stub_info_gatherer,derive::*};
 use crate::py_abstractions::Color::*;
 
+use image::io::Reader as ImageReader;
+use std::io::Cursor;
+use image::DynamicImage;
+
 /// Image, data stored in CPU memory
 #[gen_stub_pyclass]
 #[pyclass(name = "Image")]
@@ -138,26 +142,35 @@ impl Image {
         }
     }
 
-
+    /// Creates an image from a given file.
+    /// 
+    /// supported image formats are: ".png", ".jpeg"
     #[staticmethod]
-    pub fn from_file( path: String) -> PyResult<Image> {
-        let (sender, receiver) = mpsc::sync_channel(1);
-        
-        let command = Command::LoadImage {
-            path,
-            sender,
-        };
-        COMMAND_QUEUE.push(command);
+    pub fn from_file(path: String) -> PyResult<Image> {
+        // Load file bytes via your Python-callable function
+        let data = crate::py_abstractions::py_functions::load_file(path)
+            .map_err(|e|    PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Failed to load file: {e}")))?;
 
-        let result = receiver
-            .recv()
-            .map_err(|e| PyValueError::new_err(format!("{}", e)))?;
+        // Wrap bytes for image::Reader
+        let cursor = Cursor::new(data);
+        let reader = ImageReader::new(cursor)
+            .with_guessed_format()
+            .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Failed to guess format: {e}")))?;
 
+        // Decode image
+        let image = reader
+            .decode()
+            .map_err(|e|  PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Decode error: {e}")))?;
 
-        match result {
-            Ok(mq_image) => Ok(Image { bytes: mq_image.bytes, width: mq_image.width, height: mq_image.height}),
-            Err(e) => Err(PyValueError::new_err(format!("{:?}", e))),
-        }
+        // Convert to RGBA8 and get raw bytes
+        let rgba = image.to_rgba8();
+        let (width, height) = rgba.dimensions();
+
+        Ok(Image {
+            bytes: rgba.into_raw(),
+            width: width as u16,
+            height: height as u16,
+        })
     }
 
     

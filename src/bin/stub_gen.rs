@@ -1,5 +1,4 @@
 use pyo3_stub_gen::Result;
-use std::error::Error;
 use std::path::PathBuf;
 use pyquad::stub_info;
 
