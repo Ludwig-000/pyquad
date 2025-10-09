@@ -4907,7 +4907,12 @@ class Image:
         Returns a pixel [Color] from this image.
         """
     @staticmethod
-    def from_file(path:builtins.str) -> Image: ...
+    def from_file(path:builtins.str) -> Image:
+        r"""
+        Creates an image from a given file.
+        
+        supported image formats are: ".png", ".jpeg"
+        """
 
 class KeyCodeSet:
     @property
@@ -5004,7 +5009,7 @@ class Sound:
         
         Attempts to automatically detect the format of the source of data.
         
-        supported filetypes: ".wav"
+        supported filetypes: ".wav", ".mp3"
         """
     @staticmethod
     def load_sound_from_bytes(data:typing.Sequence[builtins.int]) -> Sound:
@@ -6283,6 +6288,12 @@ def get_keys_released() -> KeyCodeSet:
     """
 
 def get_mouse_position() -> tuple[builtins.float, builtins.float]: ...
+
+def load_file(path:builtins.str) -> builtins.list[builtins.int]:
+    r"""
+    loads a file from a given path.
+    works with web-assembly
+    """
 
 def next_frame() -> None:
     r"""

@@ -91,8 +91,8 @@ pub fn load_file(path: String) -> PyResult<Vec<u8>> {
 
     match receiver.recv() {
         Ok(Ok(value)) => Ok(value),
-        Ok(Err(e)) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("{e}"))),
-        Err(e) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("{e}"))),
+        Ok(Err(e)) => Err(e.into()),
+        Err(e) => panic!("Fatal MSPC Error:  {e}"),
     }
 }
 
@@ -269,13 +269,13 @@ pub fn draw_texture(texture: Texture2D,x: f32, y: f32, color: Color ) {
 /// returns the current frames per second
 #[gen_stub_pyfunction]
 #[pyfunction]
-pub fn get_fps() -> PyResult<i32> {
+pub fn get_fps() -> i32 {
     let (sender, receiver) = mpsc::sync_channel(1);
     COMMAND_QUEUE.push(Command::GetFPS(sender));
 
     match receiver.recv() {
-        Ok(fps) => Ok(fps),
-        Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to receive FPS")),
+        Ok(fps) => fps,
+        Err(e) => panic!("Fatal MSPC Error:  {e}"),
     }
 
 }
@@ -301,7 +301,7 @@ pub fn get_keys_pressed() -> PyResult<KeyCodeSet> {
 
             Ok(k)
         }
-        Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to get keyset")),
+        Err(e) => panic!("Fatal MSPC Error:  {e}"),
     }
 }
 
@@ -309,7 +309,7 @@ pub fn get_keys_pressed() -> PyResult<KeyCodeSet> {
 /// returns an list of all keys that have been released since the last check.
 #[gen_stub_pyfunction]
 #[pyfunction]
-pub fn get_keys_released() -> PyResult<KeyCodeSet> {
+pub fn get_keys_released() -> KeyCodeSet {
     //actually, i am not 100% sure how get_keys_released() works, so might wanna look into that.
     let (sender, receiver) = mpsc::sync_channel(1);
     COMMAND_QUEUE.push(Command::GetKeysReleased(sender));
@@ -323,9 +323,9 @@ pub fn get_keys_released() -> PyResult<KeyCodeSet> {
 
             let k = KeyCodeSet::new(converted_keys);
 
-            Ok(k)
+            k
         }
-        Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to get keyset")),
+        Err(e) => panic!("Fatal MSPC Error:  {e}"),
     }
 }
 
@@ -333,7 +333,7 @@ pub fn get_keys_released() -> PyResult<KeyCodeSet> {
 /// returns an list of all keys that are currently in the process of being pressed.
 #[gen_stub_pyfunction]
 #[pyfunction]
-pub fn get_keys_down() -> PyResult<KeyCodeSet> {
+pub fn get_keys_down() -> KeyCodeSet {
 
     let (sender, receiver) = mpsc::sync_channel(1);
     COMMAND_QUEUE.push(Command::GetKeysDown(sender));
@@ -347,9 +347,9 @@ pub fn get_keys_down() -> PyResult<KeyCodeSet> {
 
             let k = KeyCodeSet::new(converted_keys);
 
-            Ok(k)
+            k
         }
-        Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to get keyset")),
+        Err(e) => panic!("Fatal MSPC Error:  {e}"),
     }
 
 }

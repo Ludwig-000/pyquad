@@ -10,28 +10,30 @@ use symphonia::core::probe::Hint;
 use symphonia::default::{get_codecs, get_probe};
 use hound::{WavWriter, WavSpec, SampleFormat};
 
+use crate::engine::PError::PError;
+
 /// Converts audio-formats to .wav, since the macroquad sound engine only supports .wav
-/// 
-pub fn ensure_wav(data: Vec<u8>) -> Result<Vec<u8>, Error> {
+///
+pub fn ensure_wav(data: Vec<u8>) -> Result<Vec<u8>, PError> {
     let cursor = Cursor::new(data);
     let mss = MediaSourceStream::new(Box::new(cursor), Default::default());
 
     let probed = get_probe()
         .format(&Hint::new(), mss, &FormatOptions::default(), &MetadataOptions::default())
-        .map_err(|e| {
-            let s: &'static str = Box::leak(format!("Symphonia probe error: {}", e).into_boxed_str());
-            Error::from(s)
+        .map_err(|e: SymphoniaError| { PError::from(e)
         })?;
 
-    let mut format = probed.format;
 
+    let mut format = probed.format;
+ 
+    
     let track = format
         .default_track()
-        .ok_or_else(|| Error::from("No default audio track found"))?;
+        .ok_or_else(|| PError::BasicErr("No default audio track found".to_string()))?;
 
     let mut decoder = get_codecs()
         .make(&track.codec_params, &DecoderOptions::default())
-        .map_err(|_| Error::from("Decoder init error"))?;
+        .map_err(|e: SymphoniaError| PError::from(e))?;
 
     let mut wav_cursor = Cursor::new(Vec::new());
 
@@ -53,19 +55,19 @@ pub fn ensure_wav(data: Vec<u8>) -> Result<Vec<u8>, Error> {
     };
 
     let mut writer = WavWriter::new(&mut wav_cursor, spec)
-        .map_err(|_| Error::from("WavWriter init error"))?;
+        .map_err(|e| PError::from(e))?;
 
     loop {
         let packet = match format.next_packet() {
             Ok(p) => p,
             Err(SymphoniaError::IoError(_)) => break, // End of stream
-            Err(_) => return Err(Error::from("Packet read error")),
+            Err(_) => return Err(PError::BasicErr("Packet read error".to_string())),
         };
 
         let decoded = match decoder.decode(&packet) {
             Ok(audio_buf) => audio_buf,
             Err(SymphoniaError::DecodeError(_)) => continue, // Skip corrupt frame
-            Err(_) => return Err(Error::from("Decode error")),
+            Err(_) => return Err(PError::BasicErr("Decode error".to_string())),
         };
 
         use symphonia::core::audio::AudioBufferRef;
@@ -73,19 +75,19 @@ pub fn ensure_wav(data: Vec<u8>) -> Result<Vec<u8>, Error> {
             AudioBufferRef::F32(buf) => {
                 for s in buf.chan(0) {
                     let sample = (s.clamp(-1.0, 1.0) * i16::MAX as f32) as i16;
-                    writer.write_sample(sample).map_err(|_| Error::from("Write sample error"))?;
+                    writer.write_sample(sample).map_err(|e: hound::Error| PError::from(e))?;
                 }
             }
             AudioBufferRef::S16(buf) => {
                 for s in buf.chan(0) {
-                    writer.write_sample(*s).map_err(|_| Error::from("Write sample error"))?;
+                    writer.write_sample(*s).map_err(|e| PError::from(e))?;
                 }
             }
-            _ => return Err(Error::from("Unsupported audio buffer format")),
+            _ => return Err(PError::BasicErr("Unsupported audio buffer format".to_string())),
         }
     }
 
-    writer.finalize().map_err(|_| Error::from("Finalize WAV error"))?;
+    writer.finalize().map_err(|e| PError::from(e))?;
 
     Ok(wav_cursor.into_inner())
 }

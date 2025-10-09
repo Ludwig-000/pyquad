@@ -42,11 +42,11 @@ impl Sound {
                 match sound{
                     Ok(s) => { Ok(s.into())  },
                     Err(e) => {
-                        Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Failed to load sound: {}", e)))
+                        Err(e.into())
                     }
                 }
             }
-            Err(e) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Failed to load sound: {}", e))),
+            Err(e) => panic!("Fatal MSPC Error:  {e}"),
         }
     }
 
@@ -65,11 +65,12 @@ impl Sound {
                 match sound{
                     Ok(s) => { Ok(s.into())  },
                     Err(e) => {
-                        Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Failed to load sound: {}", e)))
+                        Err(e.into())
+                        
                     }
                 }
             }
-            Err(e) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Failed to load sound: {}", e))),
+            Err(e) => panic!("Fatal MSPC Error:  {e}"),
         }
     }
 

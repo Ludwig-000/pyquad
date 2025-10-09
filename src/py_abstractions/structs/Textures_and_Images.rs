@@ -16,7 +16,7 @@ use image::DynamicImage;
 
 /// Image, data stored in CPU memory
 #[gen_stub_pyclass]
-#[pyclass(name = "Image")]
+#[pyclass]
 #[derive(Debug, Clone, PartialEq, Eq,)]
 pub struct Image {
     #[pyo3(get, set)]

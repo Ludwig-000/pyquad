@@ -2,6 +2,7 @@
 
 use crossbeam::queue::SegQueue;
 use macroquad::texture::RenderTarget;
+use std::fmt::format;
 use std::process;
 use std::panic;
 
@@ -32,6 +33,7 @@ use crate::engine::SHADERS::shader_manager as sm;
 use crate::py_abstractions::Color::*;
 use crate::py_abstractions::structs::Config::*;
 use pyo3::exceptions::PyUnicodeWarning;
+use crate::engine::PError::PError;
 
 lazy_static! {
     pub static ref COMMAND_QUEUE: Arc<SegQueue<Command>> = Arc::new(SegQueue::new());
@@ -41,10 +43,10 @@ lazy_static! {
 
 pub enum Command {
 
-    LoadFile{ path: String, sender: mpsc::SyncSender<Result<Vec<u8>, macroquad::Error>> },
-    LoadSound{ path: String, sender: mpsc::SyncSender<Result<au::Sound, macroquad::Error>> },
+    LoadFile{ path: String, sender: mpsc::SyncSender<Result<Vec<u8>, PError>> },
+    LoadSound{ path: String, sender: mpsc::SyncSender<Result<au::Sound, PError>> },
     
-    LoadSoundFromBytes{data: Vec<u8>, sender: mpsc::SyncSender<Result<au::Sound, macroquad::Error>> },
+    LoadSoundFromBytes{data: Vec<u8>, sender: mpsc::SyncSender<Result<au::Sound, PError>> },
 
     PlaySound{ sound: au::Sound, params: au::PlaySoundParams },
 
@@ -136,7 +138,7 @@ pub enum Command {
 
     LoadImage {
         path: String,
-        sender: mpsc::SyncSender<Result<mq::Image, macroquad::Error>>,
+        sender: mpsc::SyncSender<Result<mq::Image, PError>>,
     },
 
     SetCamera{camera_2d: Option<mq::Camera2D>, camera_3d: Option<mq::Camera3D>},
@@ -189,8 +191,6 @@ async fn process_commands() {
                 crate::engine::Cubemap::draw_fullscreen_quad();
 
             }
-
-            //todo: implement the pyabastraction for these.
 
             Command::DrawAfflineParallelpiped { offset, e1, e2, e3, texture, color } => {
                 mq::draw_affine_parallelepiped(offset, e1, e2, e3, texture.as_ref(), color);
@@ -327,7 +327,9 @@ async fn process_commands() {
                     let data = macroquad::prelude::load_file(&path).await?;
 
                     //converts .mp3 to .wav
-                    let secured_data  = engine::AudioConverter::ensure_wav(data)?;
+                    let secured_data  = engine::AudioConverter::ensure_wav(data).map_err(|e| {
+                       e.with_context(format!(" path: {path}"))
+                    }  )?;
 
                     let sound = au::load_sound_from_bytes(&secured_data).await?;
                     Ok(sound)
@@ -337,7 +339,7 @@ async fn process_commands() {
             }
             Command::LoadSoundFromBytes { data ,sender} => {
 
-                 let result = async {
+                 let result: Result<_, PError> = async {
                     //converts .mp3 to .wav
                     let secured_data  = engine::AudioConverter::ensure_wav(data)?;
 
@@ -363,7 +365,7 @@ async fn process_commands() {
 
             Command::LoadFile { path ,sender} => {
 
-                let result = mq::load_file(&path).await;
+                let result = mq::load_file(&path).await.map_err(Into::into);
                 let _ = sender.send(result);
 
             }
