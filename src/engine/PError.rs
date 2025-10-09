@@ -68,7 +68,8 @@ fn regular_extract(value: PError, extra: Option<&str>) -> pyo3::PyErr {
 
         PError::WithContext(err,context ) => {
             let (e,c) = recursively_extract_context(*err, context);
-            pyo3::PyErr = regular_extract(e, Some(&c))
+            let ee: pyo3::PyErr = regular_extract(e, Some(&c));
+            ee
         }
     }
 }
@@ -100,6 +101,7 @@ fn handle_Symphonia_error(e: symphonia::core::errors::Error, extra: &str ) -> py
             PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Symphonia SeekError: {:?} {extra}",e))
         },
         Error::Unsupported(e) => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Symphonia UnsupportedError: {e} {extra}")),
+
     }
 }
 
