@@ -18,28 +18,28 @@ pub struct Mesh{
     pub texture: Option<Texture2D>,
 }
 
-impl From<Mesh> for mq_mesh {
-    fn from(v: Mesh) -> Self {
-        let t = v.texture.map(|texture| texture.texture);
-        mq_mesh {
-            vertices: v.vertices,
-            indices: v.indices,
-            texture: t,
-        }
-    }
-}
+// impl From<Mesh> for mq_mesh {
+//     fn from(v: Mesh) -> Self {
+//         let t = v.texture.map(|texture| texture.texture);
+//         mq_mesh {
+//             vertices: v.vertices,
+//             indices: v.indices,
+//             texture: t,
+//         }
+//     }
+// }
 
 
-impl From<mq_mesh> for Mesh {
-    fn from(m: mq_mesh) -> Self {
-        let t = m.texture.map(|texture| Texture2D { texture });
-        Mesh {
-            vertices: m.vertices,
-            indices: m.indices,
-            texture: t,
-        }
-    }
-}
+// impl From<mq_mesh> for Mesh {
+//     fn from(m: mq_mesh) -> Self {
+//         let t = m.texture.map(|texture| Texture2D { texture });
+//         Mesh {
+//             vertices: m.vertices,
+//             indices: m.indices,
+//             texture: t,
+//         }
+//     }
+// }
 
 
 

@@ -31,7 +31,6 @@ pub enum PError{
     SymphoniaError(symphonia::core::errors::Error),
     HoundError(hound::Error),
     BasicErr(String),
-
     WithContext(Box<PError>, String),
 }
 pub struct PyErrorWithMoreContext(pub Box<Option<PError>>, pub String);
@@ -60,12 +59,11 @@ fn regular_extract(value: PError, extra: Option<&str>) -> pyo3::PyErr {
     };
 
     match value {
-        PError::MacroquadErr(e) => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("{e} {extra}")),
+        PError::MacroquadErr(e) => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("{e} || {extra}")),
         PError::Pyo3Err(e) => e,
         PError::SymphoniaError(e) => handle_Symphonia_error(e, extra),
-        PError::BasicErr(e) => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("{e} {extra}")),
-        PError::HoundError(e) => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Hound Error: {e} {extra}")),
-
+        PError::BasicErr(e) => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("{e} || {extra}")),
+        PError::HoundError(e) => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Hound Error: {e} || {extra}")),
         PError::WithContext(err,context ) => {
             let (e,c) = recursively_extract_context(*err, context);
             let ee: pyo3::PyErr = regular_extract(e, Some(&c));
@@ -93,14 +91,14 @@ fn recursively_extract_context(err: PError, mut context: String) -> (PError, Str
 fn handle_Symphonia_error(e: symphonia::core::errors::Error, extra: &str ) -> pyo3::PyErr {
     use symphonia::core::errors::*;
     match e {
-        Error::DecodeError(e) => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Symphonia Decode Error: {e} {extra}")),
-        Error::IoError(e) => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Symphonia IoError: {e} {extra}")),
-        Error::LimitError(e) => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Symphonia LimitError: {e} {extra}")),
-        Error::ResetRequired => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Symphonia Reset Required Error {extra}")),
+        Error::DecodeError(e) => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Symphonia Decode Error: {e} || {extra}")),
+        Error::IoError(e) => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Symphonia IoError: {e} || {extra}")),
+        Error::LimitError(e) => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Symphonia LimitError: {e} || {extra}")),
+        Error::ResetRequired => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Symphonia Reset Required Error || {extra}")),
         Error::SeekError(e) => {
-            PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Symphonia SeekError: {:?} {extra}",e))
+            PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Symphonia SeekError: {:?} || {extra}",e))
         },
-        Error::Unsupported(e) => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Symphonia UnsupportedError: {e} {extra}")),
+        Error::Unsupported(e) => PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Symphonia UnsupportedError: {e} || {extra}")),
 
     }
 }

@@ -172,7 +172,7 @@ pub fn draw_plane(center: Vec3, size: Vec2, color: Color, texture: Option<Textur
     let cen = mq::vec3( center.x,center.y,center.z);
     let siz = mq::vec2(size.x,size.y);
     let tex = match texture {
-        Some(t) => Some(t.texture),
+        Some(t) => Some(  t.into()  ),
         None => None,
     };
 
@@ -208,6 +208,7 @@ pub fn clear_background(color: Color) {
 /// processes all drawing commands that have accumulated.
 /// blocks until the frame has been drawn.
 ///
+/// also, this function cleans up dropped memory like textures
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn next_frame() {
@@ -261,7 +262,7 @@ pub fn draw_poly(x: f32, y: f32, sides: u8, radius: f32, rotation: f32, color: C
 #[pyfunction]
 pub fn draw_texture(texture: Texture2D,x: f32, y: f32, color: Color ) {
     let c = mq::Color::new(color.r,color.g,color.b,color.a);
-    let innerTexture: mq::Texture2D  = texture.texture;
+    let innerTexture: mq::Texture2D  = texture.into();
     COMMAND_QUEUE.push( Command::DrawTexture{ texture: innerTexture, x, y, color: c   }  );
    
 }

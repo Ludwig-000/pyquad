@@ -8,29 +8,34 @@ use crate::COMMAND_QUEUE;
 use crate::Command;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction; 
+use crate::engine::PArc::PArc;
+
 
 #[gen_stub_pyclass]
 #[pyclass]
 #[derive(Clone, Debug)]
 pub struct RenderTarget {
-   renderTarget:  mq::RenderTarget,
+   render_target:  PArc<mq::RenderTarget>,
 }
 
 
 impl From<mq::RenderTarget> for RenderTarget{
     fn from(r: mq::RenderTarget) -> Self {
-        RenderTarget{ renderTarget: r }
+        RenderTarget{ render_target: PArc::new(r) }
     }
 }
 
 
 impl From<RenderTarget> for mq::RenderTarget{
     fn from(r: RenderTarget) -> Self {
-        r.renderTarget
+        (*r.render_target).clone()
     }
 }
-
-
+impl From<&RenderTarget> for mq::RenderTarget{
+    fn from(r: &RenderTarget) -> Self {
+        (*r.render_target).clone()
+    }
+}
 
 
 
@@ -40,30 +45,26 @@ impl From<RenderTarget> for mq::RenderTarget{
 /// A shortcut to create a render target with no depth buffer and `sample_count: 4`
 #[gen_stub_pyfunction]
 #[pyfunction]
-pub fn render_target_msaa(width: u32, height: u32) -> PyResult<RenderTarget> {
+pub fn render_target_msaa(width: u32, height: u32) -> RenderTarget {
     let (sender, receiver) = mpsc::sync_channel(1);
     COMMAND_QUEUE.push( Command::RenderTargetMsaa{width,height,sender} );
 
-    match receiver.recv() {
-        Ok(render_target) => Ok(render_target.into()),
-        Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to receive RenderTarget")),
-    }
+    let render_target = receiver.recv().unwrap();
+    RenderTarget { render_target }
 }
 
 
 #[gen_stub_pyfunction]
 #[pyfunction]
 #[pyo3(signature = (width, height, params = None))]
-pub fn render_target(width: u32, height: u32, params: Option<RenderTargetParams>) -> PyResult<RenderTarget> {
+pub fn render_target(width: u32, height: u32, params: Option<RenderTargetParams>) -> RenderTarget {
 
     let (sender, receiver) = mpsc::sync_channel(1);
 
     COMMAND_QUEUE.push( Command::RenderTargetEx { width, height, params: params.map(Into::into), sender});
 
-    match receiver.recv() {
-        Ok(render_target) => Ok(render_target.into()),
-        Err(_) => Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>("Failed to receive RenderTarget")),
-    }
+    let render_target = receiver.recv().unwrap();
+    RenderTarget { render_target }
 }
 
 

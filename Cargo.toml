@@ -21,7 +21,7 @@ doc = false
 macroquad = { version = "0.4.14", features = ["audio"] }
 
 #used to build the python library
-pyo3 = { version = "0.26", features = ["extension-module", "abi3-py37"] }
+pyo3 = { version = "0.26", features = ["extension-module", "abi3-py310"] }
 
 # a VERY slightly modified version of pyo3 stub gen, which allows it to compile to python 3.7 and 3.8
 # modification was only one line, so feel free to drop support for python 3.7 if any cool new features release

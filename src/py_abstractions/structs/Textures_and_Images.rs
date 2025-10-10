@@ -1,6 +1,7 @@
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction; 
 use macroquad::prelude as mq;
+use rapier3d::na::coordinates::M2x4;
 use std::sync::Arc;
 use crate::py_abstractions::py_structs::*;
 use std::option;
@@ -9,6 +10,8 @@ use crate::COMMAND_QUEUE;
 use crate::Command;
 use pyo3::exceptions::PyValueError;use pyo3_stub_gen::{derive::gen_stub_pyfunction, define_stub_info_gatherer,derive::*};
 use crate::py_abstractions::Color::*;
+use crate::engine::PArc::PArc;
+
 
 use image::io::Reader as ImageReader;
 use std::io::Cursor;
@@ -183,7 +186,7 @@ impl Image {
 #[pyclass(name = "Texture2D")]
 #[derive(Clone, Debug, PartialEq)]
 pub struct Texture2D {
-   pub texture: mq::Texture2D,
+   pub texture: PArc<mq::Texture2D>,
 }
 
 #[gen_stub_pymethods]
@@ -192,6 +195,7 @@ impl Texture2D {
    
     #[staticmethod]
     pub fn from_image(image: PyRef<Image>) -> Texture2D {
+        
         let inner_im = mq::Image {
             bytes: image.bytes.clone(),
             width: image.width,
@@ -217,17 +221,30 @@ impl Texture2D {
     }
 
 }
-    
+
+
+
+use std::ops::Deref;
+
+impl Deref for Texture2D {
+    type Target = mq::Texture2D;
+
+    fn deref(&self) -> &Self::Target {
+        &self.texture
+    }
+}
+
+
 
 impl From<mq::Texture2D> for Texture2D {
     fn from(t: mq::Texture2D) -> Self {
-        Texture2D { texture: t }
+        Texture2D { texture: PArc::new(  t  ) }
     }
 }
 
 
 impl From<Texture2D> for mq::Texture2D {
     fn from(t: Texture2D) -> Self {
-        t.texture
+        (*t.texture).clone()
     }
 }

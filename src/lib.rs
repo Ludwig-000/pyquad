@@ -34,7 +34,9 @@ use crate::py_abstractions::Color::*;
 use crate::py_abstractions::structs::Config::*;
 use pyo3::exceptions::PyUnicodeWarning;
 use crate::engine::PError::PError;
+use crate::engine::PArc::PArc;
 
+use std::any::Any;
 lazy_static! {
     pub static ref COMMAND_QUEUE: Arc<SegQueue<Command>> = Arc::new(SegQueue::new());
     
@@ -42,11 +44,13 @@ lazy_static! {
 
 
 pub enum Command {
+    // textures need to be dropped in the main Thread
+    DropThisItem(Arc<dyn Any + Send + Sync>),
 
     LoadFile{ path: String, sender: mpsc::SyncSender<Result<Vec<u8>, PError>> },
-    LoadSound{ path: String, sender: mpsc::SyncSender<Result<au::Sound, PError>> },
+    LoadSound{ path: String, sender: mpsc::SyncSender<Result<PArc<au::Sound>, PError>> },
     
-    LoadSoundFromBytes{data: Vec<u8>, sender: mpsc::SyncSender<Result<au::Sound, PError>> },
+    LoadSoundFromBytes{data: Vec<u8>, sender: mpsc::SyncSender<Result<PArc<au::Sound>, PError>> },
 
     PlaySound{ sound: au::Sound, params: au::PlaySoundParams },
 
@@ -56,8 +60,8 @@ pub enum Command {
 
     StopSound{ sound: au::Sound },
 
-    RenderTargetMsaa{ width: u32, height: u32, sender: mpsc::SyncSender<mq::RenderTarget> },
-    RenderTargetEx{ width: u32, height: u32, params: Option<mq::RenderTargetParams>, sender: mpsc::SyncSender<mq::RenderTarget> },
+    RenderTargetMsaa{ width: u32, height: u32, sender: mpsc::SyncSender< PArc<mq::RenderTarget>  > },
+    RenderTargetEx{ width: u32, height: u32, params: Option<mq::RenderTargetParams>, sender: mpsc::SyncSender<PArc<mq::RenderTarget> > },
     DrawArc{ x: f32,
     y: f32,
     sides: u8,
@@ -133,7 +137,7 @@ pub enum Command {
 
     ImgToTexture {
         image: Arc<mq::Image>,
-        sender: mpsc::SyncSender<mq::Texture2D>,
+        sender: mpsc::SyncSender<PArc<mq::Texture2D>>,
     },
 
     LoadImage {
@@ -226,7 +230,6 @@ async fn process_commands() {
                 mq::draw_line_3d(start, end, color);    
             }
             
-            // end of todo
 
 
             Command::LoadImage { path,sender} => {
@@ -288,7 +291,7 @@ async fn process_commands() {
             let _ = sender.send(keyset);
             }
             Command::ImgToTexture { image, sender }=>{
-                let tex: mq::Texture2D = mq::Texture2D::from_image(&image);
+                let tex: PArc<mq::Texture2D> = PArc::new(  mq::Texture2D::from_image(&image));
                 let _ = sender.send(tex);
             }
             Command::SetCamera { camera_2d, camera_3d } => { // merged cam2d and 3d for simplicity.
@@ -307,17 +310,17 @@ async fn process_commands() {
             }
             Command::RenderTargetMsaa{ width, height, sender } => {
                 let render_target = mq::render_target_msaa(width, height);
-                let _ = sender.send(render_target);
+                let _ = sender.send(PArc::new(render_target));
             }
             Command::RenderTargetEx{ width, height, params, sender } => {
                 match (params){
                     Some(p) => {
                         let render_target = mq::render_target_ex(width, height, p);
-                        let _ = sender.send(render_target);
+                        let _ = sender.send(PArc::new(render_target));
                     }
                     None => {
                         let render_target = mq::render_target_ex(width, height, mq::RenderTargetParams::default());
-                       let _ = sender.send(render_target);
+                       let _ = sender.send(PArc::new(render_target));
                     }
                 }
 
@@ -334,6 +337,7 @@ async fn process_commands() {
                     let sound = au::load_sound_from_bytes(&secured_data).await?;
                     Ok(sound)
                 }.await;
+                let result = result.map(|op| PArc::new(op)  );
             
                 let _ = sender.send(result);
             }
@@ -347,6 +351,7 @@ async fn process_commands() {
                     Ok(sound)
                 }.await;
             
+                let result = result.map(|op| PArc::new(op)  );
                 let _ = sender.send(result);
             }
             
@@ -369,6 +374,8 @@ async fn process_commands() {
                 let _ = sender.send(result);
 
             }
+
+            Command::DropThisItem(item_arc)=>{}
 
             
         }

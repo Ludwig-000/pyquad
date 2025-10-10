@@ -11,12 +11,13 @@ use crate::COMMAND_QUEUE;
 use crate::Command;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction; 
+use crate::engine::PArc::PArc;
 
 #[gen_stub_pyclass]
 #[pyclass]
 #[derive(Clone, Debug)]
 pub struct Sound {
-   audio: au::Sound,
+   audio: PArc<au::Sound>,
 }
 
 
@@ -40,7 +41,7 @@ impl Sound {
         match receiver.recv() {
             Ok(sound) => {
                 match sound{
-                    Ok(s) => { Ok(s.into())  },
+                    Ok(s) => { Ok( Sound{audio: s}   )  },
                     Err(e) => {
                         Err(e.into())
                     }
@@ -63,7 +64,7 @@ impl Sound {
         match receiver.recv() {
             Ok(sound) => {
                 match sound{
-                    Ok(s) => { Ok(s.into())  },
+                    Ok(s) => { Ok( Sound{audio: s} )  },
                     Err(e) => {
                         Err(e.into())
                         
@@ -75,20 +76,20 @@ impl Sound {
     }
 
     pub fn play_sound(&self, params: PlaySoundParams){ 
-        COMMAND_QUEUE.push( Command::PlaySound { sound: self.audio.clone() , params: params.into() }  );
+        COMMAND_QUEUE.push( Command::PlaySound { sound: au::Sound::from(self) , params: params.into() }  );
     }
 
     pub fn play_sound_once(&self){ 
-        COMMAND_QUEUE.push( Command::PlaySoundOnce { sound: self.audio.clone()  } );
+        COMMAND_QUEUE.push( Command::PlaySoundOnce { sound: au::Sound::from(self) } );
     }
 
     pub fn set_sound_volume(&self, volume: f32){ 
         
-        COMMAND_QUEUE.push( Command::SetSoundVolume { sound: self.audio.clone() , volume: volume } );
+        COMMAND_QUEUE.push( Command::SetSoundVolume { sound: au::Sound::from(self) , volume: volume } );
     }
 
     pub fn stop_sound(&self){ 
-        COMMAND_QUEUE.push( Command::StopSound { sound: self.audio.clone() } );
+        COMMAND_QUEUE.push( Command::StopSound { sound: au::Sound::from(self) } );
     }
 
 }
@@ -97,17 +98,21 @@ impl Sound {
 
 impl From<au::Sound> for Sound{
     fn from(s: au::Sound) -> Self {
-        Sound{ audio: s }
+        Sound{ audio: PArc::new(s) }
     }
 }
 
 
 impl From<Sound> for au::Sound{
     fn from(s: Sound) -> Self {
-        s.audio
+        (*s.audio).clone()
     }
 }
-
+impl From<&Sound> for au::Sound {
+    fn from(s: &Sound) -> Self {
+        (*s.audio).clone()
+    }
+}
 
 
 #[gen_stub_pyclass]
