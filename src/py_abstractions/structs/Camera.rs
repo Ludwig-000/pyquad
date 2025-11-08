@@ -1,16 +1,10 @@
-use macroquad::camera;
 use pyo3::prelude::*;
-use pyo3::wrap_pyfunction; 
+ 
 use macroquad::prelude as mq;
-use std::clone;
-use std::sync::Arc;
 use crate::py_abstractions::py_structs::*;
-use std::option;
-use std::sync::mpsc;
 use crate::COMMAND_QUEUE;
 use crate::Command;
-use pyo3::exceptions::PyValueError;
-use pyo3_stub_gen::{derive::gen_stub_pyfunction, define_stub_info_gatherer,derive::*};
+use pyo3_stub_gen::{derive::gen_stub_pyfunction,derive::*};
 
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::py_abstractions::structs::GLAM::Vec2::Vec2;

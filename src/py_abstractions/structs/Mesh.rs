@@ -1,8 +1,5 @@
-use macroquad::prelude as mq;
-use macroquad::prelude::Mesh as mq_mesh;
 use macroquad::prelude::Vertex as mq_vert;
 use crate::py_abstractions::structs::Textures_and_Images::Texture2D;
-use std::path::Path;
 
 #[repr(C)]
 pub struct Vertex {

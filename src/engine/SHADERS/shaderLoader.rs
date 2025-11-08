@@ -1,4 +1,3 @@
-use std::fs;
 use macroquad::prelude::*;
 use macroquad::material::{Material, MaterialParams};
 use macroquad::window::miniquad::{ShaderSource, PipelineParams, Comparison, UniformDesc, UniformType};

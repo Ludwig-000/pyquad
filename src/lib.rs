@@ -1,38 +1,30 @@
 //#![allow(warnings)]
 #![allow(non_snake_case)] // alot of Python Constants are defined via function, so this prevents compiler spam.
 use crossbeam::queue::SegQueue;
-use macroquad::texture::RenderTarget;
-use std::fmt::format;
-use std::process;
 use std::panic;
 
 use pyo3::prelude::*;
-use pyo3_stub_gen::{derive::gen_stub_pyfunction, define_stub_info_gatherer,derive::*};
+use pyo3_stub_gen::define_stub_info_gatherer;
 
 use lazy_static::*;
 
-use std::sync::Mutex;
 use macroquad::prelude as mq;
 use macroquad::audio as au;
 
 mod engine;
-use engine::load_ressources as eng;
 
 mod py_abstractions;
 use py_abstractions::py_structs::*;
 use py_abstractions::py_functions::*;
-use std::io::Error;
 use std::sync::mpsc;
 use std::collections::HashSet;
 use std::sync::Arc;
 use crate::py_abstractions::structs::Textures_and_Images as structs;
 use crate::py_abstractions::structs::Camera as Camera;
 use crate::py_abstractions::Mouse as Mouse;
-use crate::engine::SHADERS::shaderLoader;
 use crate::engine::SHADERS::shader_manager as sm;
 use crate::py_abstractions::Color::*;
 use crate::py_abstractions::structs::Config::*;
-use pyo3::exceptions::PyUnicodeWarning;
 use crate::engine::PError::PError;
 use crate::engine::PArc::PArc;
 

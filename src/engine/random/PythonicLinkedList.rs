@@ -30,7 +30,7 @@ impl<T> P_Linked_List<T> {
     pub fn to_linked_list(&mut self)-> Vec<T>{
         let mut vec = Vec::new();
         
-        while let Some(mut boxed_node) = self.head.take() {
+        while let Some(boxed_node) = self.head.take() {
             vec.push(boxed_node.item);
             self.head = boxed_node.next;
         }

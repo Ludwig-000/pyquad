@@ -1,5 +1,5 @@
 ﻿use rapier3d::prelude::*;
-use glam::{Vec3, Quat};
+use glam::Vec3;
 
 use rapier3d::na::{Isometry3, Vector3};
 pub fn myFun() {

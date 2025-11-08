@@ -1,20 +1,17 @@
 use pyo3::prelude::*;
-use pyo3::wrap_pyfunction; 
+ 
 use macroquad::prelude as mq;
 use std::sync::Arc;
-use crate::py_abstractions::py_structs::*;
-use std::option;
 use std::sync::mpsc;
 use crate::COMMAND_QUEUE;
 use crate::Command;
-use pyo3::exceptions::PyValueError;use pyo3_stub_gen::{derive::gen_stub_pyfunction, define_stub_info_gatherer,derive::*};
+use pyo3::exceptions::PyValueError;use pyo3_stub_gen::derive::*;
 use crate::py_abstractions::Color::*;
 use crate::engine::PArc::PArc;
 
 
 use image::ImageReader as ImageReader;
 use std::io::Cursor;
-use image::DynamicImage;
 
 /// Image, data stored in CPU memory
 #[gen_stub_pyclass]

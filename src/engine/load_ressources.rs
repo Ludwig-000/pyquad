@@ -1,9 +1,6 @@
 ﻿use std::sync::Arc;
-
 use macroquad::prelude::*;
-
 use regex::Regex;
-use reqwest::blocking::get;
 use std::fs::File;
 use std::io::copy;
 use std::error::Error;
@@ -167,7 +164,7 @@ fn download_file(url: &str, output_path: &str) -> Result<(), Box<dyn Error>> {
     let mut file = File::create(path)?;
 
     // Copy the response body into the file
-    let mut content = response.bytes()?;
+    let content = response.bytes()?;
     copy(&mut content.as_ref(), &mut file)?;
 
     println!("File successfully downloaded to '{}'", output_path);

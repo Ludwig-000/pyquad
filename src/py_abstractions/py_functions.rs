@@ -6,21 +6,15 @@
 // also, any conversion between my abstracted pyclasses and the structs used in macroquad is being done here.
 // ( example:  Color -> mq::Color )
 
-use super::py_structs::*;
 use crate::py_abstractions::structs::Textures_and_Images::*;
 use macroquad::prelude as mq;
 
-use macroquad::text;
 use pyo3::prelude::*;
-use pyo3::wrap_pyfunction; 
-use pyo3_stub_gen::create_exception;
+ 
 use pyo3_stub_gen::{derive::gen_stub_pyfunction};
 
-use std::fmt::format;
 use std::sync::mpsc;
 use std::collections::HashSet;
-use std::sync::Arc;
-use std::time::*;
 
 use crate::COMMAND_QUEUE;
 use crate::Command;
@@ -43,7 +37,7 @@ pub fn activate_engine(_py: Python, conf: Option<Config>) {
     match conf {
         Some(config) => {
 
-            let mut macroConf = Config::to_window_config(config.clone());
+            let macroConf = Config::to_window_config(config.clone());
 
             std::thread::spawn(move || {
                 macroquad::Window::from_config(macroConf, async {
