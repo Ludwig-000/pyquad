@@ -9,4 +9,7 @@ pub mod random;
 pub mod AudioConverter;
 pub mod PError;
 pub mod PArc;
-//pub use structures::Drawable;
+
+pub mod Objects;
+pub mod PAsync;
+

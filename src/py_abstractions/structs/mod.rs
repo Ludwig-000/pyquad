@@ -6,3 +6,4 @@ pub mod RenderTarget;
 pub mod KeyCode;
 pub mod Config;
 pub mod Audio;
+pub mod Objects;

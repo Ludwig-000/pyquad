@@ -45,7 +45,7 @@ impl<T: Send + Sync + 'static> Drop for PArc<T> {
         let id = thread::current().id();
         if id == self.origin {return}
 
-        // send the value to the Main Thread.
+        
         let cloned_arc  =self.item.clone();
         COMMAND_QUEUE.push( Command::DropThisItem(cloned_arc)       );
     }

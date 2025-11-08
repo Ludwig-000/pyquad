@@ -1,7 +1,6 @@
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction; 
 use macroquad::prelude as mq;
-use rapier3d::na::coordinates::M2x4;
 use std::sync::Arc;
 use crate::py_abstractions::py_structs::*;
 use std::option;
@@ -13,7 +12,7 @@ use crate::py_abstractions::Color::*;
 use crate::engine::PArc::PArc;
 
 
-use image::io::Reader as ImageReader;
+use image::ImageReader as ImageReader;
 use std::io::Cursor;
 use image::DynamicImage;
 

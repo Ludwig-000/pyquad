@@ -42,12 +42,11 @@ const MASK: [u32; 2] = [0, 0xff_ff_ff_ff];
 #[gen_stub_pymethods]
 #[pymethods]
 impl BVec2 {
+    
     #[new]
     pub fn new(x: bool, y: bool) -> Self {
     Self { x, y }
     }
-
-
 
     /// All false.
     #[classattr]

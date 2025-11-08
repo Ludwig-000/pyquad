@@ -58,6 +58,16 @@ pub struct Config {
 #[pymethods]
 impl Config {
     #[new]
+    #[pyo3(signature = (
+        window_title = "".to_string(),
+        window_width= 800,
+        window_height= 600,
+        fullscreen= false,
+        swap_interval= 60,
+        sample_count= 1,
+        window_resizable= true,
+        stop_pyton_when_closing_window= true,
+    ))]
     pub fn new(
         window_title: String,
         window_width: i32,
@@ -92,7 +102,7 @@ impl Config{
                     fullscreen: config.fullscreen,
 
                     ..Default::default()
-            };
+       };
 
             miniConf.platform.swap_interval = Some(config.swap_interval);
 
@@ -103,5 +113,23 @@ impl Config{
                 draw_call_vertex_capacity: 10000,
                 draw_call_index_capacity: 5000,
             }
+    }
+}
+
+impl Default for Config {
+    fn default() -> Self {
+
+            Config {
+
+                window_title: "Pyquad".to_string(),
+                window_width: 800,
+                window_height: 600,
+                fullscreen: false,
+                swap_interval: 60,
+                sample_count: 1,
+                window_resizable: true,
+                stop_pyton_when_closing_window: true,
+            }
+
     }
 }

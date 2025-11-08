@@ -6,8 +6,8 @@ use std::sync::Mutex;
 
 pub fn shader_load() {
     {
-        const fragment_shader_src: &str = include_str!("Basic/FRAG.frag");
-        const vertex_shader_src: &str = include_str!("Basic/VERTEX.vert");
+        const FRAGMENT_SHADER_SRC: &str = include_str!("Basic/FRAG.frag");
+        const VERTEX_SHADER_SRC: &str = include_str!("Basic/VERTEX.vert");
 
         let pipeline_params = PipelineParams {
             depth_write: true,
@@ -17,8 +17,8 @@ pub fn shader_load() {
 
         let material: Material = load_material(
             ShaderSource::Glsl {
-                vertex: &vertex_shader_src,
-                fragment: &fragment_shader_src,
+                vertex: &VERTEX_SHADER_SRC,
+                fragment: &FRAGMENT_SHADER_SRC,
             },
             MaterialParams {
                 pipeline_params,
@@ -39,12 +39,12 @@ pub fn shader_load() {
     }
 
     {
-        const fragment_shader_skybox: &str = include_str!("Skybox/FRAG.frag");
-        const vertex_shader_skybox: &str = include_str!("Skybox/VERTEX.vert");
+        const GRAGMENT_SHADER_SKYBOX: &str = include_str!("Skybox/FRAG.frag");
+        const VERTEX_SHADER_SKYBOX: &str = include_str!("Skybox/VERTEX.vert");
         let skybox_material = load_material(
             ShaderSource::Glsl {
-            vertex: &vertex_shader_skybox,
-            fragment: &fragment_shader_skybox,
+            vertex: &VERTEX_SHADER_SKYBOX,
+            fragment: &GRAGMENT_SHADER_SKYBOX,
         },
             MaterialParams {
                 // tell MQ to bind a cubemap to "u_skybox"

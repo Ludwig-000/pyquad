@@ -312,6 +312,9 @@ class Circle:
     def __new__(cls, x:builtins.float, y:builtins.float, r:builtins.float) -> Circle: ...
     def __repr__(self) -> builtins.str: ...
 
+class Circle:
+    ...
+
 class Color:
     CLOUDY_BLUE: Color
     r"""
@@ -4768,7 +4771,7 @@ class Config:
         r"""
         once the window gets closed ( not minimized ) the python script gets terminated.
         """
-    def __new__(cls, window_title:builtins.str, window_width:builtins.int, window_height:builtins.int, fullscreen:builtins.bool, swap_interval:builtins.int, sample_count:builtins.int, window_resizable:builtins.bool, stop_pyton_when_closing_window:builtins.bool) -> Config: ...
+    def __new__(cls, window_title:builtins.str='', window_width:builtins.int=800, window_height:builtins.int=600, fullscreen:builtins.bool=False, swap_interval:builtins.int=60, sample_count:builtins.int=1, window_resizable:builtins.bool=True, stop_pyton_when_closing_window:builtins.bool=True) -> Config: ...
 
 class DMat2:
     @property
@@ -4971,6 +4974,9 @@ class Rect:
     def __new__(cls, x:builtins.float, y:builtins.float, w:builtins.float, h:builtins.float) -> Rect: ...
     def __repr__(self) -> builtins.str: ...
 
+class Rectangle(Two_D_Object):
+    ...
+
 class RenderTarget:
     ...
 
@@ -5029,6 +5035,9 @@ class Texture2D:
     """
     @staticmethod
     def from_image(image:Image) -> Texture2D: ...
+
+class Two_D_Object:
+    ...
 
 class Vec2:
     ZERO: Vec2
@@ -6299,6 +6308,8 @@ def next_frame() -> None:
     r"""
     processes all drawing commands that have accumulated.
     blocks until the frame has been drawn.
+    
+    also, this function cleans up dropped memory such as Texture2D
     """
 
 def render_target(width:builtins.int, height:builtins.int, params:typing.Optional[RenderTargetParams]=None) -> RenderTarget: ...

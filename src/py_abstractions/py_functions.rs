@@ -13,6 +13,7 @@ use macroquad::prelude as mq;
 use macroquad::text;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction; 
+use pyo3_stub_gen::create_exception;
 use pyo3_stub_gen::{derive::gen_stub_pyfunction};
 
 use std::fmt::format;
@@ -27,6 +28,51 @@ use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::py_abstractions::structs::GLAM::Vec2::Vec2;
 use crate::py_abstractions::Color::*;
 use crate::py_abstractions::structs::KeyCode::*;
+use crate::py_abstractions::structs::Config::Config;
+use std::process;
+
+
+/// [!] This should generally be the first function call.
+///
+/// Turns on the pyquad engine, creates an open-gl window and allows for engine-calls to be processed.
+///
+#[gen_stub_pyfunction]
+#[pyfunction]
+#[pyo3(signature = (conf = None))] // overloads activate_engine with config
+pub fn activate_engine(_py: Python, conf: Option<Config>) {
+    match conf {
+        Some(config) => {
+
+            let mut macroConf = Config::to_window_config(config.clone());
+
+            std::thread::spawn(move || {
+                macroquad::Window::from_config(macroConf, async {
+                    crate::engine::EngineSetup::setup_engine();
+                    loop {
+                        crate::process_commands().await;
+                    }
+                });
+                if config.stop_pyton_when_closing_window{
+                    println!("Pyquad window closed. Exiting process.");
+                    process::exit(0);
+                }
+            });
+        }
+        None => {
+            std::thread::spawn(|| {
+                macroquad::Window::new("pyquad", async {
+                    crate::engine::EngineSetup::setup_engine();
+                    loop {
+                        crate::process_commands().await;
+                    }
+                });
+                println!("Pyquad window closed. Exiting process.");
+                process::exit(0);
+            });
+        }
+    }
+}
+
 
 /// draws a rectangle with a given color.
 /// viewing the rectangle required a 2D Camera ( default )
@@ -208,14 +254,13 @@ pub fn clear_background(color: Color) {
 /// processes all drawing commands that have accumulated.
 /// blocks until the frame has been drawn.
 ///
-/// also, this function cleans up dropped memory like textures
+/// also, this function cleans up dropped memory such as Texture2D
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn next_frame() {
     let (sender, receiver) = mpsc::sync_channel(1); // Create a blocking channel
     COMMAND_QUEUE.push(Command::NextFrame(sender));
 
-    // Block until next frame is processed
     let _ = receiver.recv();
 }
 

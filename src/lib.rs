@@ -1,5 +1,5 @@
-#![allow(warnings)]
-
+//#![allow(warnings)]
+#![allow(non_snake_case)] // alot of Python Constants are defined via function, so this prevents compiler spam.
 use crossbeam::queue::SegQueue;
 use macroquad::texture::RenderTarget;
 use std::fmt::format;
@@ -44,8 +44,8 @@ lazy_static! {
 
 
 pub enum Command {
-    // textures need to be dropped in the main Thread
-    DropThisItem(Arc<dyn Any + Send + Sync>),
+
+    DropThisItem(Arc<dyn Any + Send + Sync>), // drops it's item.  >_<
 
     LoadFile{ path: String, sender: mpsc::SyncSender<Result<Vec<u8>, PError>> },
     LoadSound{ path: String, sender: mpsc::SyncSender<Result<PArc<au::Sound>, PError>> },
@@ -313,7 +313,7 @@ async fn process_commands() {
                 let _ = sender.send(PArc::new(render_target));
             }
             Command::RenderTargetEx{ width, height, params, sender } => {
-                match (params){
+                match params{
                     Some(p) => {
                         let render_target = mq::render_target_ex(width, height, p);
                         let _ = sender.send(PArc::new(render_target));
@@ -385,49 +385,6 @@ async fn process_commands() {
 }
 
 
-
-/// [!] This should generally be the first function call.
-///
-/// Turns on the pyquad engine, creates an open-gl window and allows for engine-calls to be processed.
-///
-#[gen_stub_pyfunction]
-#[pyfunction]
-#[pyo3(signature = (conf = None))] // overloads activate_engine with config
-pub fn activate_engine(_py: Python, conf: Option<Config>) {
-    match conf {
-        Some(config) => {
-
-            let mut macroConf = Config::to_window_config(config.clone());
-
-            std::thread::spawn(move || {
-                macroquad::Window::from_config(macroConf, async {
-                    engine::EngineSetup::setup_engine();
-                    loop { 
-                        process_commands().await;
-                    }
-                });
-                if config.stop_pyton_when_closing_window{
-                    println!("Pyquad window closed. Exiting process.");
-                    process::exit(0);
-                }
-            });
-        }
-        None => {
-            std::thread::spawn(|| {
-                macroquad::Window::new("pyquad", async {
-                    engine::EngineSetup::setup_engine();
-                    loop {
-                        process_commands().await;
-                    }
-                });
-                println!("Pyquad window closed. Exiting process.");
-                process::exit(0);
-            });
-            
-        }
-    }
-}
-
 #[pymodule]
 fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes all functionality to python
     m.add_function(wrap_pyfunction!(activate_engine, m)?)?;
@@ -498,6 +455,10 @@ fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes
     m.add_class::<py_abstractions::structs::GLAM::BVec3::BVec3>()?;
     m.add_class::<py_abstractions::structs::GLAM::Vec3::Vec3>()?;
     m.add_class::<py_abstractions::structs::GLAM::Vec2::Vec2>()?;
+
+    m.add_class::<crate::py_abstractions::structs::Objects::Two_D_Object::Two_D_Object>()?;
+    m.add_class::<crate::py_abstractions::structs::Objects::Rectangle::Rectangle>()?;
+    m.add_class::<crate::py_abstractions::structs::Objects::Circle::Circle>()?;
 
 
 

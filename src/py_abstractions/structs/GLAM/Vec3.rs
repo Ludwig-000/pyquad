@@ -1065,7 +1065,7 @@ impl From<gl> for Vec3 {
 }
 
 #[derive(FromPyObject)]
-enum Vec3OrF32 {
+pub enum Vec3OrF32 {
     Vec3(Vec3),
     F32(f32),
 }

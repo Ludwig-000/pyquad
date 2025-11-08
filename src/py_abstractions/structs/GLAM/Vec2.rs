@@ -1000,7 +1000,7 @@ impl From<gl> for Vec2 {
 }
 
 #[derive(FromPyObject)]
-enum Vec2OrF32 {
+pub enum Vec2OrF32 {
     Vec2(Vec2),
     F32(f32),
 }

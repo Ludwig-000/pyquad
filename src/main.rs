@@ -147,22 +147,24 @@ pub fn load_custom_material() -> Material {
 
     material
 }
-
-fn window_conf() -> Conf {
-    Conf {
-        window_title: "3D Camera and Skybox".to_owned(),
-        window_width: 1920,
-        window_height: 1080,
-        fullscreen: true, // Start in windowed mode for easier debugging
-        sample_count: 8,
-        ..Default::default()
-    }
-}
 fn draw_fullscreen_quad(){
 
 }
+fn window_conf() -> Conf {
+    let mut conf = Conf {
+        window_title: "3D Camera and Skybox".to_owned(),
+        window_width: 1920,
+        window_height: 1080,
+        fullscreen: true,
+        sample_count: 8,
+        ..Default::default()
+    };
+    conf.platform.swap_interval = Some(0);
+    conf
+}
 #[macroquad::main(window_conf)]
 async fn main() {
+    
     // 1) Load any 2:1 panorama image; PNG/JPG is fine
     let sky_tex = load_texture("sky.png").await.unwrap();
     sky_tex.set_filter(FilterMode::Linear);
