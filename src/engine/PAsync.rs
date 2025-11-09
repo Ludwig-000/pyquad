@@ -1,3 +1,8 @@
+#![allow(unused)]
+#![allow(dead_code)]
+/// WIP, will see if this ever gets anywhere. 
+/// 
+
 use std::cell::UnsafeCell;
 use std::ops::Deref;
 use std::sync::{mpsc, Mutex};
@@ -65,11 +70,9 @@ impl<T> Deref for Promise<T> {
         };
 
         if !is_ready {
-            // Resolve now (blocks)
             self.resolve();
         }
 
-        // SAFETY: Once resolved, value is set and never moved again.
         unsafe {
             (*self.value.get())
                 .as_ref()

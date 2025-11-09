@@ -252,7 +252,7 @@ pub fn clear_background(color: Color) {
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn next_frame() {
-    let (sender, receiver) = mpsc::sync_channel(1); // Create a blocking channel
+    let (sender, receiver) = mpsc::sync_channel(1);
     COMMAND_QUEUE.push(Command::NextFrame(sender));
 
     let _ = receiver.recv();
@@ -313,11 +313,9 @@ pub fn get_fps() -> i32 {
     let (sender, receiver) = mpsc::sync_channel(1);
     COMMAND_QUEUE.push(Command::GetFPS(sender));
 
-    match receiver.recv() {
-        Ok(fps) => fps,
-        Err(e) => panic!("Fatal MSPC Error:  {e}"),
-    }
-
+    let fps= receiver.recv().unwrap();
+    fps
+    
 }
 
 
@@ -330,19 +328,17 @@ pub fn get_keys_pressed() -> PyResult<KeyCodeSet> {
     let (sender, receiver) = mpsc::sync_channel(1);
     COMMAND_QUEUE.push(Command::GetKeysPressed(sender));
 
-    match receiver.recv() {
-        Ok(keyset) => {
-            let converted_keys: HashSet<KeyCode> = keyset
-                .into_iter()
-                .map(KeyCode::from)
-                .collect();
+    let keyset = receiver.recv().unwrap();
 
-            let k = KeyCodeSet::new(converted_keys);
+    let converted_keys: HashSet<KeyCode> = keyset
+        .into_iter()
+        .map(KeyCode::from)
+        .collect();
 
-            Ok(k)
-        }
-        Err(e) => panic!("Fatal MSPC Error:  {e}"),
-    }
+    let k = KeyCodeSet::new(converted_keys);
+
+    Ok(k)
+
 }
 
 
@@ -354,19 +350,17 @@ pub fn get_keys_released() -> KeyCodeSet {
     let (sender, receiver) = mpsc::sync_channel(1);
     COMMAND_QUEUE.push(Command::GetKeysReleased(sender));
 
-    match receiver.recv() {
-        Ok(keyset) => {
-            let converted_keys: HashSet<KeyCode> = keyset
-                .into_iter()
-                .map(KeyCode::from)
-                .collect();
+    let keyset = receiver.recv().unwrap();
 
-            let k = KeyCodeSet::new(converted_keys);
+    let converted_keys: HashSet<KeyCode> = keyset
+        .into_iter()
+        .map(KeyCode::from)
+        .collect();
 
-            k
-        }
-        Err(e) => panic!("Fatal MSPC Error:  {e}"),
-    }
+    let k = KeyCodeSet::new(converted_keys);
+
+    k
+
 }
 
 
@@ -378,20 +372,16 @@ pub fn get_keys_down() -> KeyCodeSet {
     let (sender, receiver) = mpsc::sync_channel(1);
     COMMAND_QUEUE.push(Command::GetKeysDown(sender));
 
-    match receiver.recv() {
-        Ok(keyset) => {
-            let converted_keys: HashSet<KeyCode> = keyset
-                .into_iter()
-                .map(KeyCode::from)
-                .collect();
+    let keyset = receiver.recv().unwrap();
 
-            let k = KeyCodeSet::new(converted_keys);
+    let converted_keys: HashSet<KeyCode> = keyset
+        .into_iter()
+        .map(KeyCode::from)
+        .collect();
 
-            k
-        }
-        Err(e) => panic!("Fatal MSPC Error:  {e}"),
-    }
+    let k = KeyCodeSet::new(converted_keys);
 
+    k
 }
 
 
@@ -406,32 +396,12 @@ list of macroquad::prelude functions
     mq::build_textures_atlas
     mq::camera_font_scale
     mq::cartesian_to_polar
-    mq::clamp
-    mq::clear_background
     mq::clear_input_queue
 
-    mq::draw_affine_parallelepiped
-    mq::draw_affine_parallelogram
-    mq::draw_arc
-    mq::draw_circle
-    mq::draw_circle_lines
-    mq::draw_cube
-    mq::draw_cube_wires
-    mq::draw_cylinder
-    mq::draw_cylinder_ex
-    mq::draw_cylinder_wires
-    mq::draw_ellipse
-    mq::draw_ellipse_lines
-    mq::draw_fps
-    mq::draw_grid
-    mq::draw_grid_ex
-    mq::draw_hexagon
-    mq::draw_line
     mq::draw_line_3d
     mq::draw_mesh
     mq::draw_multiline_text
     mq::draw_plane
-    mq::draw_poly
     mq::draw_poly_lines
     mq::draw_rectangle
     mq::draw_rectangle_ex
@@ -470,18 +440,14 @@ list of macroquad::prelude functions
     mq::is_mouse_button_released
     mq::is_quit_requested
     mq::is_simulating_mouse_with_touch
-    mq::load_file
-    mq::load_image
     mq::load_material
     mq::load_string
-    mq::load_texture
     mq::load_ttf_font_from_bytes
     mq::measure_text
     mq::mouse_delta_position
     mq::mouse_position
     mq::mouse_position_local
     mq::mouse_wheel
-    mq::next_frame
     mq::polar_to_cartesian
     mq::pop_camera_state
     mq::prevent_quit
@@ -494,9 +460,7 @@ list of macroquad::prelude functions
     mq::screen_dpi_scale
     mq::screen_height
     mq::screen_width
-    mq::set_camera
     mq::set_cursor_grab
-    mq::set_default_camera
     mq::set_default_filter_mode
     mq::set_fullscreen
     mq::set_panic_handler

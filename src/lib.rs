@@ -1,5 +1,7 @@
 //#![allow(warnings)]
 #![allow(non_snake_case)] // alot of Python Constants are defined via function, so this prevents compiler spam.
+#![allow(unused_variables)] // for now.
+#![allow(dead_code)] // for now.
 use crossbeam::queue::SegQueue;
 use std::panic;
 
@@ -14,7 +16,6 @@ use macroquad::audio as au;
 mod engine;
 
 mod py_abstractions;
-use py_abstractions::py_structs::*;
 use py_abstractions::py_functions::*;
 use std::sync::mpsc;
 use std::collections::HashSet;
@@ -379,9 +380,8 @@ async fn process_commands() {
 
 #[pymodule]
 fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes all functionality to python
-    m.add_function(wrap_pyfunction!(activate_engine, m)?)?;
-    // functions
 
+    m.add_function(wrap_pyfunction!(activate_engine, m)?)?;
     m.add_function(wrap_pyfunction!(draw_rectangle, m)?)?;
     m.add_function(wrap_pyfunction!(draw_poly, m)?)?;
     m.add_function(wrap_pyfunction!(draw_circle, m)?)?;
@@ -432,18 +432,9 @@ fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes
     m.add_class::<crate::py_abstractions::structs::Audio::Sound>()?;
 
     m.add_class::<Config>()?;
-    m.add_class::<DVec2>()?;
-    m.add_class::<DVec3>()?;
-    m.add_class::<DVec4>()?;
-    m.add_class::<Circle>()?;
-    m.add_class::<Quat>()?;
-    m.add_class::<Rect>()?;
-
     m.add_class::<Color>()?;
-    m.add_class::<DMat2>()?;
-    m.add_class::<DMat3>()?;
-    m.add_class::<DMat4>()?;
 
+    m.add_class::<py_abstractions::structs::GLAM::BVec2::BVec2>()?;
     m.add_class::<py_abstractions::structs::GLAM::BVec3::BVec3>()?;
     m.add_class::<py_abstractions::structs::GLAM::Vec3::Vec3>()?;
     m.add_class::<py_abstractions::structs::GLAM::Vec2::Vec2>()?;
@@ -451,11 +442,11 @@ fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes
     m.add_class::<crate::py_abstractions::structs::Objects::Two_D_Object::Two_D_Object>()?;
     m.add_class::<crate::py_abstractions::structs::Objects::Rectangle::Rectangle>()?;
     m.add_class::<crate::py_abstractions::structs::Objects::Circle::Circle>()?;
+    m.add_class::<crate::py_abstractions::structs::Objects::Mesh::Mesh>()?;
+    m.add_class::<crate::py_abstractions::structs::Objects::Mesh::Vertex>()?;
 
 
-
-
-    //extra
+    m.add_class::<crate::py_abstractions::structs::Shader::Shader>()?;
     m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCode>()?;
     m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCodeSet>()?;
 

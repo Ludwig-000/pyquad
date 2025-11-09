@@ -1,9 +1,9 @@
 pub mod Textures_and_Images;
 pub mod Camera;
 pub mod GLAM;
-pub mod Mesh;
 pub mod RenderTarget;
 pub mod KeyCode;
 pub mod Config;
 pub mod Audio;
 pub mod Objects;
+pub mod Shader;

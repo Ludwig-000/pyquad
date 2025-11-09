@@ -1,11 +1,6 @@
-
 use pyo3::prelude::*;
- 
 use pyo3_stub_gen::derive::gen_stub_pyfunction;
-
-
 use std::sync::mpsc;
-
 use crate::COMMAND_QUEUE;
 use crate::Command;
 
@@ -25,16 +20,12 @@ pub fn get_mouse_position() -> PyResult<(f32,f32)> {
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn set_cursor_grab(option: bool)  {
-
     COMMAND_QUEUE.push(Command::SetCursorGrab(option));
-    
 }
 
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn show_mouse(option: bool) {
-    
     COMMAND_QUEUE.push(Command::ShowMouse(option));
-    
 }
 

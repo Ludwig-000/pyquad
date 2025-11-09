@@ -37,7 +37,7 @@ pub fn myFun() {
 
 
         let rigid_body = RigidBodyBuilder::fixed()
-            .position(iso)
+            .pose(iso)
             .build();
 
         let rb_handle = rigid_body_set.insert(rigid_body);

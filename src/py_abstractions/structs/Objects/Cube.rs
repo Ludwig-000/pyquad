@@ -1,16 +1,11 @@
-
-
 use pyo3::prelude::*;
- 
-//use pyo3::type_gen::generate_type;
-//use pyo3::type_gen::generate_type_as_function;
 use macroquad::prelude as mq;
 
 use pyo3_stub_gen::derive::* ;
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 
 #[derive(Clone)]
-pub struct internal_Cube{
+pub struct InternalCube{
     pub size: mq::Vec3,
     pub pos: mq::Vec3,
 }
@@ -19,7 +14,7 @@ pub struct internal_Cube{
 #[pyclass(subclass)]
 #[derive(Clone)]
 pub struct Cube{
-    pub inner: Box<internal_Cube>,
+    pub inner: Box<InternalCube>,
 }
 
 #[gen_stub_pymethods]
@@ -28,7 +23,7 @@ impl Cube {
 
     #[new]
     pub fn new()-> Self{
-        Cube { inner: Box::new( internal_Cube{  size: mq::Vec3::default(), pos: mq::Vec3::default()  }  ) }
+        todo!()
     }
 
 

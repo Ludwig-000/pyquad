@@ -3,13 +3,13 @@ use macroquad::prelude as mq;
 
 
 
-pub struct cube_mesh{
+pub struct CubeMesh{
     pub vertices: [macroquad::prelude::Vertex; 24],
     pub indices: [u16; 36],
     pub texture: Option<mq::Texture2D>,
 }
 
-impl cube_mesh {
+impl CubeMesh {
     pub fn from_internal(cube: &internal_Cube, texture: Option<mq::Texture2D>, color: mq::Color) -> Self {
         use mq::{Mat4, Vec2, Vec3, Vertex};
 
@@ -87,7 +87,7 @@ impl cube_mesh {
     }
 
 }
-pub fn draw_cube_mesh(mesh: &cube_mesh){
+pub fn draw_cube_mesh(mesh: &CubeMesh){
 
     let context= unsafe { macroquad::prelude::get_internal_gl() };
     context.quad_gl.texture(mesh.texture.as_ref());

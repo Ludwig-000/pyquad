@@ -8,4 +8,4 @@ use pyo3_stub_gen::derive::* ;
 
 #[gen_stub_pyclass]
 #[pyclass(subclass)]
-pub struct Three_D_Object{}
+pub struct ThreeDObject{}

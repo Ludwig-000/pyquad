@@ -1,7 +1,6 @@
 use pyo3::prelude::*;
  
 use macroquad::prelude as mq;
-use crate::py_abstractions::py_structs::*;
 use crate::COMMAND_QUEUE;
 use crate::Command;
 use pyo3_stub_gen::{derive::gen_stub_pyfunction,derive::*};
@@ -9,7 +8,7 @@ use pyo3_stub_gen::{derive::gen_stub_pyfunction,derive::*};
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::py_abstractions::structs::GLAM::Vec2::Vec2;
 use crate::py_abstractions::structs::RenderTarget::*;
-
+use crate::py_abstractions::structs::Objects::Rectangle::Rectangle;
 #[gen_stub_pyclass]
 #[pyclass]
 #[derive(Debug, Clone)]
@@ -77,15 +76,16 @@ impl Camera2D {
     }
 
     /// Will make camera space equals given rect.
+    /// This will ignore the Rectangle's rotation.
     #[staticmethod]
-    pub fn from_display_rect(rect: Rect) -> Camera2D {
-        let rec =  mq::Rect::new(rect.x, rect.y, rect.w, rect.h);
+    pub fn from_display_rect(rect: &Rectangle) -> Camera2D {
+        let rec =  mq::Rect::new(rect.x, rect.y, rect.width, rect.height);
         
         mq::Camera2D::from_display_rect(rec).into()
     }
 
-    #[staticmethod]
     /// Set active 2D camera.
+    #[staticmethod]
     pub fn set_camera(camera: Camera2D) {
         
         let cam: mq::Camera2D = camera.into();

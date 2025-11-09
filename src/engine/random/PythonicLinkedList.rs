@@ -1,7 +1,4 @@
 
-
-
-
 pub struct P_Linked_List<T> {
     head: Option<Box<Element<T>>>,
 }

@@ -5,7 +5,6 @@ use std::sync::mpsc;
 use pyo3_stub_gen::derive::*;
 use crate::COMMAND_QUEUE;
 use crate::Command;
-use pyo3::prelude::*;
  
 use crate::engine::PArc::PArc;
 
