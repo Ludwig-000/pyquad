@@ -3,8 +3,8 @@ use pyo3::{pyclass, pyfunction,pymethods};
 use pyo3_stub_gen::derive::gen_stub_pyfunction;
 use std::sync::mpsc;
 use pyo3_stub_gen::derive::*;
-use crate::COMMAND_QUEUE;
-use crate::Command;
+use crate::engine::CoreLoop::COMMAND_QUEUE;
+use crate::engine::CoreLoop::Command;
  
 use crate::engine::PArc::PArc;
 

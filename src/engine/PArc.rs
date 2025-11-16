@@ -1,8 +1,8 @@
 use std::ops::{Deref, DerefMut};
 use std::thread;
 use std::sync::Arc;
-use crate::COMMAND_QUEUE;
-use crate::Command;
+use crate::engine::CoreLoop::COMMAND_QUEUE;
+use crate::engine::CoreLoop::Command;
 use std::fmt::{Debug, Formatter};
 
 /// Pythonic Arc.

@@ -1,8 +1,8 @@
 use pyo3::prelude::*;
  
 use macroquad::prelude as mq;
-use crate::COMMAND_QUEUE;
-use crate::Command;
+use crate::engine::CoreLoop::COMMAND_QUEUE;
+use crate::engine::CoreLoop::Command;
 use pyo3_stub_gen::{derive::gen_stub_pyfunction,derive::*};
 
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;

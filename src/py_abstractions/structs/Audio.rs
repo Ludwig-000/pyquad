@@ -2,8 +2,8 @@ use macroquad::audio as au;
 use pyo3::{pyclass,pymethods};
 use std::sync::mpsc;
 use pyo3_stub_gen::derive::*;
-use crate::COMMAND_QUEUE;
-use crate::Command;
+use crate::engine::CoreLoop::COMMAND_QUEUE;
+use crate::engine::CoreLoop::Command;
 use pyo3::prelude::*;
  
 use crate::engine::PArc::PArc;

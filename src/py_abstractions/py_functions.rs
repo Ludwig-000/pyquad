@@ -16,8 +16,8 @@ use pyo3_stub_gen::{derive::gen_stub_pyfunction};
 use std::sync::mpsc;
 use std::collections::HashSet;
 
-use crate::COMMAND_QUEUE;
-use crate::Command;
+use crate::engine::CoreLoop::COMMAND_QUEUE;
+use crate::engine::CoreLoop::Command;
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::py_abstractions::structs::GLAM::Vec2::Vec2;
 use crate::py_abstractions::Color::*;
@@ -56,7 +56,7 @@ pub fn activate_engine(_py: Python, conf: Option<Config>) -> PyResult<()>{
             crate::engine::EngineSetup::setup_engine();
             let _ = engine_setup_complete.send(());
             loop {
-                crate::process_commands().await;
+                crate::engine::CoreLoop::process_commands().await;
             }
         });
 

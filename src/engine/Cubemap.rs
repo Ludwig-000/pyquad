@@ -7,8 +7,8 @@ use pyo3::prelude::*;
 use pyo3_stub_gen::{derive::gen_stub_pyfunction};
 
 
-use crate::COMMAND_QUEUE;
-use crate::Command;
+use crate::engine::CoreLoop::COMMAND_QUEUE;
+use crate::engine::CoreLoop::Command;
 
 #[gen_stub_pyfunction]
 #[pyfunction]

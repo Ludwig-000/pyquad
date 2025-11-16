@@ -141,7 +141,14 @@ lazy_static! {
 }
 
 
-async fn process_commands() {
+
+lazy_static! {
+    pub static ref ComputationTime: Arc<Vec<u128>> = Arc::new(Vec::new());
+
+}
+
+
+pub async fn process_commands() {
 
     // processes commands that rely on the macroquad engine
     // commands that do not rely on it's core (openGL) components are found elsewhere.

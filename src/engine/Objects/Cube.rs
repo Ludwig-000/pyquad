@@ -3,7 +3,7 @@ use rapier3d::prelude::*;
 
 #[derive( Debug, Clone)]
 pub struct Cube{
-
+    
     
     pub size: mq::Vec3,
     pub position: mq::Vec3,
