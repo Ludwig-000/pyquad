@@ -1,27 +1,21 @@
-use crossbeam::queue::SegQueue;
+
 use std::panic;
-
-use pyo3::prelude::*;
-use pyo3_stub_gen::define_stub_info_gatherer;
-
-use lazy_static::*;
-
-use macroquad::prelude as mq;
-use macroquad::audio as au;
-use crate::py_abstractions::py_functions::*;
 use std::sync::mpsc;
 use std::collections::HashSet;
 use std::sync::Arc;
-use crate::py_abstractions::structs::Textures_and_Images as structs;
-use crate::py_abstractions::structs::Camera as Camera;
-use crate::py_abstractions::Mouse as Mouse;
+use std::any::Any;
+
+use lazy_static::*;
+
+use crossbeam::queue::SegQueue;
+
+use macroquad::prelude as mq;
+use macroquad::audio as au;
+
 use crate::engine::SHADERS::shader_manager as sm;
-use crate::py_abstractions::Color::*;
-use crate::py_abstractions::structs::Config::*;
 use crate::engine::PError::PError;
 use crate::engine::PArc::PArc;
-
-use std::any::Any;
+use crate::engine::Objects::ObjectManagement::ObjectManager::*;
 
 
 
@@ -148,227 +142,234 @@ lazy_static! {
 }
 
 
-pub async fn process_commands() {
+pub async fn proccess_commands_loop() {
 
-    // processes commands that rely on the macroquad engine
-    // commands that do not rely on it's core (openGL) components are found elsewhere.
+    
+    let mut ObjectManagement = ObjectSortage::new();
 
-    while let Some(command) = COMMAND_QUEUE.pop() {
-        match command {
-            Command::DrawRect { x, y, w, h, color} => {
-                sm::switch_to_desired_shader(sm::ShaderKind::None);
-                mq::draw_rectangle(
-                    x,
-                    y,
-                    w,
-                    h,
-                    color,
-                );
-            }
-            Command::DrawPlane { center, size, color, texture } => {
-                sm::switch_to_desired_shader(sm::ShaderKind::None);
-                let tex_ref = texture.as_ref();
-                mq::draw_plane(center,size,tex_ref,color);
-            }
-            Command::DrawGrid { slices, spacing, axes_color, other_color } => {
-                sm::switch_to_desired_shader(sm::ShaderKind::None);
-                mq::draw_grid(slices, spacing, axes_color, other_color);
-            }
-            Command::DrawCube {pos,size,texture,color} => {
-                sm::switch_to_desired_shader(sm::ShaderKind::Basic);
-                mq::draw_cube(pos,size,texture.as_ref(),color)
-            }
-            Command::DrawCubemap {pos,size,texture,color} => {
-                sm::switch_to_desired_shader(sm::ShaderKind::None);
-                mq::draw_cube(pos,size,texture.as_ref(),color);
-                crate::engine::Cubemap::draw_fullscreen_quad();
+    loop {
+        // processes commands that rely on the macroquad engine
+        // commands that do not rely on it's core (openGL) components are found elsewhere.
 
-            }
+        while let Some(command) = COMMAND_QUEUE.pop() {
+            match command {
+                Command::DrawRect { x, y, w, h, color} => {
+                    sm::switch_to_desired_shader(sm::ShaderKind::None);
+                    mq::draw_rectangle(
+                        x,
+                        y,
+                        w,
+                        h,
+                        color,
+                    );
+                }
+                Command::DrawPlane { center, size, color, texture } => {
+                    sm::switch_to_desired_shader(sm::ShaderKind::None);
+                    let tex_ref = texture.as_ref();
+                    mq::draw_plane(center,size,tex_ref,color);
+                }
+                Command::DrawGrid { slices, spacing, axes_color, other_color } => {
+                    sm::switch_to_desired_shader(sm::ShaderKind::None);
+                    mq::draw_grid(slices, spacing, axes_color, other_color);
+                }
+                Command::DrawCube {pos,size,texture,color} => {
+                    sm::switch_to_desired_shader(sm::ShaderKind::Basic);
+                    mq::draw_cube(pos,size,texture.as_ref(),color)
+                }
+                Command::DrawCubemap {pos,size,texture,color} => {
+                    sm::switch_to_desired_shader(sm::ShaderKind::None);
+                    mq::draw_cube(pos,size,texture.as_ref(),color);
+                    crate::engine::Cubemap::draw_fullscreen_quad();
 
-            Command::DrawAfflineParallelpiped { offset, e1, e2, e3, texture, color } => {
-                mq::draw_affine_parallelepiped(offset, e1, e2, e3, texture.as_ref(), color);
-            }
-            Command::DrawArc { x, y, sides, radius, rotation, thickness, arc, color } => {
-                mq::draw_arc(x, y, sides, radius, rotation, thickness, arc, color);
-            }
+                }
 
-            Command::DrawCubeWires { position, size, color } => {
-                mq::draw_cube_wires(position, size, color);
-            }
-            Command::DrawCylinder { position, radius_top, radius_bottom, height, texture, color } => {
-                mq::draw_cylinder(position, radius_top, radius_bottom, height, texture.as_ref(), color);
-            }
+                Command::DrawAfflineParallelpiped { offset, e1, e2, e3, texture, color } => {
+                    mq::draw_affine_parallelepiped(offset, e1, e2, e3, texture.as_ref(), color);
+                }
+                Command::DrawArc { x, y, sides, radius, rotation, thickness, arc, color } => {
+                    mq::draw_arc(x, y, sides, radius, rotation, thickness, arc, color);
+                }
 
-            Command::DrawCylinderWires { position, radius_top, radius_bottom, height, texture, color } => {
-                mq::draw_cylinder_wires(position, radius_top, radius_bottom, height, texture.as_ref(), color);
-            }
+                Command::DrawCubeWires { position, size, color } => {
+                    mq::draw_cube_wires(position, size, color);
+                }
+                Command::DrawCylinder { position, radius_top, radius_bottom, height, texture, color } => {
+                    mq::draw_cylinder(position, radius_top, radius_bottom, height, texture.as_ref(), color);
+                }
 
-            Command::DrawEllipse { x, y, w, h, rotation, color }    => {
-                mq::draw_ellipse(x, y, w, h, rotation, color);  
-            }
-            
-            Command::DrawEllipseLines { x, y, w, h, rotation, thickness, color }    => {
-                mq::draw_ellipse_lines(x, y, w, h, rotation, thickness, color);
-            }
+                Command::DrawCylinderWires { position, radius_top, radius_bottom, height, texture, color } => {
+                    mq::draw_cylinder_wires(position, radius_top, radius_bottom, height, texture.as_ref(), color);
+                }
 
-            Command::DrawHexagon { x, y, size, border, vertical, border_color, fill_color } => {
-                mq::draw_hexagon(x, y, size, border, vertical, border_color, fill_color);
-            }
-
-            Command::DrawLine3D { start, end, color } =>{
-                mq::draw_line_3d(start, end, color);    
-            }
-            
-
-
-            Command::LoadImage { path,sender} => {
-                let result = async {
-                let bytes = mq::load_file(&path).await?;
+                Command::DrawEllipse { x, y, w, h, rotation, color }    => {
+                    mq::draw_ellipse(x, y, w, h, rotation, color);  
+                }
                 
-                let image = mq::Image::from_file_with_format(&bytes, None)?;
-                Ok(image)
-            }.await;
-
-                let _ = sender.send(result);
-            }
-            Command::DrawPoly { x, y, sides, radius, rotation, color }=>
-            {
-                sm::switch_to_desired_shader(sm::ShaderKind::None);
-                mq::draw_poly(x,y,sides,radius,rotation,color  );
-            }
-            Command::SetDefaultCamera() =>{ mq::set_default_camera() }
-
-            Command::DrawTexture { texture,x,y,color}=>
-            {
-                sm::switch_to_desired_shader(sm::ShaderKind::None);
-                mq::draw_texture(&texture,x,y,color)
-            }
-            
-            Command::ClearBackground {color } => {
-                macroquad::prelude::clear_background(color);
-            }
-
-            Command::NextFrame(sender) => {
-                mq::next_frame().await;
-                crate::engine::SHADERS::shader_manager::new_frame_shader_update();
-                let _ = sender.send(());
-            }
-         
-            Command::DrawText { text, x, y, font_size, color }=>{
-               sm::switch_to_desired_shader(sm::ShaderKind::None);
-               mq::draw_text(text.as_str(), x,y,font_size,color);
-            }
-            
-            Command::GetFPS(sender) => {
-            let fps = mq::get_fps();
-            let _ = sender.send(fps);
-            }
-            Command::GetMousePosition(sender) => {
-            let pos = mq::mouse_position();
-            let _ = sender.send(pos);
-            }
-            Command::GetKeysPressed(sender) => {
-            let keyset = mq::get_keys_pressed();
-            let _ = sender.send(keyset);
-            }
-            Command::GetKeysReleased(sender) => {
-            let keyset = mq::get_keys_released();
-            let _ = sender.send(keyset);
-            }
-            Command::GetKeysDown(sender) => {
-            let keyset = mq::get_keys_down();
-            let _ = sender.send(keyset);
-            }
-            Command::ImgToTexture { image, sender }=>{
-                let tex: PArc<mq::Texture2D> = PArc::new(  mq::Texture2D::from_image(&image));
-                let _ = sender.send(tex);
-            }
-            Command::SetCamera { camera_2d, camera_3d } => { // merged cam2d and 3d for simplicity.
-                match (camera_2d, camera_3d) {
-                    (Some(cam), None) => mq::set_camera(&cam),
-                    (None, Some(cam)) => mq::set_camera(&cam),
-                    _ => panic!("invalid cam pattern"),
-
+                Command::DrawEllipseLines { x, y, w, h, rotation, thickness, color }    => {
+                    mq::draw_ellipse_lines(x, y, w, h, rotation, thickness, color);
                 }
-            }
-            Command::SetCursorGrab(i) =>{
-                mq::set_cursor_grab(i);
-            }
-            Command::ShowMouse(i) =>{
-                mq::show_mouse(i);
-            }
-            Command::RenderTargetMsaa{ width, height, sender } => {
-                let render_target = mq::render_target_msaa(width, height);
-                let _ = sender.send(PArc::new(render_target));
-            }
-            Command::RenderTargetEx{ width, height, params, sender } => {
-                match params{
-                    Some(p) => {
-                        let render_target = mq::render_target_ex(width, height, p);
+
+                Command::DrawHexagon { x, y, size, border, vertical, border_color, fill_color } => {
+                    mq::draw_hexagon(x, y, size, border, vertical, border_color, fill_color);
+                }
+
+                Command::DrawLine3D { start, end, color } =>{
+                    mq::draw_line_3d(start, end, color);    
+                }
+                
+
+
+                Command::LoadImage { path,sender} => {
+                    let result = async {
+                    let bytes = mq::load_file(&path).await?;
+                    
+                    let image = mq::Image::from_file_with_format(&bytes, None)?;
+                    Ok(image)
+                }.await;
+
+                    let _ = sender.send(result);
+                }
+                Command::DrawPoly { x, y, sides, radius, rotation, color }=>
+                {
+                    sm::switch_to_desired_shader(sm::ShaderKind::None);
+                    mq::draw_poly(x,y,sides,radius,rotation,color  );
+                }
+                Command::SetDefaultCamera() =>{ mq::set_default_camera() }
+
+                Command::DrawTexture { texture,x,y,color}=>
+                {
+                    sm::switch_to_desired_shader(sm::ShaderKind::None);
+                    mq::draw_texture(&texture,x,y,color)
+                }
+                
+                Command::ClearBackground {color } => {
+                    macroquad::prelude::clear_background(color);
+                }
+
+                Command::NextFrame(sender) => {
+                    mq::next_frame().await;
+                    crate::engine::SHADERS::shader_manager::new_frame_shader_update();
+                    let _ = sender.send(());
+                }
+            
+                Command::DrawText { text, x, y, font_size, color }=>{
+                sm::switch_to_desired_shader(sm::ShaderKind::None);
+                mq::draw_text(text.as_str(), x,y,font_size,color);
+                }
+                
+                Command::GetFPS(sender) => {
+                let fps = mq::get_fps();
+                let _ = sender.send(fps);
+                }
+                Command::GetMousePosition(sender) => {
+                let pos = mq::mouse_position();
+                let _ = sender.send(pos);
+                }
+                Command::GetKeysPressed(sender) => {
+                let keyset = mq::get_keys_pressed();
+                let _ = sender.send(keyset);
+                }
+                Command::GetKeysReleased(sender) => {
+                let keyset = mq::get_keys_released();
+                let _ = sender.send(keyset);
+                }
+                Command::GetKeysDown(sender) => {
+                let keyset = mq::get_keys_down();
+                let _ = sender.send(keyset);
+                }
+                Command::ImgToTexture { image, sender }=>{
+                    let tex: PArc<mq::Texture2D> = PArc::new(  mq::Texture2D::from_image(&image));
+                    let _ = sender.send(tex);
+                }
+                Command::SetCamera { camera_2d, camera_3d } => { // merged cam2d and 3d for simplicity.
+                    match (camera_2d, camera_3d) {
+                        (Some(cam), None) => mq::set_camera(&cam),
+                        (None, Some(cam)) => mq::set_camera(&cam),
+                        _ => panic!("invalid cam pattern"),
+
+                    }
+                }
+                Command::SetCursorGrab(i) =>{
+                    mq::set_cursor_grab(i);
+                }
+                Command::ShowMouse(i) =>{
+                    mq::show_mouse(i);
+                }
+                Command::RenderTargetMsaa{ width, height, sender } => {
+                    let render_target = mq::render_target_msaa(width, height);
+                    let _ = sender.send(PArc::new(render_target));
+                }
+                Command::RenderTargetEx{ width, height, params, sender } => {
+                    match params{
+                        Some(p) => {
+                            let render_target = mq::render_target_ex(width, height, p);
+                            let _ = sender.send(PArc::new(render_target));
+                        }
+                        None => {
+                            let render_target = mq::render_target_ex(width, height, mq::RenderTargetParams::default());
                         let _ = sender.send(PArc::new(render_target));
+                        }
                     }
-                    None => {
-                        let render_target = mq::render_target_ex(width, height, mq::RenderTargetParams::default());
-                       let _ = sender.send(PArc::new(render_target));
-                    }
+
+                }
+                Command::LoadSound { path ,sender} => {
+                    let result = async {
+                        let data = macroquad::prelude::load_file(&path).await?;
+
+                        //converts .mp3 to .wav
+                        let secured_data  = crate::engine::AudioConverter::ensure_wav(data).map_err(|e| {
+                        e.with_context(format!(" path: {path}"))
+                        }  )?;
+
+                        let sound = au::load_sound_from_bytes(&secured_data).await?;
+                        Ok(sound)
+                    }.await;
+                    let result = result.map(|op| PArc::new(op)  );
+                
+                    let _ = sender.send(result);
+                }
+                Command::LoadSoundFromBytes { data ,sender} => {
+
+                    let result: Result<_, PError> = async {
+                        //converts .mp3 to .wav
+                        let secured_data  = crate::engine::AudioConverter::ensure_wav(data)?;
+
+                        let sound = au::load_sound_from_bytes(&secured_data).await?;
+                        Ok(sound)
+                    }.await;
+                
+                    let result = result.map(|op| PArc::new(op)  );
+                    let _ = sender.send(result);
+                }
+                
+                Command::PlaySound { sound, params } => {
+                    au::play_sound(&sound, params);
+                }
+                Command::PlaySoundOnce { sound } => {
+                    au::play_sound_once(&sound);
+                }
+                Command::StopSound { sound } => {
+                    au::stop_sound(&sound);
+                }
+                Command::SetSoundVolume { sound, volume  } => {
+                    au::set_sound_volume(&sound, volume);
                 }
 
+                Command::LoadFile { path ,sender} => {
+
+                    let result = mq::load_file(&path).await.map_err(Into::into);
+                    let _ = sender.send(result);
+
+                }
+
+                Command::DropThisItem(item_arc)=>{}
+
+                
             }
-            Command::LoadSound { path ,sender} => {
-                let result = async {
-                    let data = macroquad::prelude::load_file(&path).await?;
-
-                    //converts .mp3 to .wav
-                    let secured_data  = crate::engine::AudioConverter::ensure_wav(data).map_err(|e| {
-                       e.with_context(format!(" path: {path}"))
-                    }  )?;
-
-                    let sound = au::load_sound_from_bytes(&secured_data).await?;
-                    Ok(sound)
-                }.await;
-                let result = result.map(|op| PArc::new(op)  );
-            
-                let _ = sender.send(result);
-            }
-            Command::LoadSoundFromBytes { data ,sender} => {
-
-                 let result: Result<_, PError> = async {
-                    //converts .mp3 to .wav
-                    let secured_data  = crate::engine::AudioConverter::ensure_wav(data)?;
-
-                    let sound = au::load_sound_from_bytes(&secured_data).await?;
-                    Ok(sound)
-                }.await;
-            
-                let result = result.map(|op| PArc::new(op)  );
-                let _ = sender.send(result);
-            }
-            
-            Command::PlaySound { sound, params } => {
-                au::play_sound(&sound, params);
-            }
-            Command::PlaySoundOnce { sound } => {
-                au::play_sound_once(&sound);
-            }
-            Command::StopSound { sound } => {
-                au::stop_sound(&sound);
-            }
-            Command::SetSoundVolume { sound, volume  } => {
-                au::set_sound_volume(&sound, volume);
-            }
-
-            Command::LoadFile { path ,sender} => {
-
-                let result = mq::load_file(&path).await.map_err(Into::into);
-                let _ = sender.send(result);
-
-            }
-
-            Command::DropThisItem(item_arc)=>{}
-
-            
         }
-    }
+
+
+}
 
    
 }

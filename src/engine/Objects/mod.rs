@@ -1,5 +1,5 @@
 pub mod Cube;
 pub mod ObjectManagement;
-pub mod sphere;
+pub mod Sphere;
 pub mod Rectangle;
 pub mod Circle;

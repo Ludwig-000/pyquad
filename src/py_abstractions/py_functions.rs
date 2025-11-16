@@ -55,9 +55,9 @@ pub fn activate_engine(_py: Python, conf: Option<Config>) -> PyResult<()>{
         macroquad::Window::from_config(macroConf, async move  {
             crate::engine::EngineSetup::setup_engine();
             let _ = engine_setup_complete.send(());
-            loop {
-                crate::engine::CoreLoop::process_commands().await;
-            }
+
+            crate::engine::CoreLoop::proccess_commands_loop().await;
+
         });
 
         ENGINE_CURRENTLY_ACTIVE.store(false, Ordering::SeqCst);
