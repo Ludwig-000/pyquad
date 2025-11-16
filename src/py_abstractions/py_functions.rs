@@ -24,8 +24,10 @@ use crate::py_abstractions::Color::*;
 use crate::py_abstractions::structs::KeyCode::*;
 use crate::py_abstractions::structs::Config::Config;
 use std::process;
+use std::sync::atomic::{AtomicBool, Ordering};
+use pyo3::exceptions::PyRuntimeError;
 
-
+static ENGINE_CURRENTLY_ACTIVE: AtomicBool = AtomicBool::new(false);
 /// [!] This should generally be the first function call.
 ///
 /// Turns on the pyquad engine, creates an open-gl window and allows for engine-calls to be processed.
@@ -33,38 +35,41 @@ use std::process;
 #[gen_stub_pyfunction]
 #[pyfunction]
 #[pyo3(signature = (conf = None))] // overloads activate_engine with config
-pub fn activate_engine(_py: Python, conf: Option<Config>) {
-    match conf {
-        Some(config) => {
+pub fn activate_engine(_py: Python, conf: Option<Config>) -> PyResult<()>{
 
-            let macroConf = Config::to_window_config(config.clone());
-
-            std::thread::spawn(move || {
-                macroquad::Window::from_config(macroConf, async {
-                    crate::engine::EngineSetup::setup_engine();
-                    loop {
-                        crate::process_commands().await;
-                    }
-                });
-                if config.stop_pyton_when_closing_window{
-                    println!("Pyquad window closed. Exiting process.");
-                    process::exit(0);
-                }
-            });
-        }
-        None => {
-            std::thread::spawn(|| {
-                macroquad::Window::new("pyquad", async {
-                    crate::engine::EngineSetup::setup_engine();
-                    loop {
-                        crate::process_commands().await;
-                    }
-                });
-                println!("Pyquad window closed. Exiting process.");
-                process::exit(0);
-            });
-        }
+    if ENGINE_CURRENTLY_ACTIVE.load(Ordering::SeqCst){
+        return Err(PyRuntimeError::new_err("Only one instance of the engine can exist."));
     }
+
+    ENGINE_CURRENTLY_ACTIVE.store(true, Ordering::SeqCst);
+    let (engine_setup_complete, rx_) = mpsc::channel();
+
+
+    let conf = match conf {
+        Some(config) => config,
+        None => Config::default(),
+    };
+    let macroConf =  Config::to_window_config(conf.clone());
+
+    std::thread::spawn(move || {
+        macroquad::Window::from_config(macroConf, async move  {
+            crate::engine::EngineSetup::setup_engine();
+            let _ = engine_setup_complete.send(());
+            loop {
+                crate::process_commands().await;
+            }
+        });
+
+        ENGINE_CURRENTLY_ACTIVE.store(false, Ordering::SeqCst);
+
+        if conf.stop_pyton_when_closing_window{
+            println!("Pyquad window closed. Exiting process.");
+            process::exit(0);
+        }
+    });
+
+    rx_.recv().expect("Engine thread failed to initialize");
+    return Ok(());
 }
 
 

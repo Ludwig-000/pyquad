@@ -37,7 +37,7 @@ pub struct Config {
     /// In other words, `swap_interval` is only a hint to the GPU driver and
     /// not a reliable way to limit the game's FPS.
     #[pyo3(get, set)] 
-    pub swap_interval: i32,
+    pub swap_interval: Option<i32>,
 
     #[pyo3(get, set)]
     pub sample_count: i32,
@@ -60,7 +60,7 @@ impl Config {
         window_width= 800,
         window_height= 600,
         fullscreen= false,
-        swap_interval= 60,
+        swap_interval= None,
         sample_count= 1,
         window_resizable= true,
         stop_pyton_when_closing_window= true,
@@ -70,7 +70,7 @@ impl Config {
         window_width: i32,
         window_height: i32,
         fullscreen: bool,
-        swap_interval: i32,
+        swap_interval: Option<i32>,
         sample_count: i32,
         window_resizable: bool,
         stop_pyton_when_closing_window: bool,
@@ -101,7 +101,7 @@ impl Config{
                     ..Default::default()
        };
 
-            miniConf.platform.swap_interval = Some(config.swap_interval);
+            miniConf.platform.swap_interval = config.swap_interval;
 
             macroquad::conf::Conf {
                 miniquad_conf: miniConf,
@@ -122,7 +122,7 @@ impl Default for Config {
                 window_width: 800,
                 window_height: 600,
                 fullscreen: false,
-                swap_interval: 60,
+                swap_interval: None,
                 sample_count: 1,
                 window_resizable: true,
                 stop_pyton_when_closing_window: true,

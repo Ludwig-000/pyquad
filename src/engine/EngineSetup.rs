@@ -1,4 +1,8 @@
 use std::panic;
+use std::thread;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
+use std::sync::mpsc::{self, Receiver, Sender, TryRecvError};
 
 pub fn setup_engine(){
 
@@ -16,7 +20,25 @@ pub fn setup_engine(){
         }
     }));
 
-	
+
 	crate::engine::SHADERS::shaderLoader::shader_load();
+
+
+    
+    let (PhysicsTreadInitComplete, rx_) = mpsc::channel();
+
+    thread::Builder::new()
+        .name("PhysicsThread".to_string()) 
+        .spawn(move || {
+            
+            // do any setup if needed
+            let _ = PhysicsTreadInitComplete.send(());
+            loop {
+                crate::engine::collision::Rapier::physics_thread();
+            }
+        })
+        .expect("Failed to spawn the physics thread");
+
+    rx_.recv().expect("Physics thread failed to initialize");
 	
 }

@@ -297,7 +297,7 @@ class Camera3D:
         Set active 3D camera.
         """
 
-class Circle(Two_D_Object):
+class Circle(TwoDObject):
     ...
 
 class Color:
@@ -4976,10 +4976,10 @@ class Texture2D:
     @staticmethod
     def from_image(image:Image) -> Texture2D: ...
 
-class Three_D_Object:
+class ThreeDObject:
     ...
 
-class Two_D_Object:
+class TwoDObject:
     ...
 
 class Vec2:
@@ -6243,6 +6243,8 @@ def get_keys_released() -> KeyCodeSet:
     """
 
 def get_mouse_position() -> tuple[builtins.float, builtins.float]: ...
+
+def initialize_physics() -> None: ...
 
 def load_file(path:builtins.str) -> builtins.list[builtins.int]:
     r"""

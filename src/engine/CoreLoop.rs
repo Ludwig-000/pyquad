@@ -1,7 +1,3 @@
-//#![allow(warnings)]
-#![allow(non_snake_case)] // alot of Python Constants are defined via function, so this prevents compiler spam.
-#![allow(unused_variables)] // for now.
-#![allow(dead_code)] // for now.
 use crossbeam::queue::SegQueue;
 use std::panic;
 
@@ -12,11 +8,7 @@ use lazy_static::*;
 
 use macroquad::prelude as mq;
 use macroquad::audio as au;
-
-mod engine;
-
-mod py_abstractions;
-use py_abstractions::py_functions::*;
+use crate::py_abstractions::py_functions::*;
 use std::sync::mpsc;
 use std::collections::HashSet;
 use std::sync::Arc;
@@ -30,10 +22,7 @@ use crate::engine::PError::PError;
 use crate::engine::PArc::PArc;
 
 use std::any::Any;
-lazy_static! {
-    pub static ref COMMAND_QUEUE: Arc<SegQueue<Command>> = Arc::new(SegQueue::new());
-    
-}
+
 
 
 pub enum Command {
@@ -146,11 +135,11 @@ pub enum Command {
     
 }
 
-
 lazy_static! {
-    pub static ref ComputationTime: Arc<Vec<u128>> = Arc::new(Vec::new());
-
+    pub static ref COMMAND_QUEUE: Arc<SegQueue<Command>> = Arc::new(SegQueue::new());
+    
 }
+
 
 async fn process_commands() {
 
@@ -254,7 +243,7 @@ async fn process_commands() {
 
             Command::NextFrame(sender) => {
                 mq::next_frame().await;
-                engine::SHADERS::shader_manager::new_frame_shader_update();
+                crate::engine::SHADERS::shader_manager::new_frame_shader_update();
                 let _ = sender.send(());
             }
          
@@ -323,7 +312,7 @@ async fn process_commands() {
                     let data = macroquad::prelude::load_file(&path).await?;
 
                     //converts .mp3 to .wav
-                    let secured_data  = engine::AudioConverter::ensure_wav(data).map_err(|e| {
+                    let secured_data  = crate::engine::AudioConverter::ensure_wav(data).map_err(|e| {
                        e.with_context(format!(" path: {path}"))
                     }  )?;
 
@@ -338,7 +327,7 @@ async fn process_commands() {
 
                  let result: Result<_, PError> = async {
                     //converts .mp3 to .wav
-                    let secured_data  = engine::AudioConverter::ensure_wav(data)?;
+                    let secured_data  = crate::engine::AudioConverter::ensure_wav(data)?;
 
                     let sound = au::load_sound_from_bytes(&secured_data).await?;
                     Ok(sound)
@@ -376,223 +365,3 @@ async fn process_commands() {
 
    
 }
-
-
-#[pymodule]
-fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes all functionality to python
-
-    m.add_function(wrap_pyfunction!(activate_engine, m)?)?;
-    m.add_function(wrap_pyfunction!(draw_rectangle, m)?)?;
-    m.add_function(wrap_pyfunction!(draw_poly, m)?)?;
-    m.add_function(wrap_pyfunction!(draw_circle, m)?)?;
-    m.add_function(wrap_pyfunction!(draw_affine_parallelepiped, m)?)?;
-    m.add_function(wrap_pyfunction!(draw_arc, m)?)?;
-    m.add_function(wrap_pyfunction!(draw_cube_wires, m)?)?;
-    m.add_function(wrap_pyfunction!(draw_cylinder, m)?)?;
-    m.add_function(wrap_pyfunction!(draw_cylinder_wires, m)?)?;
-    m.add_function(wrap_pyfunction!(draw_ellipse, m)?)?;
-    m.add_function(wrap_pyfunction!(draw_ellipse_lines, m)?)?;
-    m.add_function(wrap_pyfunction!(draw_hexagon, m)?)?;
-    m.add_function(wrap_pyfunction!(draw_line_3d, m)?)?;
-
-
-    m.add_function(wrap_pyfunction!(next_frame, m)?)?;
-    m.add_function(wrap_pyfunction!(clear_background, m)?)?;
-    m.add_function(wrap_pyfunction!(draw_text, m)?)?;
-    m.add_function(wrap_pyfunction!(get_fps, m)?)?;
-    m.add_function(wrap_pyfunction!(get_keys_pressed, m)?)?;
-    m.add_function(wrap_pyfunction!(get_keys_down, m)?)?;
-    m.add_function(wrap_pyfunction!(get_keys_released, m)?)?;
-    m.add_function(wrap_pyfunction!(draw_grid, m)?)?;
-    m.add_function(wrap_pyfunction!(draw_texture, m)?)?;
-    m.add_function(wrap_pyfunction!(draw_plane, m)?)?;
-    m.add_function(wrap_pyfunction!(engine::Cubemap::draw_cubemap, m)?)?;
-    m.add_function(wrap_pyfunction!(py_abstractions::py_functions::load_file, m)?)?;
-
-    m.add_function(wrap_pyfunction!(draw_cube, m)?)?;
-    m.add_function(wrap_pyfunction!(Mouse::get_mouse_position, m)?)?;
-    m.add_function(wrap_pyfunction!(Mouse::set_cursor_grab, m)?)?;
-    m.add_function(wrap_pyfunction!(Mouse::show_mouse, m)?)?;
-
-    m.add_function(wrap_pyfunction!(Camera::set_default_camera, m)?)?;
-    
-    m.add_class::<structs::Texture2D>()?;
-    m.add_class::<structs::Image>()?;
-    m.add_class::<Camera::Camera2D>()?;
-    m.add_class::<Camera::Camera3D>()?;
-
-
-    m.add_class::<crate::py_abstractions::structs::RenderTarget::RenderTarget>()?;
-    m.add_class::<crate::py_abstractions::structs::RenderTarget::RenderTargetParams>()?;
-    m.add_function(wrap_pyfunction!(crate::py_abstractions::structs::RenderTarget::render_target_msaa, m)?)?;
-    m.add_function(wrap_pyfunction!(crate::py_abstractions::structs::RenderTarget::render_target, m)?)?;
-
-
-    m.add_class::<crate::py_abstractions::structs::Audio::PlaySoundParams>()?;
-    m.add_class::<crate::py_abstractions::structs::Audio::Sound>()?;
-
-    m.add_class::<Config>()?;
-    m.add_class::<Color>()?;
-
-    m.add_class::<py_abstractions::structs::GLAM::BVec2::BVec2>()?;
-    m.add_class::<py_abstractions::structs::GLAM::BVec3::BVec3>()?;
-    m.add_class::<py_abstractions::structs::GLAM::Vec3::Vec3>()?;
-    m.add_class::<py_abstractions::structs::GLAM::Vec2::Vec2>()?;
-
-    m.add_class::<crate::py_abstractions::structs::Objects::Three_D_Object::ThreeDObject>()?;
-    m.add_class::<crate::py_abstractions::structs::Objects::Two_D_Object::TwoDObject>()?;
-    m.add_class::<crate::py_abstractions::structs::Objects::Rectangle::Rectangle>()?;
-    m.add_class::<crate::py_abstractions::structs::Objects::Circle::Circle>()?;
-    m.add_class::<crate::py_abstractions::structs::Objects::Mesh::Mesh>()?;
-    m.add_class::<crate::py_abstractions::structs::Objects::Mesh::Vertex>()?;
-
-
-    m.add_class::<crate::py_abstractions::structs::Shader::Shader>()?;
-    m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCode>()?;
-    m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCodeSet>()?;
-
-
-    Ok(())
-
-    
-    
-}
-
-define_stub_info_gatherer!(stub_info);
-
-/*
-
-list of macroquad enums
-
-   mq::Comparison
-    mq::DrawMode
-    mq::EulerRot
-    mq::FilterMode
-    mq::ImageFormat
-    mq::KeyCode
-    mq::MouseButton
-    mq::Projection
-    mq::ShaderError
-    mq::ShaderSource
-    mq::TouchPhase
-    mq::UniformType
-
-
-
-
-*/
-
-
-
-
-
-/*
-list of macroquad::prelude functions
-
-
-
-    mq::build_textures_atlas
-    mq::camera_font_scale
-    mq::cartesian_to_polar
-    mq::clamp
-    mq::clear_background
-    mq::clear_input_queue
-
-    mq::draw_affine_parallelepiped
-    mq::draw_affine_parallelogram
-    mq::draw_arc
-    mq::draw_circle
-    mq::draw_circle_lines
-    mq::draw_cube
-    mq::draw_cube_wires
-    mq::draw_cylinder
-    mq::draw_cylinder_ex
-    mq::draw_cylinder_wires
-    mq::draw_ellipse
-    mq::draw_ellipse_lines
-    mq::draw_fps
-    mq::draw_grid
-    mq::draw_grid_ex
-    mq::draw_hexagon
-    mq::draw_line
-    mq::draw_line_3d
-    mq::draw_mesh
-    mq::draw_multiline_text
-    mq::draw_plane
-    mq::draw_poly
-    mq::draw_poly_lines
-    mq::draw_rectangle
-    mq::draw_rectangle_ex
-    mq::draw_rectangle_lines
-    mq::draw_rectangle_lines_ex
-    mq::draw_sphere
-    mq::draw_sphere_ex
-    mq::draw_sphere_wires
-
-    mq::draw_text
-    mq::draw_text_ex
-
-    mq::draw_texture
-    mq::draw_texture_ex
-    mq::draw_triangle
-    mq::draw_triangle_lines
-    mq::get_char_pressed
-    mq::get_dropped_files
-    mq::get_fps
-    mq::get_frame_time
-    mq::get_internal_gl
-    mq::get_keys_down
-    mq::get_keys_pressed
-    mq::get_keys_released
-    mq::get_last_key_pressed
-    mq::get_screen_data
-    mq::get_text_center
-    mq::get_time
-    mq::gl_use_default_material
-    mq::gl_use_material
-    mq::is_key_down
-    mq::is_key_pressed
-    mq::is_key_released
-    mq::is_mouse_button_down
-    mq::is_mouse_button_pressed
-    mq::is_mouse_button_released
-    mq::is_quit_requested
-    mq::is_simulating_mouse_with_touch
-    mq::load_file
-    mq::load_image
-    mq::load_material
-    mq::load_string
-    mq::load_texture
-    mq::load_ttf_font_from_bytes
-    mq::measure_text
-    mq::mouse_delta_position
-    mq::mouse_position
-    mq::mouse_position_local
-    mq::mouse_wheel
-    mq::next_frame
-    mq::polar_to_cartesian
-    mq::pop_camera_state
-    mq::prevent_quit
-    mq::push_camera_state
-    mq::quat
-    mq::render_target
-    mq::render_target_ex
-    mq::render_target_msaa
-    mq::request_new_screen_size
-    mq::screen_dpi_scale
-    mq::screen_height
-    mq::screen_width
-    mq::set_camera
-    mq::set_cursor_grab
-    mq::set_default_camera
-    mq::set_default_filter_mode
-    mq::set_fullscreen
-    mq::set_panic_handler
-    mq::set_pc_assets_folder
-    mq::show_mouse
-    mq::simulate_mouse_with_touch
-    mq::touches
-    mq::touches_local
-
-
-*/

@@ -146,7 +146,7 @@ impl Vec3 {
     /// uses the element from `if_false`.
     #[staticmethod]
     #[inline]
-    pub fn select(mask: BVec3, if_true: Self, if_false: Self) -> Self {
+    pub fn select(mask: &BVec3, if_true: Self, if_false: Self) -> Self {
         
         Self {
             x: if mask.test(0) { if_true.x } else { if_false.x },

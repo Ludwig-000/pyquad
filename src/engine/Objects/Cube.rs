@@ -1,8 +1,36 @@
 use macroquad::prelude as mq;
+use rapier3d::prelude::*;
+
+#[derive( Debug, Clone)]
+pub struct Cube{
+
+    
+    pub size: mq::Vec3,
+    pub position: mq::Vec3,
+    pub rotation: mq::Vec3,
+
+
+    mesh: CubeMesh,
+    collissionHandle: CubeCollossionHandles,
+
+}
+impl Cube {
+    pub fn new(){
+        todo!()
+    }
+}
 
 
 
 
+#[derive(Debug, Clone)]
+pub struct CubeCollossionHandles{
+    pub rigid_body_handle: RigidBodyHandle,
+    pub collider_handle: ColliderHandle,
+}
+
+
+#[derive(Clone, Debug)]
 pub struct CubeMesh{
     pub vertices: [macroquad::prelude::Vertex; 24],
     pub indices: [u16; 36],
@@ -10,7 +38,7 @@ pub struct CubeMesh{
 }
 
 impl CubeMesh {
-    pub fn from_internal(cube: &internal_Cube, texture: Option<mq::Texture2D>, color: mq::Color) -> Self {
+    pub fn from_internal(cube: &InternalCube, texture: Option<mq::Texture2D>, color: mq::Color) -> Self {
         use mq::{Mat4, Vec2, Vec3, Vertex};
 
         let hs = cube.size * 0.5;
@@ -99,17 +127,19 @@ pub fn draw_cube_mesh(mesh: &CubeMesh){
 
 
 #[derive(Clone, Debug)]
-pub struct internal_Cube{
+pub struct InternalCube{
     pub size: mq::Vec3,
     pub position: mq::Vec3,
     pub rotation: mq::Vec3,
 
+    pub mesh_vec_index: u32,
+
 
 }
 
-impl internal_Cube {
+impl InternalCube {
 
     pub fn submit_cube_to_Collision_check(){
-        
+        todo!()
     }
 }
