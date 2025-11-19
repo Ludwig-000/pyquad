@@ -8,15 +8,16 @@ use crate::engine::Objects::ObjectManagement::ObjectStorage as oj;
 use crate::engine::CoreLoop::COMMAND_QUEUE;
 use crate::engine::CoreLoop::Command;
 use std::sync::mpsc;
+use pyo3::types::{PyWeakref, PyWeakrefReference};
 
 #[gen_stub_pyclass]
-#[pyclass(subclass)]
+#[pyclass(subclass, weakref)]
 #[derive(Clone)]
 pub struct Cube{
     key: usize, // the key to the vec. the actual vec is static, so we do not need to link to it.
     // don't worry about memory safety.
 }
-use pyo3::types::{PyWeakref, PyWeakrefReference};
+
 #[gen_stub_pymethods]
 #[pymethods]
 impl Cube {
@@ -33,41 +34,32 @@ impl Cube {
         let (sender, receiver) = mpsc::sync_channel(1);
 
         let placeholder_struct: Cube = Cube { key: 0 };
-        let bound_obj: Bound<'_, Cube> = pyo3::Bound::new(py, placeholder_struct)?;
-        let pyAny: pyo3::Py<pyo3::PyAny> = bound_obj.clone().unbind().into();
-
-
-        // let cube_handle: Py<Cube> = Py::new(py, placeholder_struct)?;
+        let cube_handle: Py<Cube> = Py::new(py, placeholder_struct)?; 
         
-        // // 2. Prepare the Weak Reference from the strong reference.
-        // let weak_ref_handle: Py<PyWeakref> = {
-        //     // Bind the Py<Cube> handle to get a Bound<Cube> reference.
-        //     let bound_obj = cube_handle.bind(py); 
+        let weak_ref_handle: Py<PyWeakref> = {
+            let bound_cube = cube_handle.bind(py); 
+            let weak_ref_ref = PyWeakrefReference::new(&bound_cube)?;
             
-        //     // Create the PyWeakrefReference (which knows how to make the weak ref).
-        //     let weak_ref_ref = PyWeakrefReference::new(&bound_obj)?;
-            
-        //     // Cast to the persistent Py<PyWeakref> handle and unbind it.
-        //     // This is the persistent, Send-safe handle you need.
-        //     weak_ref_ref.cast_into::<PyWeakref>()?.unbind()
-        // };
+            weak_ref_ref.cast_into::<PyWeakref>()?.unbind() 
+        };
 
-        println!("One");
-        COMMAND_QUEUE.push(Command::createCube { size: size.into(), position: position.into(), rotation: rotation.into(), pyAny, sender });
-        match receiver.recv().unwrap() {
-            
-            Ok(key) => {
-                println!("SIX");
-                bound_obj.borrow_mut().key = key;
+        
+        COMMAND_QUEUE.push(Command::createCube { 
+            size: size.into(), 
+            position: position.into(), 
+            rotation: rotation.into(), 
+            pyAny: weak_ref_handle,
+            sender 
+        });
+        
+        let key: usize = receiver.recv().unwrap();
+        
+        cube_handle.borrow_mut(py).key = key;
+        Ok(cube_handle) 
 
-                Ok(bound_obj.unbind())
-            }
-            Err(e) => {
-                println!("SIX");
-                Err(e.into())
-            }
+        
     }
-    }
+        
 
 
     #[getter]
@@ -92,9 +84,3 @@ impl Cube {
     
 }
 
-impl Drop for Cube {
-    fn drop(&mut self) {
-
-        todo!()
-    }
-}

@@ -18,7 +18,7 @@ impl Cube {
     pub fn new(size: mq::Vec3, position: mq::Vec3, rotation: mq::Vec3)-> Cube{
         let inernal_cube= InternalCube{ size,position,rotation, mesh_vec_index: 0};
         let mesh: CubeMesh = CubeMesh::from_internal(&inernal_cube, None, mq::BROWN);
-        println!("THREE");
+
         Cube { size,position,rotation, mesh   }
     }
     pub fn draw(&self){
@@ -29,6 +29,7 @@ impl Cube {
             gl.quad_gl.draw_mode(DrawMode::Triangles);
 
             gl.quad_gl.geometry(&self.mesh.vertices, &self.mesh.indices);
+            
         }
         
     }

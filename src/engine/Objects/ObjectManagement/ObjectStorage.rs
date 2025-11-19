@@ -34,37 +34,24 @@ impl ObjectSortage {
         }
     }
 
-    // New signature accepts the persistent, Send handle
-pub fn push(&mut self, obj: Object, obj_handle: Py<PyAny>) -> PyResult<usize> {
-
-    // 1. Generate a unique Key
-    let key = self.next_id;
-    self.next_id += 1;
-
-    // 2. Store the object and the reverse mapping (Pure Rust operations)
-    self.storage.push(obj);
-    self.reverse_key_lookup.push(key);
-
-    // 3. 🔑 Acquire the GIL for Python operations 🔑
-    pyo3::Python::attach(|py| {
+    pub fn push(&mut self, obj: Object, weak_ref_handle: Py<PyWeakref>) -> usize { 
+    
+        // 1. Generate a unique Key
+        let key = self.next_id;
+        self.next_id += 1;
+    
+        // 2. Store the object and the reverse mapping (Pure Rust operations)
+        self.storage.push(obj);
+        let idx = self.storage.len() - 1; // Get the index immediately
+        self.reverse_key_lookup.push(key);
+    
+        // 3. Update KeyMap: Key -> (Index, Py<PyWeakref>)
+        // Use the handle directly—no binding or GIL required!
+        self.keymap.insert(key, (idx, weak_ref_handle));
         
-        // 4. Bind the persistent handle to the current thread's GIL token
-        let py_obj = obj_handle.bind(py); 
-
-        // 5. Create WeakRef (PyO3 operations)
-        let weakref_mod = pyo3::types::PyModule::import(py, "weakref")?;
-        let weak_bound: Bound<'_, PyWeakref> = weakref_mod
-            .call_method1("ref", (py_obj,))?
-            .downcast_into::<pyo3::types::PyWeakref>()?;
-
-        // 6. Update KeyMap: Key -> (Index, WeakRef)
-        let idx = self.storage.len() - 1;
-        self.keymap.insert(key, (idx, weak_bound.unbind()));
-        
-        // Return key from the closure, handling the PyResult conversion
-        Ok(key)
-    })
-}
+        // Return key
+        key
+    }
 
     pub fn remove_object(&mut self, key_to_remove: usize) {
         

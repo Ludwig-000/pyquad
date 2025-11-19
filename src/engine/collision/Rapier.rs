@@ -16,7 +16,7 @@ lazy_static! {
 }
 
 pub fn physics_thread(){
-    todo!()
+    // todo
 }
 
 pub fn get_physics_world() -> impl std::ops::DerefMut<Target = all_my_friends> + 'static {

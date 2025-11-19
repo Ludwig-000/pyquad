@@ -19,7 +19,7 @@ use crate::engine::PError::PError;
 use crate::engine::PArc::PArc;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::*;
 use pyo3::{Py,PyAny};
-
+use pyo3::types::{PyWeakref, PyWeakrefReference};
 use crate::py_abstractions::structs::Objects::Cube::Cube as pyCube;
 
 pub enum Command {
@@ -30,8 +30,8 @@ pub enum Command {
         size: mq::Vec3,
         position: mq::Vec3,
         rotation: mq::Vec3,
-        pyAny: Py<PyAny>,
-        sender: mpsc::SyncSender<Result<usize, pyo3::PyErr>>,
+        pyAny: Py<PyWeakref>,
+        sender: mpsc::SyncSender<usize>,
     },
 
     DropThisItem(Arc<dyn Any + Send + Sync>), // drops it's item.  >_<
@@ -171,18 +171,17 @@ pub async fn proccess_commands_loop() {
                     ObjectManagement::draw_all_Objects(&ObjectManagement);
                 }
                 Command::createCube { size, position, rotation, pyAny, sender }=>{
-                    println!("Two");
-                    let internal_cube_data = Cube::new(size, position, rotation);
-                    println!("THREE");
-                    let new_object_enum = Object::Cube(internal_cube_data);
-                    println!("FOUR");
 
-                    let internal: Result<usize, pyo3::PyErr> = ObjectManagement.push(new_object_enum, pyAny);
-                    println!("FIVE");
+                    let internal_cube_data = Cube::new(size, position, rotation);
+
+                    let new_object_enum = Object::Cube(internal_cube_data);
+
+
+                    let internal: usize = ObjectManagement.push(new_object_enum, pyAny);
+
                     let _ = sender.send(internal);
                 }
                 Command::DrawRect { x, y, w, h, color} => {
-                    println!("{}", std::mem::size_of::<Command>());
                     sm::switch_to_desired_shader(sm::ShaderKind::None);
                     mq::draw_rectangle(
                         x,
