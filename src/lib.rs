@@ -2,34 +2,25 @@
 #![allow(non_snake_case)] // alot of Python Constants are defined via function, so this prevents compiler spam.
 #![allow(unused_variables)] // for now.
 #![allow(dead_code)] // for now.
-use crossbeam::queue::SegQueue;
-use std::panic;
+
+#![allow(clippy::excessive_precision)]
+#![warn(clippy::large_enum_variant)]
+#![allow(clippy::wrong_self_convention)]
+
 
 use pyo3::prelude::*;
 use pyo3_stub_gen::define_stub_info_gatherer;
-
-use lazy_static::*;
-
-use macroquad::prelude as mq;
-use macroquad::audio as au;
 
 mod engine;
 
 mod py_abstractions;
 use py_abstractions::py_functions::*;
-use std::sync::mpsc;
-use std::collections::HashSet;
-use std::sync::Arc;
 use crate::py_abstractions::structs::Textures_and_Images as structs;
 use crate::py_abstractions::structs::Camera as Camera;
 use crate::py_abstractions::Mouse as Mouse;
-use crate::engine::SHADERS::shader_manager as sm;
 use crate::py_abstractions::Color::*;
 use crate::py_abstractions::structs::Config::*;
-use crate::engine::PError::PError;
-use crate::engine::PArc::PArc;
 
-use std::any::Any;
 
 
 
@@ -37,6 +28,7 @@ use std::any::Any;
 fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes all functionality to python
 
     m.add_function(wrap_pyfunction!(activate_engine, m)?)?;
+    m.add_function(wrap_pyfunction!(draw_all_objects, m)?)?;
     m.add_function(wrap_pyfunction!(draw_rectangle, m)?)?;
     m.add_function(wrap_pyfunction!(draw_poly, m)?)?;
     m.add_function(wrap_pyfunction!(draw_circle, m)?)?;
@@ -97,6 +89,7 @@ fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes
     m.add_class::<crate::py_abstractions::structs::Objects::Three_D_Object::ThreeDObject>()?;
     m.add_class::<crate::py_abstractions::structs::Objects::Two_D_Object::TwoDObject>()?;
     m.add_class::<crate::py_abstractions::structs::Objects::Rectangle::Rectangle>()?;
+    m.add_class::<crate::py_abstractions::structs::Objects::Cube::Cube>()?;
     m.add_class::<crate::py_abstractions::structs::Objects::Circle::Circle>()?;
     m.add_class::<crate::py_abstractions::structs::Objects::Mesh::Mesh>()?;
     m.add_class::<crate::py_abstractions::structs::Objects::Mesh::Vertex>()?;

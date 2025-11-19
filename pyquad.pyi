@@ -4715,7 +4715,7 @@ class Config:
         true -> creates a "windowed fullscreen" window with a resultion equal to the monitor resolution.
         """
     @property
-    def swap_interval(self) -> builtins.int:
+    def swap_interval(self) -> typing.Optional[builtins.int]:
         r"""
         Optional swap interval (vertical sync).
         
@@ -4727,7 +4727,7 @@ class Config:
         not a reliable way to limit the game's FPS.
         """
     @swap_interval.setter
-    def swap_interval(self, value: builtins.int) -> None:
+    def swap_interval(self, value: typing.Optional[builtins.int]) -> None:
         r"""
         Optional swap interval (vertical sync).
         
@@ -4756,7 +4756,7 @@ class Config:
         r"""
         once the window gets closed ( not minimized ) the python script gets terminated.
         """
-    def __new__(cls, window_title:builtins.str='', window_width:builtins.int=800, window_height:builtins.int=600, fullscreen:builtins.bool=False, swap_interval:builtins.int=60, sample_count:builtins.int=1, window_resizable:builtins.bool=True, stop_pyton_when_closing_window:builtins.bool=True) -> Config: ...
+    def __new__(cls, window_title:builtins.str='', window_width:builtins.int=800, window_height:builtins.int=600, fullscreen:builtins.bool=False, swap_interval:typing.Optional[builtins.int]=None, sample_count:builtins.int=1, window_resizable:builtins.bool=True, stop_pyton_when_closing_window:builtins.bool=True) -> Config: ...
 
 class Cube:
     @property
@@ -4767,7 +4767,7 @@ class Cube:
     def pos(self) -> Vec3: ...
     @pos.setter
     def pos(self, value: Vec3) -> None: ...
-    def __new__(cls) -> Cube: ...
+    def __new__(cls, size:Vec3, position:Vec3, rotation:Vec3=...) -> Cube: ...
 
 class Image:
     r"""
@@ -6149,6 +6149,8 @@ def clear_background(color:Color) -> None:
 
 def draw_affine_parallelepiped(offset:Vec3, e1:Vec3, e2:Vec3, e3:Vec3, texture:typing.Optional[Texture2D], color:Color) -> None: ...
 
+def draw_all_objects() -> None: ...
+
 def draw_arc(x:builtins.float, y:builtins.float, sides:builtins.int, radius:builtins.float, rotation:builtins.float, thickness:builtins.float, arc:builtins.float, color:Color) -> None: ...
 
 def draw_circle(x:builtins.float, y:builtins.float, r:builtins.float, color:Color) -> None:
@@ -6243,8 +6245,6 @@ def get_keys_released() -> KeyCodeSet:
     """
 
 def get_mouse_position() -> tuple[builtins.float, builtins.float]: ...
-
-def initialize_physics() -> None: ...
 
 def load_file(path:builtins.str) -> builtins.list[builtins.int]:
     r"""

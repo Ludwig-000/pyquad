@@ -115,7 +115,6 @@ impl Config{
 
 impl Default for Config {
     fn default() -> Self {
-
             Config {
 
                 window_title: "Pyquad".to_string(),

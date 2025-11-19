@@ -35,7 +35,7 @@ static ENGINE_CURRENTLY_ACTIVE: AtomicBool = AtomicBool::new(false);
 #[gen_stub_pyfunction]
 #[pyfunction]
 #[pyo3(signature = (conf = None))] // overloads activate_engine with config
-pub fn activate_engine(_py: Python, conf: Option<Config>) -> PyResult<()>{
+pub fn activate_engine( conf: Option<Config>) -> PyResult<()>{
 
     if ENGINE_CURRENTLY_ACTIVE.load(Ordering::SeqCst){
         return Err(PyRuntimeError::new_err("Only one instance of the engine can exist."));
@@ -71,6 +71,17 @@ pub fn activate_engine(_py: Python, conf: Option<Config>) -> PyResult<()>{
     rx_.recv().expect("Engine thread failed to initialize");
     return Ok(());
 }
+
+
+
+
+
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn draw_all_objects() {
+    COMMAND_QUEUE.push( Command::DrawAll3DObjects() );
+}
+
 
 
 /// draws a rectangle with a given color.

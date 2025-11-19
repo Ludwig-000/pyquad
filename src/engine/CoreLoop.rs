@@ -1,4 +1,6 @@
 
+
+
 use std::panic;
 use std::sync::mpsc;
 use std::collections::HashSet;
@@ -15,11 +17,22 @@ use macroquad::audio as au;
 use crate::engine::SHADERS::shader_manager as sm;
 use crate::engine::PError::PError;
 use crate::engine::PArc::PArc;
-use crate::engine::Objects::ObjectManagement::ObjectManager::*;
+use crate::engine::Objects::ObjectManagement::ObjectStorage::*;
+use pyo3::{Py,PyAny};
 
-
+use crate::py_abstractions::structs::Objects::Cube::Cube as pyCube;
 
 pub enum Command {
+
+    DrawAll3DObjects(),
+
+    createCube{
+        size: mq::Vec3,
+        position: mq::Vec3,
+        rotation: mq::Vec3,
+        pyAny: Py<PyAny>,
+        sender: mpsc::SyncSender<Result<usize, pyo3::PyErr>>,
+    },
 
     DropThisItem(Arc<dyn Any + Send + Sync>), // drops it's item.  >_<
 
@@ -141,19 +154,35 @@ lazy_static! {
 
 }
 
-
+use crate::engine::Objects::Cube::*;
+use crate::engine::Objects::ObjectManagement::*;
 pub async fn proccess_commands_loop() {
 
-    
     let mut ObjectManagement = ObjectSortage::new();
 
     loop {
         // processes commands that rely on the macroquad engine
-        // commands that do not rely on it's core (openGL) components are found elsewhere.
+        // commands that do not rely on it's core (openGL) components ( or just the internal Core-Thread ) are found in pyabstractions.
 
         while let Some(command) = COMMAND_QUEUE.pop() {
             match command {
+
+                Command::DrawAll3DObjects()=> {
+                    ObjectManagement::draw_all_Objects(&ObjectManagement);
+                }
+                Command::createCube { size, position, rotation, pyAny, sender }=>{
+                    println!("Two");
+                    let internal_cube_data = Cube::new(size, position, rotation);
+                    println!("THREE");
+                    let new_object_enum = Object::Cube(internal_cube_data);
+                    println!("FOUR");
+
+                    let internal: Result<usize, pyo3::PyErr> = ObjectManagement.push(new_object_enum, pyAny);
+                    println!("FIVE");
+                    let _ = sender.send(internal);
+                }
                 Command::DrawRect { x, y, w, h, color} => {
+                    println!("{}", std::mem::size_of::<Command>());
                     sm::switch_to_desired_shader(sm::ShaderKind::None);
                     mq::draw_rectangle(
                         x,
@@ -180,27 +209,27 @@ pub async fn proccess_commands_loop() {
                     sm::switch_to_desired_shader(sm::ShaderKind::None);
                     mq::draw_cube(pos,size,texture.as_ref(),color);
                     crate::engine::Cubemap::draw_fullscreen_quad();
-
+        
                 }
-
+        
                 Command::DrawAfflineParallelpiped { offset, e1, e2, e3, texture, color } => {
                     mq::draw_affine_parallelepiped(offset, e1, e2, e3, texture.as_ref(), color);
                 }
                 Command::DrawArc { x, y, sides, radius, rotation, thickness, arc, color } => {
                     mq::draw_arc(x, y, sides, radius, rotation, thickness, arc, color);
                 }
-
+        
                 Command::DrawCubeWires { position, size, color } => {
                     mq::draw_cube_wires(position, size, color);
                 }
                 Command::DrawCylinder { position, radius_top, radius_bottom, height, texture, color } => {
                     mq::draw_cylinder(position, radius_top, radius_bottom, height, texture.as_ref(), color);
                 }
-
+        
                 Command::DrawCylinderWires { position, radius_top, radius_bottom, height, texture, color } => {
                     mq::draw_cylinder_wires(position, radius_top, radius_bottom, height, texture.as_ref(), color);
                 }
-
+        
                 Command::DrawEllipse { x, y, w, h, rotation, color }    => {
                     mq::draw_ellipse(x, y, w, h, rotation, color);  
                 }
@@ -208,17 +237,17 @@ pub async fn proccess_commands_loop() {
                 Command::DrawEllipseLines { x, y, w, h, rotation, thickness, color }    => {
                     mq::draw_ellipse_lines(x, y, w, h, rotation, thickness, color);
                 }
-
+        
                 Command::DrawHexagon { x, y, size, border, vertical, border_color, fill_color } => {
                     mq::draw_hexagon(x, y, size, border, vertical, border_color, fill_color);
                 }
-
+        
                 Command::DrawLine3D { start, end, color } =>{
                     mq::draw_line_3d(start, end, color);    
                 }
                 
-
-
+        
+        
                 Command::LoadImage { path,sender} => {
                     let result = async {
                     let bytes = mq::load_file(&path).await?;
@@ -226,7 +255,7 @@ pub async fn proccess_commands_loop() {
                     let image = mq::Image::from_file_with_format(&bytes, None)?;
                     Ok(image)
                 }.await;
-
+        
                     let _ = sender.send(result);
                 }
                 Command::DrawPoly { x, y, sides, radius, rotation, color }=>
@@ -235,7 +264,7 @@ pub async fn proccess_commands_loop() {
                     mq::draw_poly(x,y,sides,radius,rotation,color  );
                 }
                 Command::SetDefaultCamera() =>{ mq::set_default_camera() }
-
+        
                 Command::DrawTexture { texture,x,y,color}=>
                 {
                     sm::switch_to_desired_shader(sm::ShaderKind::None);
@@ -245,7 +274,7 @@ pub async fn proccess_commands_loop() {
                 Command::ClearBackground {color } => {
                     macroquad::prelude::clear_background(color);
                 }
-
+        
                 Command::NextFrame(sender) => {
                     mq::next_frame().await;
                     crate::engine::SHADERS::shader_manager::new_frame_shader_update();
@@ -286,7 +315,7 @@ pub async fn proccess_commands_loop() {
                         (Some(cam), None) => mq::set_camera(&cam),
                         (None, Some(cam)) => mq::set_camera(&cam),
                         _ => panic!("invalid cam pattern"),
-
+        
                     }
                 }
                 Command::SetCursorGrab(i) =>{
@@ -310,17 +339,17 @@ pub async fn proccess_commands_loop() {
                         let _ = sender.send(PArc::new(render_target));
                         }
                     }
-
+        
                 }
                 Command::LoadSound { path ,sender} => {
                     let result = async {
                         let data = macroquad::prelude::load_file(&path).await?;
-
+        
                         //converts .mp3 to .wav
                         let secured_data  = crate::engine::AudioConverter::ensure_wav(data).map_err(|e| {
                         e.with_context(format!(" path: {path}"))
                         }  )?;
-
+        
                         let sound = au::load_sound_from_bytes(&secured_data).await?;
                         Ok(sound)
                     }.await;
@@ -329,11 +358,11 @@ pub async fn proccess_commands_loop() {
                     let _ = sender.send(result);
                 }
                 Command::LoadSoundFromBytes { data ,sender} => {
-
+        
                     let result: Result<_, PError> = async {
                         //converts .mp3 to .wav
                         let secured_data  = crate::engine::AudioConverter::ensure_wav(data)?;
-
+        
                         let sound = au::load_sound_from_bytes(&secured_data).await?;
                         Ok(sound)
                     }.await;
@@ -354,22 +383,20 @@ pub async fn proccess_commands_loop() {
                 Command::SetSoundVolume { sound, volume  } => {
                     au::set_sound_volume(&sound, volume);
                 }
-
+        
                 Command::LoadFile { path ,sender} => {
-
+        
                     let result = mq::load_file(&path).await.map_err(Into::into);
                     let _ = sender.send(result);
-
+        
                 }
-
+        
                 Command::DropThisItem(item_arc)=>{}
-
+        
                 
             }
         }
 
 
-}
-
-   
+    }
 }

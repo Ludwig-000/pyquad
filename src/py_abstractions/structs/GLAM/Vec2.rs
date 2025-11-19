@@ -47,80 +47,80 @@ impl Vec2 {
 
     /// A vector with all elements set to `0.0`.
     #[classattr]
-    fn ZERO() -> Vec2 {
+    pub fn ZERO() -> Vec2 {
         Self::splat(0.0)
     }
 
     /// A vector with all elements set to `1.0`.
     #[classattr]
-    fn ONE() -> Vec2 {
+    pub fn ONE() -> Vec2 {
         Self::splat(1.0)
     }
 
     /// A vector with all elements set to `-1.0`.
     #[classattr]
-    fn NEG_ONE() -> Vec2 {
+    pub fn NEG_ONE() -> Vec2 {
         Self::splat(-1.0)
     }
 
     /// A vector with all elements set to `f32::MIN`.
     #[classattr]
-    fn MIN() -> Vec2 {
+    pub fn MIN() -> Vec2 {
         Self::splat(f32::MIN)
     }
 
     /// A vector with all elements set to `f32::MAX`.
     #[classattr]
-    fn MAX() -> Vec2 {
+    pub fn MAX() -> Vec2 {
         Self::splat(f32::MAX)
     }
 
     /// A vector with all elements set to `f32::NAN`.
     #[classattr]
-    fn NAN() -> Vec2 {
+    pub fn NAN() -> Vec2 {
         Self::splat(f32::NAN)
     }
 
     /// A vector with all elements set to `f32::INFINITY`.
     #[classattr]
-    fn INFINITY() -> Vec2 {
+    pub fn INFINITY() -> Vec2 {
         Self::splat(f32::INFINITY)
     }
 
     /// A vector with all elements set to `f32::NEG_INFINITY`.
     #[classattr]
-    fn NEG_INFINITY() -> Vec2 {
+    pub fn NEG_INFINITY() -> Vec2 {
         Self::splat(f32::NEG_INFINITY)
     }
 
     /// The unit vector in the X direction `(1.0, 0.0)`.
     #[classattr]
-    fn X() -> Vec2 {
+    pub fn X() -> Vec2 {
         Self::new(1.0, 0.0)
     }
 
     /// The unit vector in the Y direction `(0.0, 1.0)`.
     #[classattr]
-    fn Y() -> Vec2 {
+    pub fn Y() -> Vec2 {
         Self::new(0.0, 1.0)
     }
 
     /// The unit vector in the negative X direction `(-1.0, 0.0)`.
     #[classattr]
-    fn NEG_X() -> Vec2 {
+    pub fn NEG_X() -> Vec2 {
         Self::new(-1.0, 0.0)
     }
 
     /// The unit vector in the negative Y direction `(0.0, -1.0)`.
     #[classattr]
-    fn NEG_Y() -> Vec2 {
+    pub fn NEG_Y() -> Vec2 {
         Self::new(0.0, -1.0)
     }
 
 
     /// The X, Y, and Z unit vectors as a list `[X, Y, Z]`.
     #[classattr]
-    fn AXES() -> Vec<Vec2> {
+    pub fn AXES() -> Vec<Vec2> {
         vec![Self::X(), Self::Y()]
     }
 

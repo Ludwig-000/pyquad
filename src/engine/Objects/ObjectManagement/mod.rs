@@ -1,1 +1,2 @@
-pub mod ObjectManager;
+pub mod ObjectStorage;
+pub mod ObjectManagement;

@@ -11,12 +11,26 @@ pub struct Cube{
 
 
     mesh: CubeMesh,
-    collissionHandle: CubeCollossionHandles,
+    //collissionHandle: CubeCollossionHandles, // re-add later
 
 }
 impl Cube {
-    pub fn new(){
-        todo!()
+    pub fn new(size: mq::Vec3, position: mq::Vec3, rotation: mq::Vec3)-> Cube{
+        let inernal_cube= InternalCube{ size,position,rotation, mesh_vec_index: 0};
+        let mesh: CubeMesh = CubeMesh::from_internal(&inernal_cube, None, mq::BROWN);
+        println!("THREE");
+        Cube { size,position,rotation, mesh   }
+    }
+    pub fn draw(&self){
+        use macroquad::prelude::DrawMode;
+        unsafe {
+            let gl = macroquad::prelude::get_internal_gl();
+            gl.quad_gl.texture(None);
+            gl.quad_gl.draw_mode(DrawMode::Triangles);
+
+            gl.quad_gl.geometry(&self.mesh.vertices, &self.mesh.indices);
+        }
+        
     }
 }
 
