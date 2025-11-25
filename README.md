@@ -1,4 +1,4 @@
-# Pyquad
+# Pyroquad
 
 This is a Python abstraction for the Rust engine [macroquad](https://github.com/not-fl3/macroquad).
 
