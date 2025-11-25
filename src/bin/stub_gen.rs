@@ -1,6 +1,6 @@
 use pyo3_stub_gen::Result;
 use std::path::PathBuf;
-use pyquad::stub_info;
+use pyroquad::stub_info;
 
 fn main() -> Result<()> {
     match stub_info() {
@@ -25,7 +25,7 @@ fn main() -> Result<()> {
                 }
                 Err(err) => eprintln!("Could not read pyproject.toml: {:?}", err),
             }
-            let guess = PathBuf::from(&manifest).join(format!("{}.pyi", "pyquad"));
+            let guess = PathBuf::from(&manifest).join(format!("{}.pyi", "pyroquad"));
             eprintln!("Guess stub path: {:?}", guess);
             return Err(e);
         }

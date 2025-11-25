@@ -30,7 +30,7 @@ use pyo3::exceptions::PyRuntimeError;
 static ENGINE_CURRENTLY_ACTIVE: AtomicBool = AtomicBool::new(false);
 /// [!] This should generally be the first function call.
 ///
-/// Turns on the pyquad engine, creates an open-gl window and allows for engine-calls to be processed.
+/// Turns on the pyroquad engine, creates an open-gl window and allows for engine-calls to be processed.
 ///
 #[gen_stub_pyfunction]
 #[pyfunction]
@@ -135,23 +135,6 @@ pub fn draw_cylinder( position: Vec3,
     COMMAND_QUEUE.push(Command::DrawCylinder {position: position.into(), radius_top: radius_top, radius_bottom: radius_bottom, 
         height, texture: texture.map(Into::into),color: color.into()});
 }
-
-
-/// loads a file from a given path.
-/// works with web-assembly
-#[gen_stub_pyfunction]
-#[pyfunction]
-pub fn load_file(path: String) -> PyResult<Vec<u8>> {
-    let (sender, receiver) = mpsc::sync_channel(1);
-    COMMAND_QUEUE.push(Command::LoadFile { path, sender });
-
-    match receiver.recv() {
-        Ok(Ok(value)) => Ok(value),
-        Ok(Err(e)) => Err(e.into()),
-        Err(e) => panic!("Fatal MSPC Error:  {e}"),
-    }
-}
-
 
 
 #[gen_stub_pyfunction]

@@ -1,6 +1,6 @@
 use macroquad::models::Mesh;
 
-use crate::engine::{Objects::Cube::InternalCube, collision::Rapier::*, structures::Rectangle};
+use crate::engine::{ collision::Rapier::*, structures::Rectangle};
 
 
 

@@ -1,12 +1,12 @@
 [project]
-name = "pyquad"
+name = "pyroquad"
 version = "0.1.0"
-description = "The Pyquad game engine."
+description = "The Pyroquad game engine."
 readme = "README.md"
 requires-python = ">=3.10"
 
 [tool.maturin]
-include = ["pyquad.pyi"]
+include = ["pyroquad.pyi"]
 abi3 = true
 
 [build-system]

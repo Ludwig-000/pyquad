@@ -11,27 +11,43 @@ use lazy_static::*;
 
 use crossbeam::queue::SegQueue;
 
+use macroquad::camera::Camera2D;
 use macroquad::prelude as mq;
 use macroquad::audio as au;
+use slotmap::DefaultKey;
 
 use crate::engine::SHADERS::shader_manager as sm;
 use crate::engine::PError::PError;
 use crate::engine::PArc::PArc;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::*;
+use crate::py_abstractions::Color::Color;
 use pyo3::{Py,PyAny};
 use pyo3::types::{PyWeakref, PyWeakrefReference};
 use crate::py_abstractions::structs::Objects::Cube::Cube as pyCube;
 
 pub enum Command {
+    
 
     DrawAll3DObjects(),
+
+    deleteCube{
+        key: DefaultKey, 
+    },
+    GetCubeSize{ key: DefaultKey, sender: mpsc::SyncSender<mq::Vec3> },
+    GetCubePos{ key: DefaultKey, sender: mpsc::SyncSender<mq::Vec3> },
+    GetCubeRotation{ key: DefaultKey, sender: mpsc::SyncSender<mq::Vec3> },
+
+    SetCubeSize{ key: DefaultKey, size: mq::Vec3 },
+    SetCubePos{ key: DefaultKey, position: mq::Vec3 },
+    SetCubeRotation{ key: DefaultKey, rotation: mq::Vec3 },
 
     createCube{
         size: mq::Vec3,
         position: mq::Vec3,
         rotation: mq::Vec3,
+        color: mq::Color,
         pyAny: Py<PyWeakref>,
-        sender: mpsc::SyncSender<usize>,
+        sender: mpsc::SyncSender<DefaultKey>,
     },
 
     DropThisItem(Arc<dyn Any + Send + Sync>), // drops it's item.  >_<
@@ -147,7 +163,10 @@ lazy_static! {
     
 }
 
-
+enum InternalCam{
+    TwoD(mq::Camera2D),
+    ThreeD(mq::Camera3D),
+}
 
 lazy_static! {
     pub static ref ComputationTime: Arc<Vec<u128>> = Arc::new(Vec::new());
@@ -155,12 +174,17 @@ lazy_static! {
 }
 
 use crate::engine::Objects::Cube::*;
-use crate::engine::Objects::ObjectManagement::*;
+use crate::engine::Objects::ObjectManagement::ObjectStorage;
+use crate::engine::Objects::ObjectManagement::ObjectManagement;
 pub async fn proccess_commands_loop() {
 
-    let mut ObjectManagement = ObjectSortage::new();
+    let mut ObjectManagement = ObjectStorage::ObjectStorage::new();
+    let mut saved_camera: InternalCam =  InternalCam::TwoD( mq::Camera2D::default()  );
+
+    
 
     loop {
+
         // processes commands that rely on the macroquad engine
         // commands that do not rely on it's core (openGL) components ( or just the internal Core-Thread ) are found in pyabstractions.
 
@@ -168,16 +192,66 @@ pub async fn proccess_commands_loop() {
             match command {
 
                 Command::DrawAll3DObjects()=> {
+                    sm::switch_to_desired_shader(sm::ShaderKind::Basic);
                     ObjectManagement::draw_all_Objects(&ObjectManagement);
                 }
-                Command::createCube { size, position, rotation, pyAny, sender }=>{
+                Command::deleteCube { key }=> {
+                    ObjectManagement.remove_object(key);
+                }
+                Command::GetCubePos { key, sender } => {
+                    let pos = match  ObjectManagement.get(key){
+                        Object::Cube(cube) => cube.position,
+                        _ => panic!("object type missmatch"),
+                    };
+                    let _ = sender.send(pos);
+                }
+                Command::GetCubeSize { key, sender } => {
+                    let pos = match  ObjectManagement.get(key){
+                        Object::Cube(cube) => cube.size,
+                        _ => panic!("object type missmatch"),
+                    };
+                    let _ = sender.send(pos);
+                }
+                Command::GetCubeRotation { key, sender } => {
+                    let pos = match  ObjectManagement.get(key){
+                        Object::Cube(cube) => cube.rotation,
+                        _ => panic!("object type missmatch"),
+                    };
+                    let _ = sender.send(pos);
+                }
+                Command::SetCubePos { key, position } => {
+                    let cube = match  ObjectManagement.get_mut(key){
+                        Object::Cube(cube) => cube,
+                        _ => panic!("object type missmatch"),
+                    };
+                    cube.position = position;
+                    cube.mesh = CubeMesh::new(cube.size, cube.position, cube.rotation, cube.mesh.texture.clone(), cube.color );
+                }
+                Command::SetCubeSize { key, size } => {
+                    let cube = match  ObjectManagement.get_mut(key){
+                        Object::Cube(cube) => cube,
+                        _ => panic!("object type missmatch"),
+                    };
+                    cube.size = size;
+                    cube.mesh = CubeMesh::new(cube.size, cube.position, cube.rotation, cube.mesh.texture.clone(), cube.color );
+                }
+                Command::SetCubeRotation { key, rotation } => {
+                    let cube = match  ObjectManagement.get_mut(key){
+                        Object::Cube(cube) => cube,
+                        _ => panic!("object type missmatch"),
+                    };
+                    cube.rotation = rotation;
+                    cube.mesh = CubeMesh::new(cube.size, cube.position, cube.rotation, cube.mesh.texture.clone(), cube.color );
+                    
+                }
+                Command::createCube { size, position, rotation,color, pyAny, sender }=>{
 
-                    let internal_cube_data = Cube::new(size, position, rotation);
+                    let internal_cube_data = Cube::new(size, position, rotation,color);
 
                     let new_object_enum = Object::Cube(internal_cube_data);
 
 
-                    let internal: usize = ObjectManagement.push(new_object_enum, pyAny);
+                    let internal: DefaultKey = ObjectManagement.push(new_object_enum, pyAny);
 
                     let _ = sender.send(internal);
                 }

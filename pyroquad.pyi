@@ -4767,7 +4767,32 @@ class Cube:
     def pos(self) -> Vec3: ...
     @pos.setter
     def pos(self, value: Vec3) -> None: ...
-    def __new__(cls, size:Vec3, position:Vec3, rotation:Vec3=...) -> Cube: ...
+    @property
+    def rot(self) -> Vec3: ...
+    @rot.setter
+    def rot(self, value: Vec3) -> None: ...
+    def __new__(cls, position:Vec3, size:Vec3, rotation:Vec3=..., color:Color=...) -> Cube: ...
+
+class Download:
+    r"""
+    Namespace for static Download-related functions.
+    """
+    @staticmethod
+    def download_file_and_save(link:builtins.str, filepath:builtins.str) -> None:
+        r"""
+        downloads a ressource file and saves it at the given filepath.
+        Does nothing if the given filepath already exists.
+        """
+    @staticmethod
+    def download_file_and_save_and_load(link:builtins.str, filepath:builtins.str) -> None: ...
+    @staticmethod
+    def download_directly_into_variable(links:typing.Sequence[tuple[builtins.str, builtins.str]]) -> builtins.dict[builtins.str, builtins.list[builtins.int]]:
+        r"""
+        skips loading the file into the filesystem, and instantly loads it as a variable.
+        Returns a dictionary: { "dir_key": bytes }
+        """
+    @staticmethod
+    def make_dict() -> dict: ...
 
 class Image:
     r"""
@@ -6138,13 +6163,18 @@ def activate_engine(conf:typing.Optional[Config]=None) -> None:
     r"""
     [!] This should generally be the first function call.
     
-    Turns on the pyquad engine, creates an open-gl window and allows for engine-calls to be processed.
+    Turns on the pyroquad engine, creates an open-gl window and allows for engine-calls to be processed.
     """
 
 def clear_background(color:Color) -> None:
     r"""
     fills the entire screen with a single color.
     this is usually used at the start of a frame.
+    """
+
+def download_file(url:builtins.str) -> builtins.list[builtins.int]:
+    r"""
+    Loads file into memory.
     """
 
 def draw_affine_parallelepiped(offset:Vec3, e1:Vec3, e2:Vec3, e3:Vec3, texture:typing.Optional[Texture2D], color:Color) -> None: ...
@@ -6248,8 +6278,7 @@ def get_mouse_position() -> tuple[builtins.float, builtins.float]: ...
 
 def load_file(path:builtins.str) -> builtins.list[builtins.int]:
     r"""
-    loads a file from a given path.
-    works with web-assembly
+    Loads a file into a List of Bytes.
     """
 
 def next_frame() -> None:

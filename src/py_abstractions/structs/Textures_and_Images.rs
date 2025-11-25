@@ -147,8 +147,8 @@ impl Image {
     #[staticmethod]
     pub fn from_file(path: String) -> PyResult<Image> {
         // Load file bytes via your Python-callable function
-        let data = crate::py_abstractions::py_functions::load_file(path)
-            .map_err(|e|    PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Failed to load file: {e}")))?;
+        let data = crate::py_abstractions::Loading::Loading::load_file(&path)
+            .map_err(|e|   { let n: PyErr= e.into(); n})?;
 
         // Wrap bytes for image::Reader
         let cursor = Cursor::new(data);

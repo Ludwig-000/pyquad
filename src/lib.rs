@@ -20,12 +20,11 @@ use crate::py_abstractions::structs::Camera as Camera;
 use crate::py_abstractions::Mouse as Mouse;
 use crate::py_abstractions::Color::*;
 use crate::py_abstractions::structs::Config::*;
-
-
+use crate::py_abstractions::Loading::Loading::*;
 
 
 #[pymodule]
-fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes all functionality to python
+fn pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes all functionality to python
 
     m.add_function(wrap_pyfunction!(activate_engine, m)?)?;
     m.add_function(wrap_pyfunction!(draw_all_objects, m)?)?;
@@ -54,7 +53,7 @@ fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes
     m.add_function(wrap_pyfunction!(draw_texture, m)?)?;
     m.add_function(wrap_pyfunction!(draw_plane, m)?)?;
     m.add_function(wrap_pyfunction!(engine::Cubemap::draw_cubemap, m)?)?;
-    m.add_function(wrap_pyfunction!(py_abstractions::py_functions::load_file, m)?)?;
+
 
     m.add_function(wrap_pyfunction!(draw_cube, m)?)?;
     m.add_function(wrap_pyfunction!(Mouse::get_mouse_position, m)?)?;
@@ -99,6 +98,10 @@ fn pyquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes
     m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCode>()?;
     m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCodeSet>()?;
 
+     m.add_class::<crate::py_abstractions::Loading::ThreadedLoading::Download>()?;
+     m.add_function(wrap_pyfunction!(load_file, m)?)?;
+     m.add_function(wrap_pyfunction!(download_file, m)?)?;
+     m.add_function(wrap_pyfunction!(write_to_file, m)?)?;
 
     Ok(())
 

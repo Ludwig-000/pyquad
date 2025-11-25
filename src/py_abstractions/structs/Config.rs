@@ -117,7 +117,7 @@ impl Default for Config {
     fn default() -> Self {
             Config {
 
-                window_title: "Pyquad".to_string(),
+                window_title: "Pyroquad".to_string(),
                 window_width: 800,
                 window_height: 600,
                 fullscreen: false,

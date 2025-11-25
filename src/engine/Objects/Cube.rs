@@ -1,4 +1,4 @@
-use macroquad::prelude as mq;
+use macroquad::{color::Color, prelude as mq};
 use rapier3d::prelude::*;
 
 #[derive( Debug, Clone)]
@@ -8,18 +8,18 @@ pub struct Cube{
     pub size: mq::Vec3,
     pub position: mq::Vec3,
     pub rotation: mq::Vec3,
+    pub color: mq::Color,
 
 
-    mesh: CubeMesh,
+    pub mesh: CubeMesh,
     //collissionHandle: CubeCollossionHandles, // re-add later
 
 }
 impl Cube {
-    pub fn new(size: mq::Vec3, position: mq::Vec3, rotation: mq::Vec3)-> Cube{
-        let inernal_cube= InternalCube{ size,position,rotation, mesh_vec_index: 0};
-        let mesh: CubeMesh = CubeMesh::from_internal(&inernal_cube, None, mq::BROWN);
+    pub fn new(size: mq::Vec3, position: mq::Vec3, rotation: mq::Vec3, color: mq::Color)-> Cube{
+        let mesh: CubeMesh = CubeMesh::new(size, position, rotation, None, color);
 
-        Cube { size,position,rotation, mesh   }
+        Cube { size,position,rotation,color,  mesh  }
     }
     pub fn draw(&self){
         use macroquad::prelude::DrawMode;
@@ -53,10 +53,10 @@ pub struct CubeMesh{
 }
 
 impl CubeMesh {
-    pub fn from_internal(cube: &InternalCube, texture: Option<mq::Texture2D>, color: mq::Color) -> Self {
+    pub fn new(size: mq::Vec3, position: mq::Vec3, rotation: mq::Vec3, texture: Option<mq::Texture2D>, color: mq::Color) -> Self {
         use mq::{Mat4, Vec2, Vec3, Vertex};
 
-        let hs = cube.size * 0.5;
+        let hs = size * 0.5;
 
         let positions = [
             Vec3::new(-hs.x, -hs.y, -hs.z),
@@ -69,8 +69,8 @@ impl CubeMesh {
             Vec3::new(-hs.x, hs.y, hs.z),
         ];
 
-        let rot = Mat4::from_euler(mq::EulerRot::XYZ, cube.rotation.x, cube.rotation.y, cube.rotation.z);
-        let transform = Mat4::from_translation(cube.position) * rot;
+        let rot = Mat4::from_euler(mq::EulerRot::XYZ, rotation.x, rotation.y, rotation.z);
+        let transform = Mat4::from_translation(position) * rot;
 
         // Each face: 4 indices (quad)
         let faces = [
@@ -137,24 +137,4 @@ pub fn draw_cube_mesh(mesh: &CubeMesh){
     context.quad_gl.draw_mode(macroquad::prelude::DrawMode::Triangles);
     context.quad_gl.geometry(&mesh.vertices, &mesh.indices);
 
-}
-
-
-
-#[derive(Clone, Debug)]
-pub struct InternalCube{
-    pub size: mq::Vec3,
-    pub position: mq::Vec3,
-    pub rotation: mq::Vec3,
-
-    pub mesh_vec_index: u32,
-
-
-}
-
-impl InternalCube {
-
-    pub fn submit_cube_to_Collision_check(){
-        todo!()
-    }
 }
