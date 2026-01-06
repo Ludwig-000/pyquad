@@ -28,6 +28,8 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use pyo3::exceptions::PyRuntimeError;
 
 static ENGINE_CURRENTLY_ACTIVE: AtomicBool = AtomicBool::new(false);
+
+
 /// [!] This should generally be the first function call.
 ///
 /// Turns on the pyroquad engine, creates an open-gl window and allows for engine-calls to be processed.

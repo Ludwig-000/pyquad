@@ -5,22 +5,23 @@ use pyo3::types::PyDict;
 use pyo3::prelude::*;
 use pyo3::exceptions::{PyRuntimeError, PyValueError};
 use std::collections::HashMap;
+use std::fmt::Display;
 use reqwest;
 use pyo3::PyResult;
 
 use std::thread;
-use crate::engine::PError::PError;
-use crate::py_abstractions::Loading::Loading::{self as load, download_file, write_to_file};
+use crate::py_abstractions::Loading::FileData;
+use crate::py_abstractions::Loading::Loading::{self as load, download_file, load_file, write_to_file};
 
 
 /// Namespace for static Download-related functions.
 #[gen_stub_pyclass]
 #[pyclass]
-pub struct Download;
+pub struct Loading;
 
 #[gen_stub_pymethods]
 #[pymethods]
-impl Download {
+impl Loading {
     
     
 
@@ -40,44 +41,49 @@ impl Download {
         Ok(data)
     }
 
-
     
     #[staticmethod]
     fn download_file(url: &str) -> PyResult<Vec<u8>> {
         load::download_file(url)
     }
 
-
     #[staticmethod]
-    fn make_dict(py: Python<'_>) -> Py<PyDict> {
-        let dict = PyDict::new(py);
-        dict.set_item("a", 1).unwrap();
-        dict.set_item("b", "x").unwrap();
-        dict.into()
+    pub fn load_multiple_files<'py>(py: Python<'py>, paths: &Bound<'_, PyDict>)-> PyResult<Bound<'py, PyDict>>{
+        let mut var_names: Vec<String> = Vec::new();
+        let mut path_names: Vec<String> = Vec::new();
+        
+        for (key, value) in paths {
+            let var_name: String = key.extract()?;
+            let file_path: String = value.extract()?;
+            var_names.push(var_name);
+            path_names.push(file_path);
+        }
+
+        let res: Vec<Vec<u8>> = threaded_map(path_names, |s: String| {
+            load_file(&s) 
+        })?;
+
+        
+        
+        if var_names.len() != res.len() {
+            return Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(
+                "Mismatch between variable names and file load results length."
+            ));
+        }
+
+        // Create the result PyDict
+        let result_dict = PyDict::new(py);
+
+        for (var_name, byte_vec) in var_names.into_iter().zip(res.into_iter()) {
+            let file = FileData::Filedata::new(byte_vec);
+            result_dict.set_item(var_name, file)?;
+        }
+        Ok(result_dict)
     }
 
 
 
 
-}
-
-
-/// validates that the link is an actual link.
-fn verify_link(link: &str){
-
-}
-
-fn process_manual_dict(py_dict: &Bound<'_, PyDict>) -> PyResult<Vec<var_file>> {
-    let mut users: Vec<var_file> = Vec::new();
-    
-    for (key, value) in py_dict {
-        let var_name: String = key.extract()?;
-        let file_path: String = value.extract()?;
-        users.push(
-            var_file{var_name, file_path}
-        );
-    }
-    Ok(users)
 }
 
 

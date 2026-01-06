@@ -13,7 +13,7 @@ use std::sync::mpsc;
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn load_file(path: &str)-> PyResult<Vec<u8>>{
-    match std::fs::read(path) {
+    match std::fs::read(&path) {
         Ok(bytes) => Ok(bytes),
         Err(e) => {
             Err(PError::BasicErr(
@@ -29,9 +29,10 @@ pub fn load_file(path: &str)-> PyResult<Vec<u8>>{
 #[cfg(any(target_arch = "wasm32", target_os = "ios"))]
 #[gen_stub_pyfunction]
 #[pyfunction]
-pub fn load_file(path: String)-> PyResult<Vec<u8>>{
+pub fn load_file(path: &str)-> PyResult<Vec<u8>>{
     let (tx, rx) = mpsc::sync_channel(1);
-    COMMAND_QUEUE.push( Command::LoadFile { path, sender: tx } );
+    let p_str = path.to_string();
+    COMMAND_QUEUE.push( Command::LoadFile { path: p_str, sender: tx } );
     let res = rx.recv().unwrap();
     return match res{
         Ok(r) => Ok(r),

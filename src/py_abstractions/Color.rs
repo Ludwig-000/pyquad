@@ -4,7 +4,7 @@ use pyo3_stub_gen::derive::* ;
 
 #[gen_stub_pyclass]
 #[pyclass]
-#[derive(Clone, Copy, PartialEq,Debug)]
+#[derive(Clone, Copy, PartialEq, Debug)]
 pub struct Color {
 
     /// red channel. ranges from 0.0 to 1.0
@@ -29,7 +29,7 @@ pub struct Color {
 #[pymethods]
 impl Color {
 
-    /// create a new color.
+    /// creates a new color.
     ///
     /// inputs range from:
     /// (0.0, 0.0, 0.0, 1.0) -> BLACK
@@ -6521,6 +6521,19 @@ impl Color {
     pub fn WHITESMOKE() -> Color {
         Color { r: 0.9607843137254902, g: 0.9607843137254902, b: 0.9607843137254902, a: 1.0 }
     }
+
+    /// INVISIBLE
+    #[classattr]
+    pub fn INVISIBLE() -> Color {
+        Color { r: 0.0, g: 0.0, b: 0.0, a: 0.0 }
+    }
+
+    /// HALF_TRANSPARENT
+    #[classattr]
+    pub fn HALF_TRANSPARENT() -> Color {
+        Color { r: 1.0, g: 1.0, b: 1.0, a: 0.5 }
+    }
+
 
 
 

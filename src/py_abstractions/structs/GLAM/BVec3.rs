@@ -4,7 +4,7 @@ use glam::BVec3 as gl;
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
 
-
+/// A Boolean Vector with 3 elements: x,y,z.
 #[gen_stub_pyclass]
 #[pyclass]
 #[derive(Clone, Copy, PartialEq,Debug,Eq, Hash)]

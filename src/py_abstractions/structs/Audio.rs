@@ -33,17 +33,15 @@ impl Sound {
 
         COMMAND_QUEUE.push( Command::LoadSound { path: path, sender } );
 
-        match receiver.recv() {
-            Ok(sound) => {
-                match sound{
-                    Ok(s) => { Ok( Sound{audio: s}   )  },
-                    Err(e) => {
-                        Err(e.into())
-                    }
-                }
+        let sound  = receiver.recv().unwrap();
+
+        match sound{
+            Ok(s) => { Ok( Sound{audio: s}   )  },
+            Err(e) => {
+                Err(e.into())
             }
-            Err(e) => panic!("Fatal MSPC Error:  {e}"),
         }
+
     }
 
     /// Load audio data.
@@ -56,18 +54,15 @@ impl Sound {
         
         COMMAND_QUEUE.push( Command::LoadSoundFromBytes { data: data, sender} );
 
-        match receiver.recv() {
-            Ok(sound) => {
-                match sound{
-                    Ok(s) => { Ok( Sound{audio: s} )  },
-                    Err(e) => {
-                        Err(e.into())
-                        
-                    }
-                }
+        let sound =  receiver.recv().unwrap();
+        match sound{
+            Ok(s) => { Ok( Sound{audio: s} )  },
+            Err(e) => {
+                Err(e.into())
+                
             }
-            Err(e) => panic!("Fatal MSPC Error:  {e}"),
         }
+ 
     }
 
     pub fn play_sound(&self, params: PlaySoundParams){ 

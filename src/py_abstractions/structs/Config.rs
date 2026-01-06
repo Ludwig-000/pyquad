@@ -27,7 +27,7 @@ pub struct Config {
     /// true -> creates a "windowed fullscreen" window with a resultion equal to the monitor resolution.
     #[pyo3(get, set)] 
     pub fullscreen: bool,
-
+    
     /// Optional swap interval (vertical sync).
     /// 
     /// Set to 0, the framerate will be uncapped.

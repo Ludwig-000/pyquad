@@ -16,13 +16,17 @@ pub struct Filedata{
 #[gen_stub_pymethods]
 #[pymethods]
 impl Filedata{
-    
 
+    #[new]
+    pub fn new(bytes: Vec<u8>)-> Self{
+        Filedata { bytes}
+    }
+    
     #[staticmethod]
     pub fn into_Image()-> Image{
         todo!()
     }
-    
+
     #[staticmethod]
     pub fn into_2DTexture()-> Texture2D{
         todo!()

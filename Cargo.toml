@@ -14,6 +14,8 @@ name = "stub_gen"
 doc = false
 
 
+[profile.release]
+overflow-checks = true
 
 [dependencies]
 

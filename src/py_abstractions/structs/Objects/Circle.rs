@@ -12,3 +12,8 @@ pub struct Circle{
     pub radius: f32,
     
 }
+impl Circle{
+    pub fn new(){
+        todo!()
+    }
+}

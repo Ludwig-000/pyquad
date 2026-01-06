@@ -6,6 +6,9 @@ import typing
 from enum import Enum
 
 class BVec2:
+    r"""
+    A Boolean Vector with 2 elements: x,y.
+    """
     FALSE: BVec2
     r"""
     All false.
@@ -24,13 +27,22 @@ class BVec2:
     def y(self, value: builtins.bool) -> None: ...
     def __new__(cls, x:builtins.bool, y:builtins.bool) -> BVec2: ...
     def bitmask(self) -> builtins.int: ...
-    def any(self) -> builtins.bool: ...
+    def any(self) -> builtins.bool:
+        r"""
+        Returns true if any of the elements are true, false otherwise.
+        """
     def all(self) -> builtins.bool:
         r"""
         Returns true if all the elements are true, false otherwise.
         """
-    def test(self, index:builtins.int) -> builtins.bool: ...
-    def set(self, index:builtins.int, value:builtins.bool) -> None: ...
+    def test(self, index:builtins.int) -> builtins.bool:
+        r"""
+        Returns the value of index 1 or index 2.
+        """
+    def set(self, index:builtins.int, value:builtins.bool) -> None:
+        r"""
+        Sets the value of index 1 or index 2.
+        """
     def into_bool_array(self) -> builtins.list[builtins.bool]: ...
     def into_u32_array(self) -> builtins.list[builtins.int]: ...
     def bitand(self, rhs:BVec2) -> BVec2: ...
@@ -40,6 +52,9 @@ class BVec2:
     def __str__(self) -> builtins.str: ...
 
 class BVec3:
+    r"""
+    A Boolean Vector with 3 elements: x,y,z.
+    """
     FALSE: BVec3
     r"""
     All false.
@@ -4621,6 +4636,14 @@ class Color:
     r"""
     WHITESMOKE
     """
+    INVISIBLE: Color
+    r"""
+    INVISIBLE
+    """
+    HALF_TRANSPARENT: Color
+    r"""
+    HALF_TRANSPARENT
+    """
     @property
     def r(self) -> builtins.float:
         r"""
@@ -4773,26 +4796,21 @@ class Cube:
     def rot(self, value: Vec3) -> None: ...
     def __new__(cls, position:Vec3, size:Vec3, rotation:Vec3=..., color:Color=...) -> Cube: ...
 
-class Download:
+class Filedata:
     r"""
-    Namespace for static Download-related functions.
+    A wrapper around raw filedata.
     """
+    @property
+    def bytes(self) -> builtins.list[builtins.int]: ...
+    @bytes.setter
+    def bytes(self, value: builtins.list[builtins.int]) -> None: ...
+    def __new__(cls, bytes:typing.Sequence[builtins.int]) -> Filedata: ...
     @staticmethod
-    def download_file_and_save(link:builtins.str, filepath:builtins.str) -> None:
-        r"""
-        downloads a ressource file and saves it at the given filepath.
-        Does nothing if the given filepath already exists.
-        """
+    def into_Image() -> Image: ...
     @staticmethod
-    def download_file_and_save_and_load(link:builtins.str, filepath:builtins.str) -> None: ...
+    def into_2DTexture() -> Texture2D: ...
     @staticmethod
-    def download_directly_into_variable(links:typing.Sequence[tuple[builtins.str, builtins.str]]) -> builtins.dict[builtins.str, builtins.list[builtins.int]]:
-        r"""
-        skips loading the file into the filesystem, and instantly loads it as a variable.
-        Returns a dictionary: { "dir_key": bytes }
-        """
-    @staticmethod
-    def make_dict() -> dict: ...
+    def into_Sound() -> Sound: ...
 
 class Image:
     r"""
@@ -4847,6 +4865,23 @@ class KeyCodeSet:
     def inner(self) -> builtins.set[KeyCode]: ...
     @inner.setter
     def inner(self, value: builtins.set[KeyCode]) -> None: ...
+
+class Loading:
+    r"""
+    Namespace for static Download-related functions.
+    """
+    @staticmethod
+    def download_file_and_save(url:builtins.str, filepath:builtins.str) -> None:
+        r"""
+        downloads a ressource file and saves it at the given filepath.
+        Does nothing if the given filepath already exists.
+        """
+    @staticmethod
+    def download_file_and_save_and_load(url:builtins.str, filepath:builtins.str) -> builtins.list[builtins.int]: ...
+    @staticmethod
+    def download_file(url:builtins.str) -> builtins.list[builtins.int]: ...
+    @staticmethod
+    def load_multiple_files(paths:dict) -> dict: ...
 
 class Mesh:
     def __new__(cls) -> Mesh: ...
@@ -6018,14 +6053,14 @@ class Vec3:
         r"""
         The default `Vec3` is `[0.0, 0.0, 0.0]`.
         """
-    def __truediv__(self, rhs:typing.Any) -> Vec3: ...
-    def __mul__(self, rhs:typing.Any) -> Vec3: ...
+    def __truediv__(self, rhs:builtins.Union['Vec3', float]) -> Vec3: ...
+    def __mul__(self, rhs:builtins.Union['Vec3', float]) -> Vec3: ...
     def __rmul__(self, lhs:builtins.float) -> Vec3: ...
-    def __add__(self, rhs:typing.Any) -> Vec3: ...
+    def __add__(self, rhs:builtins.Union['Vec3', float]) -> Vec3: ...
     def __radd__(self, lhs:builtins.float) -> Vec3: ...
-    def __sub__(self, rhs:typing.Any) -> Vec3: ...
+    def __sub__(self, rhs:builtins.Union['Vec3', float]) -> Vec3: ...
     def __rsub__(self, lhs:builtins.float) -> Vec3: ...
-    def __mod__(self, rhs:typing.Any) -> Vec3: ...
+    def __mod__(self, rhs:builtins.Union['Vec3', float]) -> Vec3: ...
     def __rmod__(self, lhs:builtins.float) -> Vec3: ...
 
 class Vertex:
@@ -6174,7 +6209,7 @@ def clear_background(color:Color) -> None:
 
 def download_file(url:builtins.str) -> builtins.list[builtins.int]:
     r"""
-    Loads file into memory.
+    Downloads a file and returning it's raw data.
     """
 
 def draw_affine_parallelepiped(offset:Vec3, e1:Vec3, e2:Vec3, e3:Vec3, texture:typing.Optional[Texture2D], color:Color) -> None: ...
@@ -6304,4 +6339,9 @@ def set_default_camera() -> None:
     """
 
 def show_mouse(option:builtins.bool) -> None: ...
+
+def write_to_file(contents:typing.Sequence[builtins.int], path:builtins.str) -> None:
+    r"""
+    Writes raw data to file.
+    """
 

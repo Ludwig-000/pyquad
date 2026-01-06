@@ -1,11 +1,11 @@
-use macroquad::{color::Color, prelude as mq};
+use macroquad::{color::Color, prelude as mq, window::InternalGlContext};
 use rapier3d::prelude::*;
 
 #[derive( Debug, Clone)]
 pub struct Cube{
     
     
-    pub size: mq::Vec3,
+    pub scale: mq::Vec3,
     pub position: mq::Vec3,
     pub rotation: mq::Vec3,
     pub color: mq::Color,
@@ -19,16 +19,13 @@ impl Cube {
     pub fn new(size: mq::Vec3, position: mq::Vec3, rotation: mq::Vec3, color: mq::Color)-> Cube{
         let mesh: CubeMesh = CubeMesh::new(size, position, rotation, None, color);
 
-        Cube { size,position,rotation,color,  mesh  }
+        Cube { scale: size,position,rotation,color,  mesh  }
     }
-    pub fn draw(&self){
+    pub fn draw(&self, gl: &mut macroquad::prelude::QuadGl ){
         use macroquad::prelude::DrawMode;
         unsafe {
-            let gl = macroquad::prelude::get_internal_gl();
-            gl.quad_gl.texture(None);
-            gl.quad_gl.draw_mode(DrawMode::Triangles);
-
-            gl.quad_gl.geometry(&self.mesh.vertices, &self.mesh.indices);
+            gl.texture(None);
+            gl.geometry(&self.mesh.vertices, &self.mesh.indices);
             
         }
         

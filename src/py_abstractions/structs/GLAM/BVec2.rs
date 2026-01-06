@@ -4,7 +4,7 @@ use glam::BVec2 as gl;
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
 
-
+/// A Boolean Vector with 2 elements: x,y.
 #[gen_stub_pyclass]
 #[pyclass]
 #[derive(Clone, Copy, PartialEq,Debug,Eq, Hash)]
@@ -45,7 +45,7 @@ impl BVec2 {
     
     #[new]
     pub fn new(x: bool, y: bool) -> Self {
-    Self { x, y }
+        Self { x, y }
     }
 
     /// All false.
@@ -65,6 +65,7 @@ impl BVec2 {
         (self.x as u32) | (self.y as u32) << 1
     }
 
+    /// Returns true if any of the elements are true, false otherwise.
     #[inline]
     pub fn any(&self) -> bool {
         self.x || self.y
@@ -76,6 +77,7 @@ impl BVec2 {
         self.x && self.y
     }
 
+    /// Returns the value of index 1 or index 2.
     #[inline]
     pub fn test(&self, index: usize) -> bool {
         match index {
@@ -85,6 +87,7 @@ impl BVec2 {
         }
     }
 
+    /// Sets the value of index 1 or index 2.
     #[inline]
     pub fn set(&mut self, index: usize, value: bool) {
         match index {
@@ -135,6 +138,7 @@ impl BVec2 {
             y: !self.y,
         }
     }
+
     fn __str__(&self) -> String {
         format!("{}, {}", self.x, self.y)
     }

@@ -7,11 +7,11 @@ use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
 //define_stub_info_gatherer!(stub_info);
 
+
 //
 // A python abstraction for the Vec2 struct from the GLAM crate.
 // This file implements all functionality from Glam, replacing uses of BVec2 and Vec2 with the pyabstracted versions.
 //
-
 #[gen_stub_pyclass]
 #[pyclass]
 #[derive(Clone, Copy, PartialEq,Debug)]

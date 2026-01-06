@@ -24,9 +24,10 @@ use crate::py_abstractions::Loading::Loading::*;
 
 
 #[pymodule]
-fn pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // exposes all functionality to python
+pub fn pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
 
     m.add_function(wrap_pyfunction!(activate_engine, m)?)?;
+    
     m.add_function(wrap_pyfunction!(draw_all_objects, m)?)?;
     m.add_function(wrap_pyfunction!(draw_rectangle, m)?)?;
     m.add_function(wrap_pyfunction!(draw_poly, m)?)?;
@@ -98,7 +99,8 @@ fn pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> { // expos
     m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCode>()?;
     m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCodeSet>()?;
 
-     m.add_class::<crate::py_abstractions::Loading::ThreadedLoading::Download>()?;
+     m.add_class::<crate::py_abstractions::Loading::ThreadedLoading::Loading>()?;
+     m.add_class::<crate::py_abstractions::Loading::FileData::Filedata>()?;
      m.add_function(wrap_pyfunction!(load_file, m)?)?;
      m.add_function(wrap_pyfunction!(download_file, m)?)?;
      m.add_function(wrap_pyfunction!(write_to_file, m)?)?;

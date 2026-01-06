@@ -11,6 +11,7 @@ use lazy_static::*;
 
 use crossbeam::queue::SegQueue;
 
+use macroquad::camera::Camera;
 use macroquad::camera::Camera2D;
 use macroquad::prelude as mq;
 use macroquad::audio as au;
@@ -163,11 +164,6 @@ lazy_static! {
     
 }
 
-enum InternalCam{
-    TwoD(mq::Camera2D),
-    ThreeD(mq::Camera3D),
-}
-
 lazy_static! {
     pub static ref ComputationTime: Arc<Vec<u128>> = Arc::new(Vec::new());
 
@@ -179,7 +175,6 @@ use crate::engine::Objects::ObjectManagement::ObjectManagement;
 pub async fn proccess_commands_loop() {
 
     let mut ObjectManagement = ObjectStorage::ObjectStorage::new();
-    let mut saved_camera: InternalCam =  InternalCam::TwoD( mq::Camera2D::default()  );
 
     
 
@@ -189,11 +184,17 @@ pub async fn proccess_commands_loop() {
         // commands that do not rely on it's core (openGL) components ( or just the internal Core-Thread ) are found in pyabstractions.
 
         while let Some(command) = COMMAND_QUEUE.pop() {
+            
             match command {
 
                 Command::DrawAll3DObjects()=> {
+                    let matrix;
+                    unsafe {
+                        let mat = mq::get_internal_gl();
+                        matrix= mat.quad_gl.get_projection_matrix()
+                    }
                     sm::switch_to_desired_shader(sm::ShaderKind::Basic);
-                    ObjectManagement::draw_all_Objects(&ObjectManagement);
+                    ObjectManagement::draw_all_Objects(&ObjectManagement, matrix);
                 }
                 Command::deleteCube { key }=> {
                     ObjectManagement.remove_object(key);
@@ -207,7 +208,7 @@ pub async fn proccess_commands_loop() {
                 }
                 Command::GetCubeSize { key, sender } => {
                     let pos = match  ObjectManagement.get(key){
-                        Object::Cube(cube) => cube.size,
+                        Object::Cube(cube) => cube.scale,
                         _ => panic!("object type missmatch"),
                     };
                     let _ = sender.send(pos);
@@ -225,15 +226,15 @@ pub async fn proccess_commands_loop() {
                         _ => panic!("object type missmatch"),
                     };
                     cube.position = position;
-                    cube.mesh = CubeMesh::new(cube.size, cube.position, cube.rotation, cube.mesh.texture.clone(), cube.color );
+                    cube.mesh = CubeMesh::new(cube.scale, cube.position, cube.rotation, cube.mesh.texture.clone(), cube.color );
                 }
                 Command::SetCubeSize { key, size } => {
                     let cube = match  ObjectManagement.get_mut(key){
                         Object::Cube(cube) => cube,
                         _ => panic!("object type missmatch"),
                     };
-                    cube.size = size;
-                    cube.mesh = CubeMesh::new(cube.size, cube.position, cube.rotation, cube.mesh.texture.clone(), cube.color );
+                    cube.scale = size;
+                    cube.mesh = CubeMesh::new(cube.scale, cube.position, cube.rotation, cube.mesh.texture.clone(), cube.color );
                 }
                 Command::SetCubeRotation { key, rotation } => {
                     let cube = match  ObjectManagement.get_mut(key){
@@ -241,7 +242,7 @@ pub async fn proccess_commands_loop() {
                         _ => panic!("object type missmatch"),
                     };
                     cube.rotation = rotation;
-                    cube.mesh = CubeMesh::new(cube.size, cube.position, cube.rotation, cube.mesh.texture.clone(), cube.color );
+                    cube.mesh = CubeMesh::new(cube.scale, cube.position, cube.rotation, cube.mesh.texture.clone(), cube.color );
                     
                 }
                 Command::createCube { size, position, rotation,color, pyAny, sender }=>{
@@ -336,7 +337,9 @@ pub async fn proccess_commands_loop() {
                     sm::switch_to_desired_shader(sm::ShaderKind::None);
                     mq::draw_poly(x,y,sides,radius,rotation,color  );
                 }
-                Command::SetDefaultCamera() =>{ mq::set_default_camera() }
+                Command::SetDefaultCamera() =>{ 
+                    mq::set_default_camera() 
+                }
         
                 Command::DrawTexture { texture,x,y,color}=>
                 {
@@ -385,8 +388,12 @@ pub async fn proccess_commands_loop() {
                 }
                 Command::SetCamera { camera_2d, camera_3d } => { // merged cam2d and 3d for simplicity.
                     match (camera_2d, camera_3d) {
-                        (Some(cam), None) => mq::set_camera(&cam),
-                        (None, Some(cam)) => mq::set_camera(&cam),
+                        (Some(cam), None) => {
+                            mq::set_camera(&cam);
+                        },
+                        (None, Some(cam)) => {
+                            mq::set_camera(&cam);
+                        },
                         _ => panic!("invalid cam pattern"),
         
                     }
