@@ -8,21 +8,14 @@ use crate::engine::Objects::ObjectManagement::ObjectStorage as obj;
 
 pub fn physics_thread(){
     let c = RapierWorld::new();
-
-
+    
 }
 pub struct ObjectHandle {
     pub rigid_body_handle: RigidBodyHandle,
     pub collider_handle: ColliderHandle,
 }
 
-pub fn manually_move_object(handle: &RigidBodyHandle, pos: &Vec3, rbs: &mut RigidBodySet) {
-    if let Some(rb) = rbs.get_mut(*handle) {
-        rb.set_translation(vector![pos.x, pos.y, pos.z], true);
-    }
-}
-
-fn extract_object_transforms(obj: &obj::Object)-> Transforms{
+fn extract_object_transforms(obj: &obj::Object)-> Transforms<'_>{
     match obj{
         obj::Object::Cube(cube) => Transforms { pos: &cube.position, rot: &cube.rotation, scale: &cube.scale },
         _ => todo!()
@@ -41,7 +34,6 @@ pub struct RapierWorld{
     rigidBS: RigidBodySet,
 }
 impl RapierWorld{
-
     pub fn new()-> RapierWorld{
         RapierWorld{
             pipeline: CollisionPipeline::new(),
@@ -52,6 +44,28 @@ impl RapierWorld{
         }
     }
 
+    pub fn move_object(&mut self, handle: &RigidBodyHandle, pos: &Vec3) {
+        if let Some(rb) = self.rigidBS.get_mut(*handle) {
+            rb.set_translation(vector![pos.x, pos.y, pos.z], true);
+        }
+    }
+    pub fn rotate_object(&mut self, handle: &RigidBodyHandle, rot: &Vec3) {
+        use rapier3d::na::UnitQuaternion;
+        if let Some(rb) = self.rigidBS.get_mut(*handle) {
+            let rotation = UnitQuaternion::from_euler_angles(rot.x, rot.y, rot.z);
+            rb.set_rotation(rotation, true);
+        }
+    }
+    pub fn scale_object(&mut self, handle: &ColliderHandle, obj_type:  &obj::Object, scale: &Vec3){
+        match obj_type{
+            obj::Object::Cube(_) => {
+                let c = self.coll.get_mut(*handle).expect("Missing cloider despite holding handle.");
+                let shape = SharedShape::cuboid(scale.x/2.0, scale.y/2.0, scale.z/2.0);
+                c.set_shape(shape);
+            }
+            _ => todo!()
+        }
+    }
 
     pub fn step(&mut self, distance: f32) {
         self.pipeline.step(
@@ -69,7 +83,7 @@ impl RapierWorld{
         
         let rigid_body = RigidBodyBuilder::kinematic_position_based()
             .translation(vector![t.pos.x,t.pos.y,t.pos.z])
-            .rotation(vector![t.rot.x,t.rot.y,t.rot.z])
+            .rotation(rapier3d::na::Vector3::new(t.rot.x, t.rot.y, t.rot.z))
             .build();
         
         // NOTE: cuboid takes half-extents. We divide size by 2.0.
