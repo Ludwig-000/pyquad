@@ -247,14 +247,12 @@ pub async fn proccess_commands_loop() {
                 }
                 Command::createCube { size, position, rotation,color, pyAny, sender }=>{
 
-                    let internal_cube_data = Cube::new(size, position, rotation,color);
-
-                    let new_object_enum = Object::Cube(internal_cube_data);
-
-
-                    let internal: DefaultKey = ObjectManagement.push(new_object_enum, pyAny);
-
-                    let _ = sender.send(internal);
+                    ObjectManagement.quick_push(sender, pyAny, 
+                        move || {
+                            let internal_cube = Cube::new(size, position, rotation, color);
+                            Object::Cube(internal_cube)
+                        });
+                        
                 }
                 Command::DrawRect { x, y, w, h, color} => {
                     sm::switch_to_desired_shader(sm::ShaderKind::None);

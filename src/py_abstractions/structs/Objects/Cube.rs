@@ -20,6 +20,11 @@ use crate::py_abstractions::Color::Color;
 #[derive(Clone)]
 pub struct Cube{
     key: DefaultKey, // the key to the actual underlying cube, stored inside "ObjectStorage"
+
+
+    // TODO!
+    // we should also cache trivial data like size,rot,scale
+    //
 }
 
 #[gen_stub_pymethods]

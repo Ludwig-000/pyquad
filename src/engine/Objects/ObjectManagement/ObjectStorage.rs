@@ -5,6 +5,7 @@ use slotmap::*;
 use std::sync::Arc;
 use crate::engine::Objects::Physics_World::Rapier::RapierWorld;
 use macroquad::prelude as mq;
+use std::sync::mpsc::SyncSender; // Import this
 pub enum Object {
     Rectangle(Rectangle),
     Cube(Cube),
@@ -43,6 +44,23 @@ impl ObjectStorage {
         self.reverse_key_lookup.push(key);
         
         key
+    }
+
+    /// Returns the Oject key through the Sender, before the object has been created.
+    pub fn quick_push<F: FnOnce()-> Object>(&mut self,
+        sender: SyncSender<DefaultKey>,
+        weak_ref_handle: Py<PyWeakref>,
+        factory: F){
+
+        let idx = self.storage.len();
+        let key = self.keymap.insert((idx, Arc::new(weak_ref_handle)));
+        let _ = sender.send(key);
+
+        self.reverse_key_lookup.push(key);
+
+        let obj = factory();
+        self.storage.push(obj);
+        
     }
 
     pub fn remove_object(&mut self, key_to_remove: DefaultKey) {

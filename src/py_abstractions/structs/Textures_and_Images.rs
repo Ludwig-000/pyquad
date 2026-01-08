@@ -20,8 +20,10 @@ use std::io::Cursor;
 pub struct Image {
     #[pyo3(get, set)]
     pub bytes: Vec<u8>, 
+
     #[pyo3(get, set)]
     pub width: u16, 
+
     #[pyo3(get, set)]
     pub height: u16,
 }
