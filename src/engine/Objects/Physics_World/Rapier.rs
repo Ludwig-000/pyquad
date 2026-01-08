@@ -10,16 +10,16 @@ pub fn physics_thread(){
     let c = RapierWorld::new();
     
 }
+
+
+
+
+
+
+
 pub struct ObjectHandle {
     pub rigid_body_handle: RigidBodyHandle,
     pub collider_handle: ColliderHandle,
-}
-
-fn extract_object_transforms(obj: &obj::Object)-> Transforms<'_>{
-    match obj{
-        obj::Object::Cube(cube) => Transforms { pos: &cube.position, rot: &cube.rotation, scale: &cube.scale },
-        _ => todo!()
-    }
 }
 struct Transforms<'a>{
     pos: &'a Vec3,
@@ -59,7 +59,7 @@ impl RapierWorld{
     pub fn scale_object(&mut self, handle: &ColliderHandle, obj_type:  &obj::Object, scale: &Vec3){
         match obj_type{
             obj::Object::Cube(_) => {
-                let c = self.coll.get_mut(*handle).expect("Missing cloider despite holding handle.");
+                let c = self.coll.get_mut(*handle).expect("Missing collider despite holding handle.");
                 let shape = SharedShape::cuboid(scale.x/2.0, scale.y/2.0, scale.z/2.0);
                 c.set_shape(shape);
             }
@@ -111,7 +111,7 @@ impl RapierWorld{
         ObjectHandle { rigid_body_handle, collider_handle }
     }
 
-    pub fn check_for_collision(&mut self, collider_handle: ColliderHandle) -> bool {
+    pub fn has_collision(&mut self, collider_handle: ColliderHandle) -> bool {
         
         let has_contacts = self.narrowP
             .contact_pairs_with(collider_handle)
@@ -158,14 +158,21 @@ impl RapierWorld{
 
 
 
-// Helper to turn that u128 back into your SlotMap Key
 fn u128_to_key(val: u128) -> DefaultKey {
     let as_u64 = val as u64;
     KeyData::from_ffi(as_u64).into()
 }
-// Convert SlotMap Key -> u128 for Rapier
+
 fn key_to_u128(key: DefaultKey) -> u128 {
     let data = key.data();
-    let as_u64 = data.as_ffi(); // This gives you the internal bit representation
+    let as_u64 = data.as_ffi();
     as_u64 as u128
+}
+
+fn extract_object_transforms(obj: &obj::Object)-> Transforms<'_>{
+    
+    match obj{
+        obj::Object::Cube(cube) => Transforms { pos: &cube.position, rot: &cube.rotation, scale: &cube.scale },
+        _ => todo!()
+    }
 }

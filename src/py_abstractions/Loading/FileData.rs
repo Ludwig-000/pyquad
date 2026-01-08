@@ -17,8 +17,8 @@ pub struct Filedata{
 #[pymethods]
 impl Filedata{
 
-    #[new]
-    pub fn new(bytes: Vec<u8>)-> Self{
+    #[staticmethod]
+    pub fn from_bytes(bytes: Vec<u8>)-> Self{
         Filedata { bytes}
     }
     

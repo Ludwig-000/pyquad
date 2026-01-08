@@ -3,7 +3,8 @@ use pyo3::prelude::*;
 use pyo3::types::PyWeakref;
 use slotmap::*;
 use std::sync::Arc;
-use crate::engine::collision::Rapier::RapierWorld;
+use crate::engine::Objects::Physics_World::Rapier::RapierWorld;
+use macroquad::prelude as mq;
 pub enum Object {
     Rectangle(Rectangle),
     Cube(Cube),
@@ -18,7 +19,7 @@ pub struct ObjectStorage {
     
     // Maps: Vector Index -> Object Key
     reverse_key_lookup: Vec<DefaultKey>,
-
+    
     // Rapier colission and physics world.
     rapier_colission: RapierWorld,
 }
@@ -90,6 +91,7 @@ impl ObjectStorage {
         self.storage.get_mut(*vec_idx).expect("missing object")
         
     }
+
 
     pub fn get(&self, key: DefaultKey) -> &Object {
         let (vec_idx, _) = self.keymap.get(key).expect("missing key");

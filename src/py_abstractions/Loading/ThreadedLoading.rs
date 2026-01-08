@@ -23,8 +23,6 @@ pub struct Loading;
 #[pymethods]
 impl Loading {
     
-    
-
     /// downloads a ressource file and saves it at the given filepath.
     /// Does nothing if the given filepath already exists.
     #[staticmethod]
@@ -71,11 +69,11 @@ impl Loading {
             ));
         }
 
-        // Create the result PyDict
+
         let result_dict = PyDict::new(py);
 
         for (var_name, byte_vec) in var_names.into_iter().zip(res.into_iter()) {
-            let file = FileData::Filedata::new(byte_vec);
+            let file = FileData::Filedata::from_bytes(byte_vec);
             result_dict.set_item(var_name, file)?;
         }
         Ok(result_dict)

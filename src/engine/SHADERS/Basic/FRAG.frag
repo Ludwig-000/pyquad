@@ -20,7 +20,7 @@ void main() {
             vec3 dy = dFdy(v_world_pos);
             N = normalize(cross(dx, dy));
         #else
-            N = vec3(0.0, 1.0, 0.0); // Fallback if derivatives aren't available
+            N = vec3(0.0, 1.0, 0.0);
         #endif
     }
 

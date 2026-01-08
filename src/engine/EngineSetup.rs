@@ -34,7 +34,7 @@ pub fn setup_engine(){
             // do any setup if needed
             let _ = PhysicsTreadInitComplete.send(());
             loop {
-                crate::engine::collision::Rapier::physics_thread();
+                crate::engine::Objects::Physics_World::Rapier::physics_thread();
             }
         })
         .expect("Failed to spawn the physics thread");

@@ -5,6 +5,8 @@ use macroquad::prelude::Mat4; // Import Mat4 for clarity
 use std::sync::{Mutex, OnceLock}; // <-- Import Mutex and OnceLock
 use macroquad::prelude as mq;
 
+
+
 pub fn draw_all_Objects(obj: &ObjectStorage, viewMat: macroquad::prelude::Mat4){
 
     unsafe {
