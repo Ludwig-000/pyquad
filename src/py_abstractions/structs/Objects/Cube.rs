@@ -33,19 +33,19 @@ pub struct Cube{
 #[pymethods]
 impl Cube {
 
-    #[pyo3(signature = (position, size, rotation = Vec3::ZERO(), color = Color::WHITE()   ))]
+    #[pyo3(signature = (position= Vec3::ZERO(), rotation = Vec3::ZERO(),scale= Vec3::ONE(), color = Color::WHITE()   ))]
     #[new]
     pub fn new(
         py: Python<'_>,
         position: Vec3,
-        size: Vec3,
         rotation: Vec3,
+        scale: Vec3,
         color: Color,
     ) -> PyResult<Py<Cube>> {
 
         let (sender, receiver) = mpsc::sync_channel(1);
 
-        let cache = ObjectDataCache::ThreeDObjCache::new(true, position.into(), rotation.into(), size.into(), color.into());
+        let cache = ObjectDataCache::ThreeDObjCache::new(true, position.into(), rotation.into(), scale.into(), color.into());
         let placeholder_struct: Cube = Cube { key: DefaultKey::null(),  cache};
         let cube_handle: Py<Cube> = Py::new(py, placeholder_struct)?; 
         
@@ -57,8 +57,8 @@ impl Cube {
         };
 
         
-        COMMAND_QUEUE.push(Command::createCube { 
-            size: size.into(), 
+        COMMAND_QUEUE.push(Command::CreateCube { 
+            size: scale.into(), 
             position: position.into(), 
             rotation: rotation.into(), 
             color: color.into(),
@@ -77,7 +77,7 @@ impl Cube {
 
 
     #[getter]
-    fn size(&self) -> Vec3 {
+    fn scale(&self) -> Vec3 {
         if self.cache.can_be_cached == true{
             return self.cache.scale.into()
         }
@@ -89,7 +89,7 @@ impl Cube {
     }
 
     #[setter]
-    fn set_size(&mut self, value: Vec3) {
+    fn set_scale(&mut self, value: Vec3) {
         if self.cache.can_be_cached == true{
             self.cache.scale = value.into();
         }
@@ -144,6 +144,6 @@ impl Cube {
 
 impl Drop for Cube{
     fn drop(&mut self) {
-        COMMAND_QUEUE.push( Command::deleteCube { key: self.key });
+        COMMAND_QUEUE.push( Command::DeleteCube { key: self.key });
     }
 }

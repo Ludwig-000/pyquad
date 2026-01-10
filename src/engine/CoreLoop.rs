@@ -11,8 +11,6 @@ use lazy_static::*;
 
 use crossbeam::queue::SegQueue;
 
-use macroquad::camera::Camera;
-use macroquad::camera::Camera2D;
 use macroquad::prelude as mq;
 use macroquad::audio as au;
 use slotmap::DefaultKey;
@@ -21,17 +19,15 @@ use crate::engine::SHADERS::shader_manager as sm;
 use crate::engine::PError::PError;
 use crate::engine::PArc::PArc;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::*;
-use crate::py_abstractions::Color::Color;
-use pyo3::{Py,PyAny};
-use pyo3::types::{PyWeakref, PyWeakrefReference};
-use crate::py_abstractions::structs::Objects::Cube::Cube as pyCube;
+use pyo3::{Py};
+use pyo3::types::{PyWeakref};
 
 pub enum Command {
     
 
     DrawAll3DObjects(),
 
-    deleteCube{
+    DeleteCube{
         key: DefaultKey, 
     },
     GetCubeSize{ key: DefaultKey, sender: mpsc::SyncSender<mq::Vec3> },
@@ -42,7 +38,7 @@ pub enum Command {
     SetCubePos{ key: DefaultKey, position: mq::Vec3 },
     SetCubeRotation{ key: DefaultKey, rotation: mq::Vec3 },
 
-    createCube{
+    CreateCube{
         size: mq::Vec3,
         position: mq::Vec3,
         rotation: mq::Vec3,
@@ -172,6 +168,7 @@ lazy_static! {
 use crate::engine::Objects::Cube::*;
 use crate::engine::Objects::ObjectManagement::ObjectStorage;
 use crate::engine::Objects::ObjectManagement::ObjectManagement;
+
 pub async fn proccess_commands_loop() {
 
     let mut ObjectManagement = ObjectStorage::ObjectStorage::new();
@@ -196,7 +193,7 @@ pub async fn proccess_commands_loop() {
                     sm::switch_to_desired_shader(sm::ShaderKind::Basic);
                     ObjectManagement::draw_all_Objects(&ObjectManagement, matrix);
                 }
-                Command::deleteCube { key }=> {
+                Command::DeleteCube { key }=> {
                     ObjectManagement.remove_object(key);
                 }
                 Command::GetCubePos { key, sender } => {
@@ -245,7 +242,7 @@ pub async fn proccess_commands_loop() {
                     cube.mesh = CubeMesh::new(cube.scale, cube.position, cube.rotation, cube.mesh.texture.clone(), cube.color );
                     
                 }
-                Command::createCube { size, position, rotation,color, pyAny, sender }=>{
+                Command::CreateCube { size, position, rotation,color, pyAny, sender }=>{
 
                     ObjectManagement.quick_push(sender, pyAny, 
                         move || {

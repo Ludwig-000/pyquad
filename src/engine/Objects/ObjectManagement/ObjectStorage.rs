@@ -2,9 +2,8 @@ use crate::engine::{structures::Rectangle, Objects::Cube::Cube};
 use pyo3::prelude::*;
 use pyo3::types::PyWeakref;
 use slotmap::*;
-use std::{any::Any, sync::Arc};
-use crate::engine::Objects::Physics_World::Rapier::{ObjectHandle, RapierWorld};
-use macroquad::prelude as mq;
+use std::{sync::Arc};
+use crate::engine::Objects::PhysicsWorld::Rapier::{ObjectHandle, RapierWorld};
 use std::sync::mpsc::SyncSender;
 pub enum Object {
     Rectangle(Rectangle),

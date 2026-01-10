@@ -4,7 +4,7 @@ use glam::Vec3;
 use std::sync::Mutex;
 use slotmap::{DefaultKey, Key, KeyData};
 use crate::engine::Objects::ObjectManagement::ObjectStorage as obj;
-// This struct holds the handles to a specific object in the physics world
+
 
 pub fn physics_thread(){
     let c = RapierWorld::new();
@@ -33,7 +33,7 @@ pub struct RapierWorld{
     narrowP: NarrowPhase,
     rigidBS: RigidBodySet,
 
-    // useless stuff:
+    // unused stuff Rapier needs to function.
     islands: IslandManager,
     impulse_joints: ImpulseJointSet,
     multibody_joints: MultibodyJointSet,

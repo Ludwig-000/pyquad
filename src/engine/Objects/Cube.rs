@@ -21,24 +21,12 @@ impl Cube {
         Cube { scale: size,position,rotation,color,  mesh  }
     }
     pub fn draw(&self, gl: &mut macroquad::prelude::QuadGl ){
-        use macroquad::prelude::DrawMode;
-        unsafe {
             gl.texture(None);
             gl.geometry(&self.mesh.vertices, &self.mesh.indices);
-            
-        }
         
     }
 }
 
-
-
-
-#[derive(Debug, Clone)]
-pub struct CubeCollossionHandles{
-    pub rigid_body_handle: RigidBodyHandle,
-    pub collider_handle: ColliderHandle,
-}
 
 
 #[derive(Clone, Debug)]
@@ -49,7 +37,13 @@ pub struct CubeMesh{
 }
 
 impl CubeMesh {
-    pub fn new(size: mq::Vec3, position: mq::Vec3, rotation: mq::Vec3, texture: Option<mq::Texture2D>, color: mq::Color) -> Self {
+    pub fn new(
+        size: mq::Vec3, 
+        position: mq::Vec3, 
+        rotation: mq::Vec3, 
+        texture: Option<mq::Texture2D>, 
+        color: mq::Color) -> Self {
+
         use mq::{Mat4, Vec2, Vec3, Vertex};
 
         let hs = size * 0.5;
@@ -124,13 +118,5 @@ impl CubeMesh {
             texture,
         }
     }
-
-}
-pub fn draw_cube_mesh(mesh: &CubeMesh){
-
-    let context= unsafe { macroquad::prelude::get_internal_gl() };
-    context.quad_gl.texture(mesh.texture.as_ref());
-    context.quad_gl.draw_mode(macroquad::prelude::DrawMode::Triangles);
-    context.quad_gl.geometry(&mesh.vertices, &mesh.indices);
 
 }

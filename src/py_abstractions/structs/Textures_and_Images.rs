@@ -34,13 +34,12 @@ impl Image {
 
     #[new]
     pub fn new(bytes: Vec<u8>, width: u16, height: u16, ) -> PyResult<Self> {
-
         if bytes.len() != (width as usize) * (height as usize) * 4 {
             return Err(PyErr::new::<PyValueError, _>(
                 "Invalid image data size: expected width * height * 4 bytes",
             ));
         }
-
+        
         Ok(Self { bytes, width, height })
     }
     
