@@ -4,6 +4,8 @@ use macroquad::prelude as mq;
 use pyo3_stub_gen::derive::* ;
 use slotmap::DefaultKey;
 use slotmap::Key;
+use crate::engine::Objects::ObjectDataCache;
+use crate::engine::Objects::ObjectDataCache::ThreeDObjCache;
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::engine::Objects::Cube as cu;
 use crate::engine::Objects::ObjectManagement::ObjectStorage as oj;
@@ -22,9 +24,9 @@ pub struct Cube{
     key: DefaultKey, // the key to the actual underlying cube, stored inside "ObjectStorage"
 
 
-    // TODO!
-    // we should also cache trivial data like size,rot,scale
-    //
+    /// we add a cache for trivial data, which can be used if the object is not
+    /// influenced by outside forces F.E. Gravity.
+    cache: ObjectDataCache::ThreeDObjCache,
 }
 
 #[gen_stub_pymethods]
@@ -43,7 +45,8 @@ impl Cube {
 
         let (sender, receiver) = mpsc::sync_channel(1);
 
-        let placeholder_struct: Cube = Cube { key: DefaultKey::null() };
+        let cache = ObjectDataCache::ThreeDObjCache::new(true, position.into(), rotation.into(), size.into(), color.into());
+        let placeholder_struct: Cube = Cube { key: DefaultKey::null(),  cache};
         let cube_handle: Py<Cube> = Py::new(py, placeholder_struct)?; 
         
         let weak_ref_handle: Py<PyWeakref> = {
@@ -75,6 +78,10 @@ impl Cube {
 
     #[getter]
     fn size(&self) -> Vec3 {
+        if self.cache.can_be_cached == true{
+            return self.cache.scale.into()
+        }
+
         let (sender, receiver) = mpsc::sync_channel(1);
         let command = Command::GetCubeSize { key: self.key, sender: sender };
         COMMAND_QUEUE.push(command);
@@ -82,13 +89,20 @@ impl Cube {
     }
 
     #[setter]
-    fn set_size(&self, value: Vec3) {
+    fn set_size(&mut self, value: Vec3) {
+        if self.cache.can_be_cached == true{
+            self.cache.scale = value.into();
+        }
+
         let command = Command::SetCubeSize { key: self.key, size: value.into() };
         COMMAND_QUEUE.push(command);
     }
 
     #[getter]
     fn pos(&self) -> Vec3 {
+        if self.cache.can_be_cached == true{
+            return self.cache.location.into()
+        }
         let (sender, receiver) = mpsc::sync_channel(1);
         let command = Command::GetCubePos { key: self.key, sender: sender };
         COMMAND_QUEUE.push(command);
@@ -96,13 +110,20 @@ impl Cube {
     }
 
     #[setter]
-    fn set_pos(&self, value: Vec3) {
+    fn set_pos(&mut self, value: Vec3) {
+        if self.cache.can_be_cached == true{
+            self.cache.location = value.into();
+        }
         let command = Command::SetCubePos { key: self.key, position: value.into() };
         COMMAND_QUEUE.push(command);
     }
 
     #[getter]
     fn rot(&self) -> Vec3 {
+        if self.cache.can_be_cached == true{
+            return self.cache.rotation.into()
+        }
+
         let (sender, receiver) = mpsc::sync_channel(1);
         let command = Command::GetCubeRotation{ key: self.key, sender: sender };
         COMMAND_QUEUE.push(command);
@@ -111,6 +132,10 @@ impl Cube {
 
     #[setter]
     fn set_rot(&mut self, value: Vec3) {
+        if self.cache.can_be_cached == true{
+            self.cache.rotation = value.into();
+        }
+
         let command = Command::SetCubeRotation { key: self.key, rotation: value.into() };
         COMMAND_QUEUE.push(command);
     }

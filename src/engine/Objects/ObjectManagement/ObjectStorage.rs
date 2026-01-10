@@ -2,10 +2,10 @@ use crate::engine::{structures::Rectangle, Objects::Cube::Cube};
 use pyo3::prelude::*;
 use pyo3::types::PyWeakref;
 use slotmap::*;
-use std::sync::Arc;
-use crate::engine::Objects::Physics_World::Rapier::RapierWorld;
+use std::{any::Any, sync::Arc};
+use crate::engine::Objects::Physics_World::Rapier::{ObjectHandle, RapierWorld};
 use macroquad::prelude as mq;
-use std::sync::mpsc::SyncSender; // Import this
+use std::sync::mpsc::SyncSender;
 pub enum Object {
     Rectangle(Rectangle),
     Cube(Cube),
@@ -18,11 +18,13 @@ pub struct ObjectStorage {
     // The actual objects (Packed array)
     storage: Vec<Object>,
     
-    // Maps: Vector Index -> Object Key
-    reverse_key_lookup: Vec<DefaultKey>,
+    glue_data: Vec<GlueData>,
     
-    // Rapier colission and physics world.
-    rapier_colission: RapierWorld,
+    physics_world: RapierWorld,
+}
+pub struct GlueData{
+    pub reverse_lookup: DefaultKey,
+    pub obj_handle:  ObjectHandle,
 }
 
 impl ObjectStorage {
@@ -30,18 +32,22 @@ impl ObjectStorage {
         ObjectStorage {
             keymap: SlotMap::default(),
             storage: Vec::new(),
-            reverse_key_lookup: Vec::new(),
-            rapier_colission: RapierWorld::new(),
+            glue_data: Vec::new(),
+            physics_world: RapierWorld::new(),
         }
     }
 
     pub fn push(&mut self, obj: Object, weak_ref_handle: Py<PyWeakref>) -> DefaultKey {
-        self.storage.push(obj);
-        let idx = self.storage.len() - 1;
 
+        
+        let idx = self.storage.len(); // the index of where the obj will be placed eventually.
         let key = self.keymap.insert((idx, Arc::new(weak_ref_handle)));
 
-        self.reverse_key_lookup.push(key);
+        // gets the glue data.
+        let glue  = GlueData{  reverse_lookup: key, obj_handle: self.physics_world.insert_object(&obj, key)};
+        self.glue_data.push(glue);
+
+        self.storage.push(obj);
         
         key
     }
@@ -50,22 +56,24 @@ impl ObjectStorage {
     pub fn quick_push<F: FnOnce()-> Object>(&mut self,
         sender: SyncSender<DefaultKey>,
         weak_ref_handle: Py<PyWeakref>,
-        factory: F){
+        object_factory: F){
 
         let idx = self.storage.len();
         let key = self.keymap.insert((idx, Arc::new(weak_ref_handle)));
         let _ = sender.send(key);
 
-        self.reverse_key_lookup.push(key);
+        let obj = object_factory();
 
-        let obj = factory();
+        // gets the glue data.
+        let glue  = GlueData{  reverse_lookup: key, obj_handle: self.physics_world.insert_object(&obj, key)};
+        self.glue_data.push(glue);
+
         self.storage.push(obj);
-        
     }
 
-    pub fn remove_object(&mut self, key_to_remove: DefaultKey) {
+    pub fn remove_object(&mut self, key: DefaultKey) {
     
-        let idx_to_remove = match self.keymap.get(key_to_remove) {
+        let idx_to_remove = match self.keymap.get(key) {
             Some(val) => val.0,
             None => panic!("Key not Found"), 
         };
@@ -74,22 +82,28 @@ impl ObjectStorage {
     
         self.storage.swap(idx_to_remove, last_idx);
         
-        self.reverse_key_lookup.swap(idx_to_remove, last_idx);
+        self.glue_data.swap(idx_to_remove, last_idx);
     
         if idx_to_remove != last_idx {
             
-            let key_of_moved_obj = self.reverse_key_lookup[idx_to_remove];
+            let key_of_moved_obj = self.glue_data[idx_to_remove].reverse_lookup;
     
             if let Some((stored_idx, _)) = self.keymap.get_mut(key_of_moved_obj) {
                 *stored_idx = idx_to_remove;
             }
         }
-    
+
         self.storage.pop();
-        self.reverse_key_lookup.pop();
+
         
-        self.keymap.remove(key_to_remove);
+
+        let obj_data=  self.glue_data.pop().expect("tried to remove obj-data, but array is empty.");
+        self.physics_world.remove_object(obj_data.obj_handle);
+        
+        self.keymap.remove(key);
     
+        
+
         let current_len = self.storage.len();
         let current_cap = self.storage.capacity();
     
@@ -103,17 +117,30 @@ impl ObjectStorage {
         self.keymap.get(key).expect("WeakRef not found for key").1.clone()
     }
 
+    pub fn get_handle_mut(&mut self, key: DefaultKey) -> &mut ObjectHandle{
+        let (vec_idx, _) = self.keymap.get(key).expect("key not known to the map.");
+        &mut self.glue_data.get_mut(*vec_idx).expect("missing object data").obj_handle
+    }
+    pub fn get_handle(&self, key: DefaultKey) -> &ObjectHandle{
+        let (vec_idx, _) = self.keymap.get(key).expect("key not known to the map.");
+        &self.glue_data.get(*vec_idx).expect("missing object data").obj_handle
+    }
+
     pub fn get_mut(&mut self, key: DefaultKey) -> &mut Object {
 
-        let (vec_idx, _) = self.keymap.get(key).expect("missing key");
+        let (vec_idx, _) = self.keymap.get(key).expect("key not known to the map.");
         self.storage.get_mut(*vec_idx).expect("missing object")
         
     }
 
 
     pub fn get(&self, key: DefaultKey) -> &Object {
-        let (vec_idx, _) = self.keymap.get(key).expect("missing key");
+        let (vec_idx, _) = self.keymap.get(key).expect("key not known to the map.");
         self.storage.get(*vec_idx).expect("missing object")
+    }
+
+    pub fn len(&self)-> usize{
+        self.storage.len()
     }
 
     pub fn iter_mut(&mut self) -> std::slice::IterMut<'_, Object> {

@@ -22,23 +22,5 @@ pub fn setup_engine(){
 
 
 	crate::engine::SHADERS::shaderLoader::shader_load();
-
-
-    
-    let (PhysicsTreadInitComplete, rx_) = mpsc::channel();
-
-    thread::Builder::new()
-        .name("PhysicsThread".to_string()) 
-        .spawn(move || {
-            
-            // do any setup if needed
-            let _ = PhysicsTreadInitComplete.send(());
-            loop {
-                crate::engine::Objects::Physics_World::Rapier::physics_thread();
-            }
-        })
-        .expect("Failed to spawn the physics thread");
-
-    rx_.recv().expect("Physics thread failed to initialize");
 	
 }

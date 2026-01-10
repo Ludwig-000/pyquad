@@ -12,7 +12,6 @@ pub struct Cube{
 
 
     pub mesh: CubeMesh,
-    //collissionHandle: CubeCollossionHandles, // re-add later
 
 }
 impl Cube {

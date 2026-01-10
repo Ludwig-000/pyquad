@@ -32,6 +32,11 @@ pub struct RapierWorld{
     coll: ColliderSet,
     narrowP: NarrowPhase,
     rigidBS: RigidBodySet,
+
+    // useless stuff:
+    islands: IslandManager,
+    impulse_joints: ImpulseJointSet,
+    multibody_joints: MultibodyJointSet,
 }
 impl RapierWorld{
     pub fn new()-> RapierWorld{
@@ -41,6 +46,9 @@ impl RapierWorld{
             coll: ColliderSet::new(),
             narrowP: NarrowPhase::new(),
             rigidBS: RigidBodySet::new(),
+            islands: IslandManager::new(),
+            impulse_joints: ImpulseJointSet::new(),
+            multibody_joints: MultibodyJointSet::new(),
         }
     }
 
@@ -109,6 +117,23 @@ impl RapierWorld{
         );
     
         ObjectHandle { rigid_body_handle, collider_handle }
+    }
+    
+    pub fn remove_object(&mut self, handle: ObjectHandle) {
+        self.coll.remove(
+            handle.collider_handle, 
+            &mut self.islands,
+            &mut self.rigidBS, 
+            true
+        );
+        self.rigidBS.remove(
+            handle.rigid_body_handle, 
+            &mut self.islands, 
+            &mut self.coll, 
+            &mut self.impulse_joints,
+            &mut self.multibody_joints,
+            true
+        );
     }
 
     pub fn has_collision(&mut self, collider_handle: ColliderHandle) -> bool {
