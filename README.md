@@ -14,14 +14,14 @@ The project is in early development and the repository exists for documentation 
 #
 #
 **Hello rectangle:**
-```python
+```Python
 from pyquad import *
 
 activate_engine()
 
 while True:
-    draw_rectangle(100, 100, 600, 300, Color.GREEN)
-    draw_text("Hello rectangle", 200, 200, 50, Color.RED)
+    draw_rectangle(x=100, y=100, w=600, h=300, color=Color.GREEN)
+    draw_text(text="Hello rectangle", x=200, y=200, font_size=50, color=Color.RED)
     next_frame()
 ```
 #

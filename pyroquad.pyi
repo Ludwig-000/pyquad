@@ -5116,6 +5116,8 @@ class Vec2:
         uses the element from `if_false`.
         """
     @staticmethod
+    def splat(value:builtins.float) -> Vec2: ...
+    @staticmethod
     def from_array(a:typing.Sequence[builtins.float]) -> Vec2:
         r"""
         Creates a new vector from an array.
@@ -5620,6 +5622,8 @@ class Vec3:
         r"""
         Creates a new vector from an array.
         """
+    @staticmethod
+    def splat(value:builtins.float) -> Vec3: ...
     def to_array(self) -> builtins.list[builtins.float]:
         r"""
         `[x, y, z]`
@@ -6342,7 +6346,7 @@ def set_default_camera() -> None:
 
 def show_mouse(option:builtins.bool) -> None: ...
 
-def step_physics(length:builtins.float) -> None: ...
+def step_physics(distance:builtins.float) -> None: ...
 
 def write_to_file(contents:typing.Sequence[builtins.int], path:builtins.str) -> None:
     r"""

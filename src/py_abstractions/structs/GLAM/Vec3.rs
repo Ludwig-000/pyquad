@@ -34,7 +34,7 @@ impl Vec3 {
 
     // Const constructor for splat values
     #[inline(always)]
-    pub const fn splat(value: f32) -> Self {
+    pub const fn const_splat(value: f32) -> Self {
         Vec3 { x: value, y: value, z: value }
     }
 }
@@ -50,49 +50,49 @@ impl Vec3 {
     /// A vector with all elements set to `0.0`.
     #[classattr]
     pub fn ZERO() -> Vec3 {
-        Self::splat(0.0)
+        Self::const_splat(0.0)
     }
 
     /// A vector with all elements set to `1.0`.
     #[classattr]
     pub fn ONE() -> Vec3 {
-        Self::splat(1.0)
+        Self::const_splat(1.0)
     }
 
     /// A vector with all elements set to `-1.0`.
     #[classattr]
     pub fn NEG_ONE() -> Vec3 {
-        Self::splat(-1.0)
+        Self::const_splat(-1.0)
     }
 
     /// A vector with all elements set to `f32::MIN`.
     #[classattr]
     pub fn MIN() -> Vec3 {
-        Self::splat(f32::MIN)
+        Self::const_splat(f32::MIN)
     }
 
     /// A vector with all elements set to `f32::MAX`.
     #[classattr]
     pub fn MAX() -> Vec3 {
-        Self::splat(f32::MAX)
+        Self::const_splat(f32::MAX)
     }
 
     /// A vector with all elements set to `f32::NAN`.
     #[classattr]
     pub fn NAN() -> Vec3 {
-        Self::splat(f32::NAN)
+        Self::const_splat(f32::NAN)
     }
 
     /// A vector with all elements set to `f32::INFINITY`.
     #[classattr]
     pub fn INFINITY() -> Vec3 {
-        Self::splat(f32::INFINITY)
+        Self::const_splat(f32::INFINITY)
     }
 
     /// A vector with all elements set to `f32::NEG_INFINITY`.
     #[classattr]
     pub fn NEG_INFINITY() -> Vec3 {
-        Self::splat(f32::NEG_INFINITY)
+        Self::const_splat(f32::NEG_INFINITY)
     }
 
     /// The unit vector in the X direction `(1.0, 0.0, 0.0)`.
@@ -160,6 +160,13 @@ impl Vec3 {
     #[inline]
     pub fn from_array(a: [f32; 3]) -> Self {
         Self::new(a[0], a[1], a[2])
+    }
+
+    // constructor for splat values
+    #[staticmethod]
+    #[inline(always)]
+    pub fn splat(value: f32) -> Vec3 {
+        Vec3 { x: value, y: value, z: value }
     }
 
     /// `[x, y, z]`

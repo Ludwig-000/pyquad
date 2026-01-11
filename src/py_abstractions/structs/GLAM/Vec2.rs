@@ -32,7 +32,7 @@ impl Vec2 {
 
     // Const constructor for splat values
     #[inline(always)]
-    pub const fn splat(value: f32) -> Self {
+    pub const fn const_splat(value: f32) -> Self {
         Vec2 { x: value, y: value}
     }
 }
@@ -48,49 +48,49 @@ impl Vec2 {
     /// A vector with all elements set to `0.0`.
     #[classattr]
     pub fn ZERO() -> Vec2 {
-        Self::splat(0.0)
+        Self::const_splat(0.0)
     }
 
     /// A vector with all elements set to `1.0`.
     #[classattr]
     pub fn ONE() -> Vec2 {
-        Self::splat(1.0)
+        Self::const_splat(1.0)
     }
 
     /// A vector with all elements set to `-1.0`.
     #[classattr]
     pub fn NEG_ONE() -> Vec2 {
-        Self::splat(-1.0)
+        Self::const_splat(-1.0)
     }
 
     /// A vector with all elements set to `f32::MIN`.
     #[classattr]
     pub fn MIN() -> Vec2 {
-        Self::splat(f32::MIN)
+        Self::const_splat(f32::MIN)
     }
 
     /// A vector with all elements set to `f32::MAX`.
     #[classattr]
     pub fn MAX() -> Vec2 {
-        Self::splat(f32::MAX)
+        Self::const_splat(f32::MAX)
     }
 
     /// A vector with all elements set to `f32::NAN`.
     #[classattr]
     pub fn NAN() -> Vec2 {
-        Self::splat(f32::NAN)
+        Self::const_splat(f32::NAN)
     }
 
     /// A vector with all elements set to `f32::INFINITY`.
     #[classattr]
     pub fn INFINITY() -> Vec2 {
-        Self::splat(f32::INFINITY)
+        Self::const_splat(f32::INFINITY)
     }
 
     /// A vector with all elements set to `f32::NEG_INFINITY`.
     #[classattr]
     pub fn NEG_INFINITY() -> Vec2 {
-        Self::splat(f32::NEG_INFINITY)
+        Self::const_splat(f32::NEG_INFINITY)
     }
 
     /// The unit vector in the X direction `(1.0, 0.0)`.
@@ -139,6 +139,13 @@ impl Vec2 {
             x: if mask.test(0) { if_true.x } else { if_false.x },
             y: if mask.test(1) { if_true.y } else { if_false.y },
         }
+    }
+
+    // constructor for splat values
+    #[staticmethod]
+    #[inline(always)]
+    pub fn splat(value: f32) -> Vec2 {
+        Vec2 { x: value, y: value}
     }
 
     /// Creates a new vector from an array.
