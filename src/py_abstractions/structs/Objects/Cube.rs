@@ -1,14 +1,10 @@
 use pyo3::prelude::*;
-use macroquad::prelude as mq;
 
 use pyo3_stub_gen::derive::* ;
 use slotmap::DefaultKey;
 use slotmap::Key;
 use crate::engine::Objects::ObjectDataCache;
-use crate::engine::Objects::ObjectDataCache::ThreeDObjCache;
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
-use crate::engine::Objects::Cube as cu;
-use crate::engine::Objects::ObjectManagement::ObjectStorage as oj;
 use crate::engine::CoreLoop::COMMAND_QUEUE;
 use crate::engine::CoreLoop::Command;
 use std::sync::mpsc;
@@ -141,12 +137,13 @@ impl Cube {
     }
 
 
-    pub fn check_collision<'py>(&self,py: Python<'py> )-> Vec<Bound<'py, PyAny>>{
+    pub fn check_collision<'py>(&self, py: Python<'py> )-> Vec<Bound<'py, PyAny>>{
 
         let (sender, receiver) = mpsc::sync_channel(1);
         let command = Command::GetColissionObjects { key: self.key, sender };
         COMMAND_QUEUE.push(command);
         let res: Vec<std::sync::Arc<Py<PyWeakref>>> = receiver.recv().unwrap();
+
 
         res.into_iter().filter_map(|pyObj|{
 

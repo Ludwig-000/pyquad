@@ -6,6 +6,7 @@
 // also, any conversion between my abstracted pyclasses and the structs used in macroquad is being done here.
 // ( example:  Color -> mq::Color )
 
+use crate::engine::FrameInfo::DELTA_TIME;
 use crate::py_abstractions::structs::Textures_and_Images::*;
 use macroquad::prelude as mq;
 
@@ -317,13 +318,28 @@ pub fn draw_texture(texture: Texture2D,x: f32, y: f32, color: Color ) {
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_fps() -> i32 {
-    let (sender, receiver) = mpsc::sync_channel(1);
-    COMMAND_QUEUE.push(Command::GetFPS(sender));
-
-    let fps= receiver.recv().unwrap();
-    fps
-    
+    use crate::engine::FrameInfo::*;
+    FPS.load(Ordering::Relaxed)
 }
+
+/// Returns duration in seconds of the last frame drawn.
+/// This function is identical to 'get_frame_time()' but under another name.
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn get_delta_time() -> f32 {
+    use crate::engine::FrameInfo::*;
+    *DELTA_TIME.lock().unwrap()
+}
+
+/// Returns duration in seconds of the last frame drawn.
+/// This function is identical to 'get_delta_time()' but under another name.
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn get_frame_time() -> f32 {
+    use crate::engine::FrameInfo::*;
+    *DELTA_TIME.lock().unwrap()
+}
+
 
 
 /// returns an list of all keys that have been pressed since the last check.

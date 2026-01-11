@@ -9,3 +9,4 @@ pub mod PError;
 pub mod PArc;
 pub mod Objects;
 pub mod CoreLoop;
+pub mod FrameInfo;

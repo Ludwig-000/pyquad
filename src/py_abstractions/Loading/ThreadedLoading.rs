@@ -2,11 +2,6 @@ use pyo3::prelude::*;
  
 use pyo3_stub_gen::derive::* ;
 use pyo3::types::PyDict;
-use pyo3::prelude::*;
-use pyo3::exceptions::{PyRuntimeError, PyValueError};
-use std::collections::HashMap;
-use std::fmt::Display;
-use reqwest;
 use pyo3::PyResult;
 
 use std::thread;
@@ -121,19 +116,19 @@ where
 /// 
 /// 
 #[derive(FromPyObject)]
-struct var_file_url {
+struct VarFileUrl {
     var_name: String,
     file_path: String,
     url: String,
 }
 #[derive(FromPyObject)]
-struct var_file {
+struct VarFile {
     var_name: String,
     file_path: String,
 }
 
 #[derive(FromPyObject)]
-struct file_url {
+struct FileUrl {
     file_path: String,
     url: String,
 }

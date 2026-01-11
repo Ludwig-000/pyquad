@@ -129,7 +129,6 @@ pub enum Command {
     
     ClearBackground { color: mq::Color },
 
-    GetFPS(mpsc::SyncSender<i32>),
 
     GetMousePosition(mpsc::SyncSender<(f32,f32)>),
     
@@ -360,6 +359,7 @@ pub async fn proccess_commands_loop() {
                 Command::NextFrame(sender) => {
                     mq::next_frame().await;
                     crate::engine::SHADERS::shader_manager::new_frame_shader_update();
+                    crate::engine::FrameInfo::update_frame_info();
                     let _ = sender.send(());
                 }
             
@@ -368,10 +368,6 @@ pub async fn proccess_commands_loop() {
                 mq::draw_text(text.as_str(), x,y,font_size,color);
                 }
                 
-                Command::GetFPS(sender) => {
-                let fps = mq::get_fps();
-                let _ = sender.send(fps);
-                }
                 Command::GetMousePosition(sender) => {
                 let pos = mq::mouse_position();
                 let _ = sender.send(pos);

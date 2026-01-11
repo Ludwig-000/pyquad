@@ -49,6 +49,8 @@ pub fn pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(clear_background, m)?)?;
     m.add_function(wrap_pyfunction!(draw_text, m)?)?;
     m.add_function(wrap_pyfunction!(get_fps, m)?)?;
+    m.add_function(wrap_pyfunction!(get_delta_time, m)?)?;
+    m.add_function(wrap_pyfunction!(get_frame_time, m)?)?;
     m.add_function(wrap_pyfunction!(get_keys_pressed, m)?)?;
     m.add_function(wrap_pyfunction!(get_keys_down, m)?)?;
     m.add_function(wrap_pyfunction!(get_keys_released, m)?)?;
