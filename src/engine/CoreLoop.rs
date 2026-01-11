@@ -7,6 +7,7 @@ use std::collections::HashSet;
 use std::sync::Arc;
 use std::any::Any;
 
+use crossbeam::channel::SendTimeoutError;
 use lazy_static::*;
 
 use crossbeam::queue::SegQueue;
@@ -23,8 +24,11 @@ use pyo3::{Py};
 use pyo3::types::{PyWeakref};
 
 pub enum Command {
+    ManuallyStepPhysics(f32),
     
-
+    GetColissionObjects{
+        key: DefaultKey, sender: mpsc::SyncSender<Vec<Arc<Py<PyWeakref>>>>,
+    },
     DrawAll3DObjects(),
 
     DeleteCube{
@@ -171,7 +175,7 @@ use crate::engine::Objects::ObjectManagement::ObjectManagement;
 
 pub async fn proccess_commands_loop() {
 
-    let mut ObjectManagement = ObjectStorage::ObjectStorage::new();
+    let mut object_storage = ObjectStorage::ObjectStorage::new();
 
     
 
@@ -183,7 +187,14 @@ pub async fn proccess_commands_loop() {
         while let Some(command) = COMMAND_QUEUE.pop() {
             
             match command {
-
+                Command::GetColissionObjects { key, sender }=>{
+                    let keys = object_storage.collides_with(key);
+                    let py_refs  = object_storage.keys_to_py(keys);
+                    let _ = sender.send(py_refs);
+                }
+                Command::ManuallyStepPhysics(distance)=>{
+                    object_storage.step_physics(distance);
+                }
                 Command::DrawAll3DObjects()=> {
                     let matrix;
                     unsafe {
@@ -191,34 +202,34 @@ pub async fn proccess_commands_loop() {
                         matrix= mat.quad_gl.get_projection_matrix()
                     }
                     sm::switch_to_desired_shader(sm::ShaderKind::Basic);
-                    ObjectManagement::draw_all_Objects(&ObjectManagement, matrix);
+                    ObjectManagement::draw_all_Objects(&object_storage, matrix);
                 }
                 Command::DeleteCube { key }=> {
-                    ObjectManagement.remove_object(key);
+                    object_storage.remove_object(key);
                 }
                 Command::GetCubePos { key, sender } => {
-                    let pos = match  ObjectManagement.get(key){
+                    let pos = match  object_storage.get(key){
                         Object::Cube(cube) => cube.position,
                         _ => panic!("object type missmatch"),
                     };
                     let _ = sender.send(pos);
                 }
                 Command::GetCubeSize { key, sender } => {
-                    let pos = match  ObjectManagement.get(key){
+                    let pos = match  object_storage.get(key){
                         Object::Cube(cube) => cube.scale,
                         _ => panic!("object type missmatch"),
                     };
                     let _ = sender.send(pos);
                 }
                 Command::GetCubeRotation { key, sender } => {
-                    let pos = match  ObjectManagement.get(key){
+                    let pos = match  object_storage.get(key){
                         Object::Cube(cube) => cube.rotation,
                         _ => panic!("object type missmatch"),
                     };
                     let _ = sender.send(pos);
                 }
                 Command::SetCubePos { key, position } => {
-                    let cube = match  ObjectManagement.get_mut(key){
+                    let cube = match  object_storage.get_mut(key){
                         Object::Cube(cube) => cube,
                         _ => panic!("object type missmatch"),
                     };
@@ -226,7 +237,7 @@ pub async fn proccess_commands_loop() {
                     cube.mesh = CubeMesh::new(cube.scale, cube.position, cube.rotation, cube.mesh.texture.clone(), cube.color );
                 }
                 Command::SetCubeSize { key, size } => {
-                    let cube = match  ObjectManagement.get_mut(key){
+                    let cube = match  object_storage.get_mut(key){
                         Object::Cube(cube) => cube,
                         _ => panic!("object type missmatch"),
                     };
@@ -234,7 +245,7 @@ pub async fn proccess_commands_loop() {
                     cube.mesh = CubeMesh::new(cube.scale, cube.position, cube.rotation, cube.mesh.texture.clone(), cube.color );
                 }
                 Command::SetCubeRotation { key, rotation } => {
-                    let cube = match  ObjectManagement.get_mut(key){
+                    let cube = match  object_storage.get_mut(key){
                         Object::Cube(cube) => cube,
                         _ => panic!("object type missmatch"),
                     };
@@ -244,7 +255,7 @@ pub async fn proccess_commands_loop() {
                 }
                 Command::CreateCube { size, position, rotation,color, pyAny, sender }=>{
 
-                    ObjectManagement.quick_push(sender, pyAny, 
+                    object_storage.quick_push(sender, pyAny, 
                         move || {
                             let internal_cube = Cube::new(size, position, rotation, color);
                             Object::Cube(internal_cube)

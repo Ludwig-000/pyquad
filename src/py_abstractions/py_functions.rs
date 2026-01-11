@@ -103,6 +103,12 @@ pub fn draw_affine_parallelepiped(offset: Vec3, e1: Vec3,e2: Vec3,e3: Vec3,textu
     COMMAND_QUEUE.push(Command::DrawAfflineParallelpiped { offset: offset.into(), e1: e1.into(), e2: e2.into(), e3: e3.into(), texture: texture.map(Into::into), color: color.into() });
 }
 
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn step_physics(distance: f32) {
+    
+    COMMAND_QUEUE.push(Command::ManuallyStepPhysics(distance));
+}
 
 #[gen_stub_pyfunction]
 #[pyfunction]

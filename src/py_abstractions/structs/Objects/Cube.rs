@@ -139,6 +139,30 @@ impl Cube {
         let command = Command::SetCubeRotation { key: self.key, rotation: value.into() };
         COMMAND_QUEUE.push(command);
     }
+
+
+    pub fn check_collision<'py>(&self,py: Python<'py> )-> Vec<Bound<'py, PyAny>>{
+
+        let (sender, receiver) = mpsc::sync_channel(1);
+        let command = Command::GetColissionObjects { key: self.key, sender };
+        COMMAND_QUEUE.push(command);
+        let res: Vec<std::sync::Arc<Py<PyWeakref>>> = receiver.recv().unwrap();
+
+        res.into_iter().filter_map(|pyObj|{
+
+            let weak_py: &Py<PyWeakref> = &*pyObj;
+
+            let weak_bound: Bound<'py, PyWeakref> = weak_py.bind(py).clone();
+
+            let upgraded: Bound<'py, PyAny> = weak_bound.call0().ok()?;
+
+            if upgraded.is_none() {
+                None
+            } else {
+                Some(upgraded)
+            }
+        }).collect()
+    }
     
 }
 

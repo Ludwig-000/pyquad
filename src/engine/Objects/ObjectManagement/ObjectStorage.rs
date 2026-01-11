@@ -10,6 +10,11 @@ pub enum Object {
     Cube(Cube),
 }
 
+#[derive(Clone, Copy)]
+pub struct GlueData{
+    pub reverse_lookup: DefaultKey,
+    pub obj_handle:  ObjectHandle,
+}
 pub struct ObjectStorage {
     // Maps: Object Key -> (Vector Index, WeakRef)
     keymap: SlotMap<DefaultKey, (usize, Arc<Py<PyWeakref>>)>,
@@ -21,11 +26,6 @@ pub struct ObjectStorage {
     
     physics_world: RapierWorld,
 }
-pub struct GlueData{
-    pub reverse_lookup: DefaultKey,
-    pub obj_handle:  ObjectHandle,
-}
-
 impl ObjectStorage {
     pub fn new() -> ObjectStorage {
         ObjectStorage {
@@ -148,5 +148,30 @@ impl ObjectStorage {
 
     pub fn iter(&self) -> std::slice::Iter<'_, Object> {
         self.storage.iter()
+    }
+
+
+    pub fn step_physics(&mut self, distance: f32){
+        self.physics_world.step(distance);
+    }
+    pub fn does_collide(&mut self, key: DefaultKey)-> bool{
+        let (vec_idx, _) = self.keymap.get(key).expect("key not known to the map.");
+        let glue  = self.glue_data.get(*vec_idx).expect("missing object for 'does_collide'");
+        self.physics_world.has_collision(*(&glue.obj_handle.collider_handle))
+    }
+
+    pub fn collides_with(&mut self, key: DefaultKey)-> Vec<DefaultKey>{
+        let (vec_idx, _) = self.keymap.get(key).expect("key not known to the map.");
+        let glue  = self.glue_data.get(*vec_idx).expect("missing object for 'collides_with'");
+        self.physics_world.get_collided_keys(*(&glue.obj_handle.collider_handle))
+    }
+
+    pub fn keys_to_py(&mut self, keys: Vec<DefaultKey>)-> Vec<Arc<Py<PyWeakref>>>{
+        let mut v = Vec::new();
+        for key in keys{
+            let p = self.get_pyref(key);
+            v.push(p);
+        }
+        v
     }
 }

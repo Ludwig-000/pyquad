@@ -1,4 +1,5 @@
 ﻿use lazy_static::lazy_static;
+use pyo3_stub_gen::derive;
 use rapier3d::{pipeline, prelude::*};
 use glam::Vec3;
 use std::sync::Mutex;
@@ -16,7 +17,7 @@ pub fn physics_thread(){
 
 
 
-
+#[derive(Clone, Copy)]
 pub struct ObjectHandle {
     pub rigid_body_handle: RigidBodyHandle,
     pub collider_handle: ColliderHandle,

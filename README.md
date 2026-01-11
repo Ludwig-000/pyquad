@@ -1,6 +1,6 @@
 # Pyroquad
 
-This is a Python abstraction for the Rust engine [macroquad](https://github.com/not-fl3/macroquad).
+This is a Python game engine based on [macroquad](https://github.com/not-fl3/macroquad).
 
 The project is in early development and the repository exists for documentation purposes.
 

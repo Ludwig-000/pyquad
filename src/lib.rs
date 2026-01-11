@@ -42,6 +42,8 @@ pub fn pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(draw_hexagon, m)?)?;
     m.add_function(wrap_pyfunction!(draw_line_3d, m)?)?;
 
+    m.add_function(wrap_pyfunction!(step_physics, m)?)?;
+
 
     m.add_function(wrap_pyfunction!(next_frame, m)?)?;
     m.add_function(wrap_pyfunction!(clear_background, m)?)?;
