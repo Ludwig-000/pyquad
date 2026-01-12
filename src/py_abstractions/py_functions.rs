@@ -6,7 +6,6 @@
 // also, any conversion between my abstracted pyclasses and the structs used in macroquad is being done here.
 // ( example:  Color -> mq::Color )
 
-use crate::engine::FrameInfo::DELTA_TIME;
 use crate::py_abstractions::structs::Textures_and_Images::*;
 use macroquad::prelude as mq;
 
@@ -327,8 +326,8 @@ pub fn get_fps() -> i32 {
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_delta_time() -> f32 {
-    use crate::engine::FrameInfo::*;
-    *DELTA_TIME.lock().unwrap()
+    use crate::engine::FrameInfo as fi;
+    *fi::DELTA_TIME.lock().unwrap()
 }
 
 /// Returns duration in seconds of the last frame drawn.
@@ -336,8 +335,8 @@ pub fn get_delta_time() -> f32 {
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_frame_time() -> f32 {
-    use crate::engine::FrameInfo::*;
-    *DELTA_TIME.lock().unwrap()
+    use crate::engine::FrameInfo as fi;
+    *fi::DELTA_TIME.lock().unwrap()
 }
 
 

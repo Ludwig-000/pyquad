@@ -99,8 +99,16 @@ impl RapierWorld{
         let mut collider  = match obj{
             obj::Object::Cube(_) => {
                 ColliderBuilder::cuboid(t.scale.x / 2.0, t.scale.y / 2.0, t.scale.z / 2.0)
+                    .sensor(true)
                     .restitution(0.7)
                     .density(1.0)
+                    .active_collision_types(
+                        ActiveCollisionTypes::DYNAMIC_DYNAMIC
+                        | ActiveCollisionTypes::DYNAMIC_KINEMATIC
+                        | ActiveCollisionTypes::DYNAMIC_FIXED
+                        | ActiveCollisionTypes::KINEMATIC_KINEMATIC 
+                        | ActiveCollisionTypes::KINEMATIC_FIXED
+                    )
                     .build()
             },
             _ => todo!(),
@@ -176,7 +184,6 @@ impl RapierWorld{
         });
 
         pairs.chain(pairs2).collect()
-
     }
     
     

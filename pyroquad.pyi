@@ -6294,9 +6294,21 @@ def draw_texture(texture:Texture2D, x:builtins.float, y:builtins.float, color:Co
     a texture gets created by calling `Texture2D.from_image( image )`
     """
 
+def get_delta_time() -> builtins.float:
+    r"""
+    Returns duration in seconds of the last frame drawn.
+    This function is identical to 'get_frame_time()' but under another name.
+    """
+
 def get_fps() -> builtins.int:
     r"""
     returns the current frames per second
+    """
+
+def get_frame_time() -> builtins.float:
+    r"""
+    Returns duration in seconds of the last frame drawn.
+    This function is identical to 'get_delta_time()' but under another name.
     """
 
 def get_keys_down() -> KeyCodeSet:
