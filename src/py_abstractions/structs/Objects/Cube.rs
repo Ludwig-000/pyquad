@@ -1,3 +1,4 @@
+use pyo3::IntoPyObjectExt;
 use pyo3::prelude::*;
 
 use pyo3_stub_gen::derive::* ;
@@ -7,11 +8,12 @@ use crate::engine::Objects::ObjectDataCache;
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::engine::CoreLoop::COMMAND_QUEUE;
 use crate::engine::CoreLoop::Command;
+use crate::py_abstractions::structs::Objects::ObjectFunctionStorage;
+use std::fmt::Pointer;
 use std::sync::mpsc;
 use pyo3::types::{PyWeakref, PyWeakrefReference};
 use crate::py_abstractions::Color::Color;
-
-
+use pyo3::exceptions::*;
 
 #[gen_stub_pyclass]
 #[pyclass(subclass, weakref)]
@@ -29,7 +31,7 @@ pub struct Cube{
 #[pymethods]
 impl Cube {
 
-    #[pyo3(signature = (position= Vec3::ZERO(), rotation = Vec3::ZERO(),scale= Vec3::ONE(), color = Color::WHITE()   ))]
+    #[pyo3(signature = (position= Vec3::ZERO(), rotation = Vec3::ZERO(),scale= Vec3::ONE(), color = Color::WHITE()))]
     #[new]
     pub fn new(
         py: Python<'_>,
@@ -70,8 +72,6 @@ impl Cube {
         
     }
         
-
-
     #[getter]
     fn scale(&self) -> Vec3 {
         if self.cache.can_be_cached == true{
@@ -160,6 +160,34 @@ impl Cube {
             }
         }).collect()
     }
+
+    /// Add a function to this object, which will automatically be executed each frame.
+    /// The function may take 'self' as the first argument.
+    /// 
+    /// example:
+    /// 
+    /// 
+    /// def fun(cube):
+    ///     cube.x+=1
+    /// 
+    /// myCube.tick(fun)
+    /// 
+    pub fn tick(slf: Bound<'_, Self>, function: Bound<'_,PyAny>)-> PyResult<()>{
+
+        if !function.is_callable(){
+            return Err(PyRuntimeError::new_err(format!("Attatched object {:?} is not callable.",function)));
+        }
+
+        let mut storage = ObjectFunctionStorage::get_fun_storage();
+        
+        let func_persistent = function.unbind();
+        let obj  = slf.into_any();
+
+        storage.add(obj, func_persistent);
+
+        Ok(())
+    }
+
     
 }
 

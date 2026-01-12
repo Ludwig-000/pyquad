@@ -4796,6 +4796,19 @@ class Cube:
     def rot(self, value: Vec3) -> None: ...
     def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=...) -> Cube: ...
     def check_collision(self) -> builtins.list[typing.Any]: ...
+    def tick(self, slf:Cube, function:typing.Any) -> None:
+        r"""
+        Add a function to this object, which will automatically be executed each frame.
+        The function may take 'self' as the first argument.
+        
+        example:
+        ```Python
+        def fun(cube):
+            cube.x+=1
+        
+        myCube.tick(fun)
+        ```
+        """
 
 class Filedata:
     r"""

@@ -6,6 +6,7 @@
 // also, any conversion between my abstracted pyclasses and the structs used in macroquad is being done here.
 // ( example:  Color -> mq::Color )
 
+use crate::py_abstractions::structs::Objects::ObjectFunctionStorage;
 use crate::py_abstractions::structs::Textures_and_Images::*;
 use macroquad::prelude as mq;
 
@@ -258,11 +259,16 @@ pub fn clear_background(color: Color) {
 /// also, this function cleans up dropped memory such as Texture2D
 #[gen_stub_pyfunction]
 #[pyfunction]
-pub fn next_frame() {
+pub fn next_frame(py: Python<'_>) -> PyResult<()>{
+    {
+        let fn_storage = ObjectFunctionStorage::get_fun_storage();
+        fn_storage.execute_all(py)?;
+    }
     let (sender, receiver) = mpsc::sync_channel(1);
     COMMAND_QUEUE.push(Command::NextFrame(sender));
 
     let _ = receiver.recv();
+    Ok(())
 }
 
 /// draws a text in 2d space.
