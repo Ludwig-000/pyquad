@@ -16,6 +16,7 @@ use macroquad::prelude as mq;
 use macroquad::audio as au;
 use slotmap::DefaultKey;
 
+use crate::engine::Objects::Sphere::Sphere;
 use crate::engine::SHADERS::shader_manager as sm;
 use crate::engine::PError::PError;
 use crate::engine::PArc::PArc;
@@ -31,7 +32,7 @@ pub enum Command {
     },
     DrawAll3DObjects(),
 
-    DeleteCube{
+    DeleteObject{
         key: DefaultKey, 
     },
     GetCubeSize{ key: DefaultKey, sender: mpsc::SyncSender<mq::Vec3> },
@@ -43,6 +44,15 @@ pub enum Command {
     SetCubeRotation{ key: DefaultKey, rotation: mq::Vec3 },
 
     CreateCube{
+        size: mq::Vec3,
+        position: mq::Vec3,
+        rotation: mq::Vec3,
+        color: mq::Color,
+        pyAny: Py<PyWeakref>,
+        sender: mpsc::SyncSender<DefaultKey>,
+    },
+
+    CreateSphere{
         size: mq::Vec3,
         position: mq::Vec3,
         rotation: mq::Vec3,
@@ -172,6 +182,9 @@ use crate::engine::Objects::Cube::*;
 use crate::engine::Objects::ObjectManagement::ObjectStorage;
 use crate::engine::Objects::ObjectManagement::ObjectManagement;
 
+
+/// processes commands that rely on the macroquad engine
+/// commands that do not rely on it's core (openGL) components ( or just the internal Core-Thread ) are found in pyabstractions.
 pub async fn proccess_commands_loop() {
 
     let mut object_storage = ObjectStorage::ObjectStorage::new();
@@ -179,9 +192,6 @@ pub async fn proccess_commands_loop() {
     
 
     loop {
-
-        // processes commands that rely on the macroquad engine
-        // commands that do not rely on it's core (openGL) components ( or just the internal Core-Thread ) are found in pyabstractions.
 
         while let Some(command) = COMMAND_QUEUE.pop() {
             
@@ -203,7 +213,7 @@ pub async fn proccess_commands_loop() {
                     sm::switch_to_desired_shader(sm::ShaderKind::Basic);
                     ObjectManagement::draw_all_Objects(&object_storage, matrix);
                 }
-                Command::DeleteCube { key }=> {
+                Command::DeleteObject { key }=> {
                     object_storage.remove_object(key);
                 }
                 Command::GetCubePos { key, sender } => {
@@ -258,6 +268,15 @@ pub async fn proccess_commands_loop() {
                         move || {
                             let internal_cube = Cube::new(size, position, rotation, color);
                             Object::Cube(internal_cube)
+                        });
+                        
+                }
+                Command::CreateSphere { size, position, rotation,color, pyAny, sender }=>{
+
+                    object_storage.quick_push(sender, pyAny, 
+                        move || {
+                            let internal_sphere = Sphere::new(size, position, rotation, color);
+                            Object::Sphere(internal_sphere)
                         });
                         
                 }

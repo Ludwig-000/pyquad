@@ -14,6 +14,7 @@ use crate::engine::PError::PError;
 
 /// Converts audio-formats to .wav, since the macroquad sound engine only supports .wav
 ///
+/// TODO: directly convert files to bytes.
 pub fn ensure_wav(data: Vec<u8>) -> Result<Vec<u8>, PError> {
     let cursor = Cursor::new(data);
     let mss = MediaSourceStream::new(Box::new(cursor), Default::default());

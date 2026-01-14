@@ -4,12 +4,10 @@ use rapier3d::prelude::*;
 #[derive( Debug, Clone)]
 pub struct Cube{
     
-    
     pub scale: mq::Vec3,
     pub position: mq::Vec3,
     pub rotation: mq::Vec3,
     pub color: mq::Color,
-
 
     pub mesh: CubeMesh,
 
@@ -25,6 +23,8 @@ impl Cube {
             gl.geometry(&self.mesh.vertices, &self.mesh.indices);
         
     }
+
+
 }
 
 
@@ -79,7 +79,7 @@ impl CubeMesh {
             Vec2::new(0.0, 1.0),
         ];
 
-        let mut vertices = [Vertex {
+        let mut vertices= [Vertex {
             position: mq::Vec3::ZERO,
             uv: mq::Vec2::ZERO,
             color: color.into(),

@@ -20,7 +20,7 @@ use crate::py_abstractions::Color::Color;
 
 #[gen_stub_pyclass]
 #[pyclass(subclass, weakref)]
-pub struct Cube{
+pub struct Sphere{
     key: DefaultKey, // The key to the actual underlying cube, stored inside "ObjectStorage".
 
     // Key to a function inside 'function storage', which will be run each frame by the engine.
@@ -33,7 +33,7 @@ pub struct Cube{
 
 #[gen_stub_pymethods]
 #[pymethods]
-impl Cube {
+impl Sphere {
 
     #[pyo3(signature = (position= Vec3::ZERO(), rotation = Vec3::ZERO(),scale= Vec3::ONE(), color = Color::WHITE()))]
     #[new]
@@ -43,20 +43,24 @@ impl Cube {
         rotation: Vec3,
         scale: Vec3,
         color: Color,
-    ) -> PyResult<Py<Cube>> {
+    ) -> PyResult<Py<Sphere>> {
 
         let (sender, receiver) = mpsc::sync_channel(1);
 
-        let cache = ObjectDataCache::ThreeDObjCache::new(true, position.into(), rotation.into(), scale.into(), color.into());
-        let placeholder_struct: Cube = Cube { key: DefaultKey::null(),function_key: None,  cache};
-        let cube_handle: Py<Cube> = Py::new(py, placeholder_struct)?; 
+        let cache = ObjectDataCache::ThreeDObjCache::new(
+            true, position.into(), rotation.into(), scale.into(), color.into());
+            
+        let placeholder_struct: Sphere = Sphere { key: DefaultKey::null(),function_key: None,  cache};
+        let cube_handle: Py<Sphere> = Py::new(py, placeholder_struct)?; 
         
         let weak_ref_handle: Py<PyWeakref> = {
             let bound_cube = cube_handle.bind(py); 
             let weak_ref_ref = PyWeakrefReference::new(&bound_cube)?;
+            
             weak_ref_ref.cast_into::<PyWeakref>()?.unbind() 
         };
 
+        
         COMMAND_QUEUE.push(Command::CreateCube { 
             size: scale.into(), 
             position: position.into(), 
@@ -72,15 +76,6 @@ impl Cube {
         Ok(cube_handle) 
     }
         
-    /// Accesses the scale of the given object.
-    /// Note that individual values of an object can NOT be changed via:
-    /// ```
-    /// >>>object.scale.x += 1
-    /// ```
-    /// since object.scale returns a copy of its scale, one has to write:
-    /// ```
-    /// >>>object.scale += Vec3(1, 0, 0)
-    /// ```
     #[getter]
     fn scale(&self) -> Vec3 {
         if self.cache.can_be_cached == true{
@@ -103,15 +98,6 @@ impl Cube {
         COMMAND_QUEUE.push(command);
     }
 
-    /// Accesses the position of the given object.
-    /// Note that individual values of an object can NOT be changed via:
-    /// ```
-    /// >>>object.pos.x += 1
-    /// ```
-    /// since object.pos returns a copy of its position, one has to write:
-    /// ```
-    /// >>>object.pos += Vec3(1, 0, 0)
-    /// ```
     #[getter]
     fn pos(&self) -> Vec3 {
         if self.cache.can_be_cached == true{
@@ -132,15 +118,6 @@ impl Cube {
         COMMAND_QUEUE.push(command);
     }
 
-    /// Accesses the rotation of the given object.
-    /// Note that individual values of an object can NOT be changed via:
-    /// ```
-    /// >>>object.rot.x += 1
-    /// ```
-    /// since object.rot returns a copy of its rotation, one has to write:
-    /// ```
-    /// >>>object.rot += Vec3(1, 0, 0)
-    /// ```
     #[getter]
     fn rot(&self) -> Vec3 {
         if self.cache.can_be_cached == true{
@@ -273,7 +250,7 @@ impl Cube {
 
 }
 
-impl Drop for Cube{
+impl Drop for Sphere{
     fn drop(&mut self) {
 
         // function storage MUST be cleaned first, since a function inside fun-storage may rely on the object still living.

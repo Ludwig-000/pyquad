@@ -1,6 +1,10 @@
 ﻿use macroquad::prelude as mq;
 use std::sync::Arc;
 
+///
+/// This file is outdated.
+/// 
+/// 
 
 pub trait Drawable {
     fn draw(&self);

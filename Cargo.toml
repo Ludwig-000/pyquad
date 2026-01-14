@@ -17,6 +17,13 @@ doc = false
 [profile.release]
 overflow-checks = true
 
+# Max Optimization for final release.
+# opt-level = 3
+# lto = "fat"
+# codegen-units = 1
+# panic = "abort"
+# incremental = false
+
 [dependencies]
 
 #core dependency

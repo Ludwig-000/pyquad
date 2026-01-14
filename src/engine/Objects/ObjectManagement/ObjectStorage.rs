@@ -1,4 +1,4 @@
-use crate::engine::{structures::Rectangle, Objects::Cube::Cube};
+use crate::engine::{Objects::{Cube::Cube, Sphere::Sphere}, structures::Rectangle};
 use pyo3::prelude::*;
 use pyo3::types::PyWeakref;
 use slotmap::*;
@@ -8,6 +8,7 @@ use std::sync::mpsc::SyncSender;
 pub enum Object {
     Rectangle(Rectangle),
     Cube(Cube),
+    Sphere(Sphere),
 }
 
 #[derive(Clone, Copy)]

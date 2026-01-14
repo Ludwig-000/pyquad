@@ -8,8 +8,6 @@ use std::sync::MutexGuard;
 use slotmap::{DefaultKey, DenseSlotMap};
 use pyo3::prelude::*;
 use pyo3::ffi;
-
-// These are the specific traits for the Bound API in 0.23+ 
 use pyo3::types::*;
 use std::sync::{OnceLock};
 
@@ -20,40 +18,45 @@ pub fn get_fun_storage() -> MutexGuard<'static, FunctionStorage> {
     let mutex = FUN_STORAGE.get_or_init(|| {
         Mutex::new(FunctionStorage::new())
     });
-
-
+    
     mutex.lock().unwrap()
 }
 
 
 
 
-#[pyclass]
+
 pub struct FunctionStorage{
-    pub tasks: DenseSlotMap<DefaultKey, (usize, Py<PyAny>)>,
+    tasks: DenseSlotMap<DefaultKey, 
+    (usize, // raw object pointer, used as function input.
+    Py<PyAny>)>, // Owned python function.
 }
-#[pymethods]
+
 impl FunctionStorage{
-    #[new]
     pub fn new() -> Self {
         Self { tasks: DenseSlotMap::default() }
     }
-
-    pub fn add(&mut self, target: Bound<'_, PyAny>, func: Py<PyAny>) {
+    
+    pub fn add(&mut self, target: Bound<'_, PyAny>, func: Py<PyAny>)-> DefaultKey {
         // Gets the raw pointer without incrementing the refcount
         let ptr = target.as_ptr() as usize;
-        self.tasks.insert((ptr, func));
+        let key =self.tasks.insert((ptr, func));
+        key
+    }
+
+    pub fn remove(&mut self, target: DefaultKey){
+        self.tasks.remove(target);
     }
 
     pub fn execute_all(&self, py: Python<'_>) -> PyResult<()> {
         for (ptr_address, callback) in self.tasks.values() {
+            
             unsafe {
-
                 let raw_ptr = *ptr_address as *mut ffi::PyObject;
                 
                 let target_bound = Bound::from_borrowed_ptr(py, raw_ptr);
                 let func_bound = callback.bind(py);
-
+                
                 if let Err(e) = func_bound.call1((target_bound,)) {
                     self.report_error(py, &e, func_bound);
                     return Err(e);
@@ -68,7 +71,7 @@ impl FunctionStorage{
 
 impl FunctionStorage {
     fn report_error(&self, py: Python<'_>, err: &PyErr, func: &Bound<'_, PyAny>) {
-        println!("\n--- ⚠️ SCRIPT ERROR ---");
+        println!("\n--- SCRIPT ERROR ---");
 
         let func_name = func.getattr("__name__")
             .and_then(|n| n.extract::<String>())

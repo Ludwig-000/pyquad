@@ -328,7 +328,20 @@ pub fn get_fps() -> i32 {
 }
 
 /// Returns duration in seconds of the last frame drawn.
-/// This function is identical to 'get_frame_time()' but under another name.
+/// This is useful for F.E. animations, that have to keep the same pace,
+/// independent of the frame rate.
+/// 
+///Example:
+///```
+///>>>rect_x  = 0
+///>>>while True:
+///...  delta_time = get_delta_time()
+///...  rect_x += (2.0*delta_time)
+///...
+///...  draw_rectangle(x=rect_x, y=50, w=50, h=50, color=Color.WHITE())
+///...
+///...  next_frame()
+/// ```
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_delta_time() -> f32 {
@@ -336,14 +349,6 @@ pub fn get_delta_time() -> f32 {
     *fi::DELTA_TIME.lock().unwrap()
 }
 
-/// Returns duration in seconds of the last frame drawn.
-/// This function is identical to 'get_delta_time()' but under another name.
-#[gen_stub_pyfunction]
-#[pyfunction]
-pub fn get_frame_time() -> f32 {
-    use crate::engine::FrameInfo as fi;
-    *fi::DELTA_TIME.lock().unwrap()
-}
 
 
 

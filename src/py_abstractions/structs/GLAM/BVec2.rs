@@ -132,7 +132,7 @@ impl BVec2 {
     }
 
     #[inline]
-    fn not(&self) -> Self {
+    fn _not(&self) -> Self {
         Self {
             x: !self.x,
             y: !self.y,

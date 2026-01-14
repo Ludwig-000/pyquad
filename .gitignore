@@ -2,6 +2,7 @@
 .vs/
 .vscode/
 target/
+.cargo/
 pyvv/
 .venv/
 pyinstll/

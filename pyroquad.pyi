@@ -48,7 +48,7 @@ class BVec2:
     def bitand(self, rhs:BVec2) -> BVec2: ...
     def bitor(self, rhs:BVec2) -> BVec2: ...
     def bitxor(self, rhs:BVec2) -> BVec2: ...
-    def not(self) -> BVec2: ...
+    def _not(self) -> BVec2: ...
     def __str__(self) -> builtins.str: ...
 
 class BVec3:
@@ -89,7 +89,7 @@ class BVec3:
     def bitand(self, rhs:BVec3) -> BVec3: ...
     def bitor(self, rhs:BVec3) -> BVec3: ...
     def bitxor(self, rhs:BVec3) -> BVec3: ...
-    def not(self) -> BVec3: ...
+    def _not(self) -> BVec3: ...
     def __str__(self) -> builtins.str: ...
 
 class Camera2D:
@@ -4783,32 +4783,98 @@ class Config:
 
 class Cube:
     @property
-    def scale(self) -> Vec3: ...
+    def scale(self) -> Vec3:
+        r"""
+        Accesses the scale of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>object.scale.x += 1
+        ```
+        since object.scale returns a copy of its scale, one has to write:
+        ```
+        >>>object.scale += Vec3(1, 0, 0)
+        ```
+        """
     @scale.setter
     def scale(self, value: Vec3) -> None: ...
     @property
-    def pos(self) -> Vec3: ...
+    def pos(self) -> Vec3:
+        r"""
+        Accesses the position of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>object.pos.x += 1
+        ```
+        since object.pos returns a copy of its position, one has to write:
+        ```
+        >>>object.pos += Vec3(1, 0, 0)
+        ```
+        """
     @pos.setter
     def pos(self, value: Vec3) -> None: ...
     @property
-    def rot(self) -> Vec3: ...
+    def rot(self) -> Vec3:
+        r"""
+        Accesses the rotation of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>object.rot.x += 1
+        ```
+        since object.rot returns a copy of its rotation, one has to write:
+        ```
+        >>>object.rot += Vec3(1, 0, 0)
+        ```
+        """
     @rot.setter
     def rot(self, value: Vec3) -> None: ...
     def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=...) -> Cube: ...
-    def check_collision(self) -> builtins.list[typing.Any]: ...
-    def tick(self, slf:Cube, function:typing.Any) -> None:
+    def disable_collision(self) -> None: ...
+    def enable_collision(self) -> None: ...
+    def check_collision(self) -> builtins.list[typing.Any]:
         r"""
-        Add a function to this object, which will automatically be executed each frame.
-        The function may take 'self' as the first argument.
+        Returns any object, with active collision, that is either
+        intersected or inserted in the current object.
         
-        example:
-        ```Python
-        def fun(cube):
-            cube.x+=1
+        Example:
         
-        myCube.tick(fun)
+        ```
+        >>>bigCube: Cube = Cube(pos=Vec3.splat(50))
+        >>>intersected: list[Cube] = bigCube.check_collision()
+        ...
+        ...# since the returned objects are references, we can edit them directly
+        ...# without creating duplicates.
+        >>>for cube in intersected:
+        ...   cube.pos = Vec3.ZERO()
         ```
         """
+    def tick(self, slf:Cube, function:typing.Any) -> None:  # type: ignore[slf]
+        r"""
+        Add a function to this object, which will automatically be executed each frame.
+        The function must take the object it is attatched to as an argument.
+        
+        Example:
+        
+        ```
+        ...# arguments from outside the scope may be included.
+        >>>delta_time = 0
+        >>>def updateCube(cube: Cube):
+        ...    cube.rot += Vec3.splat(0.2*delta_time)
+        ...
+        >>>myCube = Cube()
+        >>>myCube.tick(updateCube)
+        ...
+        >>>while True:
+        ...    # dt would have to get updated each frame.
+        ...    delta_time = get_delta_time()
+        ...
+        ...    #'next_frame' runs the update function for every object.
+        ...    next_frame()
+        ```
+        """
+    def __eq__(self, other:Cube) -> builtins.bool: ...
+    def __hash__(self) -> builtins.int: ...
+    def __repr__(self) -> builtins.str: ...
+    def __str__(self) -> builtins.str: ...
 
 class Filedata:
     r"""
@@ -5043,6 +5109,68 @@ class Sound:
     def play_sound_once(self) -> None: ...
     def set_sound_volume(self, volume:builtins.float) -> None: ...
     def stop_sound(self) -> None: ...
+
+class Sphere:
+    @property
+    def scale(self) -> Vec3: ...
+    @scale.setter
+    def scale(self, value: Vec3) -> None: ...
+    @property
+    def pos(self) -> Vec3: ...
+    @pos.setter
+    def pos(self, value: Vec3) -> None: ...
+    @property
+    def rot(self) -> Vec3: ...
+    @rot.setter
+    def rot(self, value: Vec3) -> None: ...
+    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=...) -> Sphere: ...
+    def disable_collision(self) -> None: ...
+    def enable_collision(self) -> None: ...
+    def check_collision(self) -> builtins.list[typing.Any]:
+        r"""
+        Returns any object, with active collision, that is either
+        intersected or inserted in the current object.
+        
+        Example:
+        
+        ```
+        >>>bigCube: Cube = Cube(pos=Vec3.splat(50))
+        >>>intersected: list[Cube] = bigCube.check_collision()
+        ...
+        ...# since the returned objects are references, we can edit them directly
+        ...# without creating duplicates.
+        >>>for cube in intersected:
+        ...   cube.pos = Vec3.ZERO()
+        ```
+        """
+    def tick(self, slf:Sphere, function:typing.Any) -> None:
+        r"""
+        Add a function to this object, which will automatically be executed each frame.
+        The function must take the object it is attatched to as an argument.
+        
+        Example:
+        
+        ```
+        ...# arguments from outside the scope may be included.
+        >>>delta_time = 0
+        >>>def updateCube(cube: Cube):
+        ...    cube.rot += Vec3.splat(0.2*delta_time)
+        ...
+        >>>myCube = Cube()
+        >>>myCube.tick(updateCube)
+        ...
+        >>>while True:
+        ...    # dt would have to get updated each frame.
+        ...    delta_time = get_delta_time()
+        ...
+        ...    #'next_frame' runs the update function for every object.
+        ...    next_frame()
+        ```
+        """
+    def __eq__(self, other:Sphere) -> builtins.bool: ...
+    def __hash__(self) -> builtins.int: ...
+    def __repr__(self) -> builtins.str: ...
+    def __str__(self) -> builtins.str: ...
 
 class Texture2D:
     r"""
@@ -6310,18 +6438,25 @@ def draw_texture(texture:Texture2D, x:builtins.float, y:builtins.float, color:Co
 def get_delta_time() -> builtins.float:
     r"""
     Returns duration in seconds of the last frame drawn.
-    This function is identical to 'get_frame_time()' but under another name.
+    This is useful for F.E. animations, that have to keep the same pace,
+    independent of the frame rate.
+    
+    Example:
+    ```
+    >>>rect_x  = 0
+    >>>while True:
+    ...  delta_time = get_delta_time()
+    ...  rect_x += (2.0*delta_time)
+    ...
+    ...  draw_rectangle(x=rect_x, y=50, w=50, h=50, color=Color.WHITE())
+    ...
+    ...  next_frame()
+    ```
     """
 
 def get_fps() -> builtins.int:
     r"""
     returns the current frames per second
-    """
-
-def get_frame_time() -> builtins.float:
-    r"""
-    Returns duration in seconds of the last frame drawn.
-    This function is identical to 'get_delta_time()' but under another name.
     """
 
 def get_keys_down() -> KeyCodeSet:
