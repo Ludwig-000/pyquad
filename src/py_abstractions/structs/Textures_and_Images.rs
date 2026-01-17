@@ -177,7 +177,27 @@ impl Image {
     
     
 }
+pub fn image_from_bytes(bytes: &Vec<u8>)-> PyResult<Image>{
+    let cursor = Cursor::new(bytes);
+        let reader = ImageReader::new(cursor)
+            .with_guessed_format()
+            .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Failed to guess format: {e}")))?;
 
+        // Decode image
+        let image = reader
+            .decode()
+            .map_err(|e|  PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Decode error: {e}")))?;
+
+        // Convert to RGBA8 and get raw bytes
+        let rgba = image.to_rgba8();
+        let (width, height) = rgba.dimensions();
+
+        Ok(Image {
+            bytes: rgba.into_raw(),
+            width: width as u16,
+            height: height as u16,
+        })
+}
 
 /// Texture, data stored in GPU memory
 #[gen_stub_pyclass]
@@ -192,10 +212,10 @@ pub struct Texture2D {
 impl Texture2D {
    
     #[staticmethod]
-    pub fn from_image(image: PyRef<Image>) -> Texture2D {
+    pub fn from_image(image: Image) -> Texture2D {
         
         let inner_im = mq::Image {
-            bytes: image.bytes.clone(),
+            bytes: image.bytes,
             width: image.width,
             height: image.height,
         };

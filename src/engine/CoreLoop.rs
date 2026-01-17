@@ -1,12 +1,9 @@
-
-
-
 use std::panic;
 use std::sync::mpsc;
 use std::collections::HashSet;
 use std::sync::Arc;
 use std::any::Any;
-
+use pyo3::prelude::PyResult;
 use crossbeam::channel::SendTimeoutError;
 use lazy_static::*;
 
@@ -16,6 +13,7 @@ use macroquad::prelude as mq;
 use macroquad::audio as au;
 use slotmap::DefaultKey;
 
+use crate::engine::Objects::Mesh::Mesh;
 use crate::engine::Objects::Sphere::Sphere;
 use crate::engine::SHADERS::shader_manager as sm;
 use crate::engine::PError::PError;
@@ -23,6 +21,11 @@ use crate::engine::PArc::PArc;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::*;
 use pyo3::{Py};
 use pyo3::types::{PyWeakref};
+
+use crate::engine::Objects::Cube::*;
+use crate::engine::Objects::ObjectManagement::ObjectStorage;
+use crate::engine::Objects::ObjectManagement::ObjectManagement;
+
 
 pub enum Command {
     ManuallyStepPhysics(f32),
@@ -48,7 +51,13 @@ pub enum Command {
         position: mq::Vec3,
         rotation: mq::Vec3,
         color: mq::Color,
-        pyAny: Py<PyWeakref>,
+        weak_ref: Py<PyWeakref>,
+        sender: mpsc::SyncSender<DefaultKey>,
+    },
+
+    CreateMesh{
+        mesh: Mesh,
+        weak_ref: Py<PyWeakref>,
         sender: mpsc::SyncSender<DefaultKey>,
     },
 
@@ -57,7 +66,7 @@ pub enum Command {
         position: mq::Vec3,
         rotation: mq::Vec3,
         color: mq::Color,
-        pyAny: Py<PyWeakref>,
+        weak_ref: Py<PyWeakref>,
         sender: mpsc::SyncSender<DefaultKey>,
     },
 
@@ -178,21 +187,13 @@ lazy_static! {
 
 }
 
-use crate::engine::Objects::Cube::*;
-use crate::engine::Objects::ObjectManagement::ObjectStorage;
-use crate::engine::Objects::ObjectManagement::ObjectManagement;
-
-
 /// processes commands that rely on the macroquad engine
 /// commands that do not rely on it's core (openGL) components ( or just the internal Core-Thread ) are found in pyabstractions.
 pub async fn proccess_commands_loop() {
 
     let mut object_storage = ObjectStorage::ObjectStorage::new();
 
-    
-
     loop {
-
         while let Some(command) = COMMAND_QUEUE.pop() {
             
             match command {
@@ -264,7 +265,7 @@ pub async fn proccess_commands_loop() {
                     cube.rotation = rotation;
                     
                 }
-                Command::CreateCube { size, position, rotation,color, pyAny, sender }=>{
+                Command::CreateCube { size, position, rotation,color, weak_ref: pyAny, sender }=>{
 
                     object_storage.quick_push(sender, pyAny, 
                         move || {
@@ -273,7 +274,14 @@ pub async fn proccess_commands_loop() {
                         });
                         
                 }
-                Command::CreateSphere { size, position, rotation,color, pyAny, sender }=>{
+                Command::CreateMesh { mesh, weak_ref, sender }=>{
+
+                    object_storage.quick_push(sender, weak_ref, 
+                        move || {
+                            Object::Mesh(mesh)
+                        });
+                }
+                Command::CreateSphere { size, position, rotation,color, weak_ref: pyAny, sender }=>{
 
                     object_storage.quick_push(sender, pyAny, 
                         move || {

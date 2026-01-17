@@ -32,9 +32,19 @@ impl Color {
     /// creates a new color.
     ///
     /// inputs range from:
-    /// (0.0, 0.0, 0.0, 1.0) -> BLACK
-    /// to
-    /// (1.0, 1.0, 1.0, 1.0) -> WHITE
+    /// ```
+    /// >>>Color(r=0.0, g=0.0, b=0.0, a=1.0) -> Color.BLACK()
+    /// ...#to
+    /// >>Color(r=1.0, g=1.0, b=1.0, a=1.0) -> Color.WHITE()
+    /// ```
+    /// r represents the red channel.
+    /// 
+    /// g represents the green channel.
+    /// 
+    /// b represents the blue channel.
+    /// 
+    /// a represents the alpha channel aka. transparency.
+    #[pyo3(signature = (r= 1.0, g= 1.0, b= 1.0, a= 1.0))]
     #[new]
     pub fn new(r: f32, g: f32,b: f32,a: f32) -> Self {
        Self { r,g,b,a }

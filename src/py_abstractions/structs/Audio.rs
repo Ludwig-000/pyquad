@@ -59,7 +59,6 @@ impl Sound {
             Ok(s) => { Ok( Sound{audio: s} )  },
             Err(e) => {
                 Err(e.into())
-                
             }
         }
  

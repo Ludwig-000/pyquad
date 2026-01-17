@@ -66,7 +66,7 @@ impl Sphere {
             position: position.into(), 
             rotation: rotation.into(), 
             color: color.into(),
-            pyAny: weak_ref_handle,
+            weak_ref: weak_ref_handle,
             sender 
         });
         

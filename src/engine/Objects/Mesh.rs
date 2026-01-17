@@ -3,6 +3,9 @@ use glam::{Vec3A, Mat3A, Quat, EulerRot};
 // This fix for Error #1: Explicitly import the enum
 use gltf::mesh::util::ReadIndices;
 
+use crate::engine::PError::PError;
+
+
 pub struct Mesh{
     
     pub scale: mq::Vec3,
@@ -15,9 +18,11 @@ pub struct Mesh{
 }
 impl Mesh{
 
-    pub fn load_from_gltf(path: &str, texture: Option<mq::Texture2D>) -> Option<Self> {
-        let (document, buffers, _) = gltf::import(path).ok()?;
-        
+    /// Loads a mesh from raw bytes (e.g. from include_bytes! or std::fs::read)
+    /// Best used with .glb files or .gltf files with embedded buffers.
+    pub fn load_from_gltf(data: &[u8], texture: Option<mq::Texture2D>) -> Result<Self, gltf::Error> {
+        let (document, buffers, _) = gltf::import_slice(data)?;
+
         let mut vertices = Vec::new();
         let mut indices = Vec::new();
 
@@ -26,9 +31,16 @@ impl Mesh{
                 let reader = primitive.reader(|buffer| Some(&buffers[buffer.index()]));
 
                 // 1. Extract Positions
-                let positions: Vec<_> = reader.read_positions()?.map(mq::Vec3::from).collect();
+                // We cannot use '?' here because read_positions returns Option.
+                // If a primitive has no positions, we skip it.
+                let positions_reader = match reader.read_positions() {
+                    Some(iter) => iter,
+                    None => continue,
+                };
                 
-                // 2. Extract Normals (Fix for Error #3)
+                let positions: Vec<_> = positions_reader.map(mq::Vec3::from).collect();
+
+                // 2. Extract Normals
                 let normals: Vec<_> = reader
                     .read_normals()
                     .map(|n| n.map(mq::Vec3::from).collect())
@@ -43,16 +55,22 @@ impl Mesh{
                 // 4. Extract Colors
                 let colors: Vec<_> = reader
                     .read_colors(0)
-                    .map(|c| c.into_rgba_f32().map(|rgba| mq::Color::from_vec(mq::vec4(rgba[0], rgba[1], rgba[2], rgba[3]))).collect())
+                    .map(|c| {
+                        c.into_rgba_f32()
+                            .map(|rgba| mq::Color::from_vec(mq::vec4(rgba[0], rgba[1], rgba[2], rgba[3])))
+                            .collect()
+                    })
                     .unwrap_or_else(|| vec![mq::WHITE; positions.len()]);
 
-                // Map to Macroquad Vertices (including the normal field)
+                // Map to Macroquad Vertices
                 for i in 0..positions.len() {
                     vertices.push(mq::Vertex {
                         position: positions[i],
                         uv: tex_coords[i],
                         color: colors[i].into(),
-                        normal: normals[i].extend(0.0), // Added normal field here
+                        // Extending vec3 normal to vec4 as required by macroquad internal definitions usually
+                        // Note: mq::Vertex.normal is usually Vec3, but if your setup expects float extensions ensure this matches
+                        normal: normals[i].extend(0.0), 
                     });
                 }
 
@@ -67,7 +85,8 @@ impl Mesh{
             }
         }
 
-        Some(Self {
+        // CHANGE 2: Wrap result in Ok()
+        Ok(Self {
             scale: mq::vec3(1.0, 1.0, 1.0),
             position: mq::vec3(0.0, 0.0, 0.0),
             rotation: mq::vec3(0.0, 0.0, 0.0),

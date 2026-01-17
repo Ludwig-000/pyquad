@@ -4684,14 +4684,23 @@ class Color:
         r"""
         alpha channel. ranges from 0.0 to 1.0
         """
-    def __new__(cls, r:builtins.float, g:builtins.float, b:builtins.float, a:builtins.float) -> Color:
+    def __new__(cls, r:builtins.float=1.0, g:builtins.float=1.0, b:builtins.float=1.0, a:builtins.float=1.0) -> Color:
         r"""
         creates a new color.
         
         inputs range from:
-        (0.0, 0.0, 0.0, 1.0) -> BLACK
-        to
-        (1.0, 1.0, 1.0, 1.0) -> WHITE
+        ```
+        >>>Color(r=0.0, g=0.0, b=0.0, a=1.0) -> Color.BLACK()
+        ...#to
+        >>Color(r=1.0, g=1.0, b=1.0, a=1.0) -> Color.WHITE()
+        ```
+        'r represents the red channel.'
+        
+        g represents the green channel.
+        
+        b represents the blue channel.
+        
+        a represents the alpha channel aka. transparency.
         """
 
 class Config:
@@ -4847,7 +4856,7 @@ class Cube:
         ...   cube.pos = Vec3.ZERO()
         ```
         """
-    def tick(self, slf:Cube, function:typing.Any) -> None:  # type: ignore[slf]
+    def tick(self, slf:Cube, function:typing.Any) -> None:
         r"""
         Add a function to this object, which will automatically be executed each frame.
         The function must take the object it is attatched to as an argument.
@@ -4871,27 +4880,66 @@ class Cube:
         ...    next_frame()
         ```
         """
+    def remove_tick(self) -> None: ...
+    def bind_location(self, obj:typing.Any) -> None: ...
+    def unbind_location(self) -> None: ...
+    def bind_rotation(self) -> None: ...
+    def unbind_rotation(self) -> None: ...
+    def bind_scale(self) -> None: ...
+    def unbind_scale(self) -> None: ...
     def __eq__(self, other:Cube) -> builtins.bool: ...
     def __hash__(self) -> builtins.int: ...
     def __repr__(self) -> builtins.str: ...
     def __str__(self) -> builtins.str: ...
 
-class Filedata:
+class FileData:
     r"""
-    A wrapper around raw filedata.
+    A wrapper around raw filedata that has not yet been parsed.
+    
+    To load FileData, there are functions like:
+    ```
+    >>>load_file(...)
+    ...
+    >>>download_file(...)
+    ...
+    ```
+    or 'Loading'.
     """
     @property
-    def bytes(self) -> builtins.list[builtins.int]: ...
+    def bytes(self) -> builtins.list[builtins.int]:
+        r"""
+        These are the raw bytes of a file.
+        They likely do not need to be edited manually.
+        """
     @bytes.setter
-    def bytes(self, value: builtins.list[builtins.int]) -> None: ...
+    def bytes(self, value: builtins.list[builtins.int]) -> None:
+        r"""
+        These are the raw bytes of a file.
+        They likely do not need to be edited manually.
+        """
     @staticmethod
-    def from_bytes(bytes:typing.Sequence[builtins.int]) -> Filedata: ...
-    @staticmethod
-    def into_Image() -> Image: ...
-    @staticmethod
-    def into_2DTexture() -> Texture2D: ...
-    @staticmethod
-    def into_Sound() -> Sound: ...
+    def from_raw_bytes(bytes:typing.Sequence[builtins.int]) -> FileData:
+        r"""
+        Loads file data from raw bytes.
+        This is mostly useful to be compatible with other libraries,
+        which may return F.E. an audio file as Bytes.
+        
+        For more practical ways to load a file, look into 'Loading'.
+        """
+    def to_Image(self) -> Image:
+        r"""
+        Attempts to parse the file data as an Image.
+        """
+    def to_2DTexture(self) -> Texture2D:
+        r"""
+        Attempts to parse the file data as a texture.
+        FileData -> Image -> Texture2D
+        """
+    def to_Sound(self) -> Sound:
+        r"""
+        Attempts to parse the file data as a Sound.
+        """
+    def to_mesh_data(self) -> None: ...
 
 class Image:
     r"""
@@ -4958,9 +5006,9 @@ class Loading:
         Does nothing if the given filepath already exists.
         """
     @staticmethod
-    def download_file_and_save_and_load(url:builtins.str, filepath:builtins.str) -> builtins.list[builtins.int]: ...
+    def download_file_and_save_and_load(url:builtins.str, filepath:builtins.str) -> FileData: ...
     @staticmethod
-    def download_file(url:builtins.str) -> builtins.list[builtins.int]: ...
+    def download_file(url:builtins.str) -> FileData: ...
     @staticmethod
     def load_multiple_files(paths:dict) -> dict: ...
 
@@ -6354,7 +6402,7 @@ def clear_background(color:Color) -> None:
     this is usually used at the start of a frame.
     """
 
-def download_file(url:builtins.str) -> builtins.list[builtins.int]:
+def download_file(url:builtins.str) -> FileData:
     r"""
     Downloads a file and returning it's raw data.
     """
@@ -6477,9 +6525,9 @@ def get_keys_released() -> KeyCodeSet:
 
 def get_mouse_position() -> tuple[builtins.float, builtins.float]: ...
 
-def load_file(path:builtins.str) -> builtins.list[builtins.int]:
+def load_file(path:builtins.str) -> FileData:
     r"""
-    Loads a file into a List of Bytes.
+    Loads a file.
     """
 
 def next_frame() -> None:
@@ -6508,7 +6556,7 @@ def show_mouse(option:builtins.bool) -> None: ...
 
 def step_physics(distance:builtins.float) -> None: ...
 
-def write_to_file(contents:typing.Sequence[builtins.int], path:builtins.str) -> None:
+def write_to_file(contents:FileData, path:builtins.str) -> None:
     r"""
     Writes raw data to file.
     """
