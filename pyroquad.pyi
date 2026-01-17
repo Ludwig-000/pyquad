@@ -4694,7 +4694,7 @@ class Color:
         ...#to
         >>Color(r=1.0, g=1.0, b=1.0, a=1.0) -> Color.WHITE()
         ```
-        'r represents the red channel.'
+        r represents the red channel.
         
         g represents the green channel.
         
@@ -4939,7 +4939,12 @@ class FileData:
         r"""
         Attempts to parse the file data as a Sound.
         """
-    def to_mesh_data(self) -> None: ...
+    def to_mesh_data(self) -> Mesh:
+        r"""
+        Attempts to parse the file as a mesh.
+        Immediately returns a fully fledged Mesh object that has collision, is queued to be drawn,
+        and is positioned at 0,0,0
+        """
 
 class Image:
     r"""
@@ -5014,6 +5019,8 @@ class Loading:
 
 class Mesh:
     def __new__(cls) -> Mesh: ...
+    @staticmethod
+    def from_file_data(data:FileData, position:Vec3, rotation:Vec3, scale:Vec3) -> Mesh: ...
 
 class PlaySoundParams:
     @property
@@ -6257,9 +6264,6 @@ class Vec3:
     def __rsub__(self, lhs:builtins.float) -> Vec3: ...
     def __mod__(self, rhs:builtins.Union['Vec3', float]) -> Vec3: ...
     def __rmod__(self, lhs:builtins.float) -> Vec3: ...
-
-class Vertex:
-    def __new__(cls) -> Vertex: ...
 
 class KeyCode(Enum):
     Space = ...

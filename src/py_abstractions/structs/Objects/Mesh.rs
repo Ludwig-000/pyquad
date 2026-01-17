@@ -18,7 +18,7 @@ use pyo3_stub_gen::derive::* ;
 use pyo3::types::{PyWeakref, PyWeakrefReference};
 
 #[gen_stub_pyclass]
-#[pyclass]
+#[pyclass(subclass, weakref)]
 pub struct Mesh{
 	pub key: DefaultKey
 }
@@ -33,6 +33,7 @@ impl Mesh{
 
     #[staticmethod]
     pub fn from_file_data(py: Python<'_>,data: FileData, position: Vec3, rotation: Vec3, scale: Vec3)-> PyResult<Py<Mesh>>{
+
         let mesh =  internal_mesh::Mesh::load_from_gltf(&data.bytes, None).map_err(|e|{
             PError::GLTFError(e)
         })?;
@@ -44,8 +45,8 @@ impl Mesh{
         let mesh_handle: Py<Mesh> = Py::new(py, placeholder_struct)?; 
         
         let weak_ref_handle: Py<PyWeakref> = {
-            let bound_cube = mesh_handle.bind(py); 
-            let weak_ref_ref = PyWeakrefReference::new(&bound_cube)?;
+            let bound_mesh = mesh_handle.bind(py); 
+            let weak_ref_ref = PyWeakrefReference::new(&bound_mesh)?;
             weak_ref_ref.cast_into::<PyWeakref>()?.unbind() 
         };
 

@@ -72,7 +72,7 @@ impl RapierWorld{
                 let shape = SharedShape::cuboid(scale.x/2.0, scale.y/2.0, scale.z/2.0);
                 c.set_shape(shape);
             }
-            _ => todo!()
+            _ => todo!() // not important for the moment
         }
     }
 
@@ -111,7 +111,46 @@ impl RapierWorld{
                     )
                     .build()
             },
-            _ => todo!(),
+            obj::Object::Mesh(mesh_wrapper) => {
+                // 1. Bake Scale & Convert Vertices
+                // We iterate over the Macroquad vertices, applying the object's scale immediately.
+                // We convert them into Rapier's Point3<f32>.
+                let vertices: Vec<rapier3d::na::Point3<f32>> = mesh_wrapper.mesh.vertices
+                    .iter()
+                    .map(|v| {
+                        rapier3d::na::Point3::new(
+                            v.position.x * mesh_wrapper.scale.x,
+                            v.position.y * mesh_wrapper.scale.y,
+                            v.position.z * mesh_wrapper.scale.z,
+                        )
+                    })
+                    .collect();
+            
+                // 2. Convert Indices
+                // Macroquad uses a flat Vec<u16>, but Rapier needs [u32; 3] for triangles.
+                // We use chunks_exact(3) to group them into triangles.
+                let indices: Vec<[u32; 3]> = mesh_wrapper.mesh.indices
+                    .chunks_exact(3)
+                    .map(|chunk| [chunk[0] as u32, chunk[1] as u32, chunk[2] as u32])
+                    .collect();
+            
+                // 3. Build the Collider
+                // We duplicate the sensor/physics settings from your Cube logic to keep behavior consistent.
+                ColliderBuilder::trimesh(vertices, indices)
+                    .expect("Could not build mesh collider from raw vertecies")
+                    .sensor(true) 
+                    .restitution(0.7)
+                    .density(1.0)
+                    .active_collision_types(
+                        ActiveCollisionTypes::DYNAMIC_DYNAMIC
+                        | ActiveCollisionTypes::DYNAMIC_KINEMATIC
+                        | ActiveCollisionTypes::DYNAMIC_FIXED
+                        | ActiveCollisionTypes::KINEMATIC_KINEMATIC 
+                        | ActiveCollisionTypes::KINEMATIC_FIXED
+                    )
+                    .build()
+            },
+            _ => todo!()
         };
         
         collider.user_data = key_to_u128(key);
@@ -206,6 +245,7 @@ fn extract_object_transforms(obj: &obj::Object)-> Transforms<'_>{
     
     match obj{
         obj::Object::Cube(cube) => Transforms { pos: &cube.position, rot: &cube.rotation, scale: &cube.scale },
+        obj::Object::Mesh(mesh) => Transforms { pos: &mesh.position, rot: &mesh.rotation, scale: &mesh.scale},
         _ => todo!()
     }
 }

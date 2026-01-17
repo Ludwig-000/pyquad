@@ -15,7 +15,8 @@ pub fn draw_all_Objects(obj: &ObjectStorage, viewMat: macroquad::prelude::Mat4){
         let _: () = obj.iter().map(|item|{
             match item{
                 Object::Cube(cube)=> cube.draw(gl),
-                _ => todo!(),
+                Object::Mesh(mesh)=> mesh.draw(gl),
+                _ => todo!()
             }
         }).collect();
 

@@ -17,6 +17,10 @@ pub struct Mesh{
 
 }
 impl Mesh{
+    pub fn draw(&self, gl: &mut macroquad::prelude::QuadGl ){
+        gl.texture(self.mesh.texture.as_ref());
+        gl.geometry(&self.mesh.vertices, &self.mesh.indices);
+    }
 
     /// Loads a mesh from raw bytes (e.g. from include_bytes! or std::fs::read)
     /// Best used with .glb files or .gltf files with embedded buffers.
