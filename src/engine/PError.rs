@@ -1,17 +1,12 @@
-
-
 use pyo3::prelude::*;
- 
-
-
 use symphonia;
 use hound;
 
 
-// creates an intermediate Error, to collect all custom errors and turn them into PythonErrors
-// this turns any error into a runtime error
+/// Custom error type for this game engine.
+/// It collects all possible errors that can be thrown, like MacroquadErr, Hound, Symphonia, Pyo3
+/// and allows a conversion to Pyo3 error to be exposed to python.
 pub enum PError{
-
     MacroquadErr(macroquad::Error),
     Pyo3Err(pyo3::PyErr),
     SymphoniaError(symphonia::core::errors::Error),

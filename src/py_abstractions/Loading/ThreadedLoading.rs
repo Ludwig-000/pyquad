@@ -5,7 +5,7 @@ use pyo3::types::PyDict;
 use pyo3::PyResult;
 
 use std::thread;
-use crate::py_abstractions::Loading::FileData;
+use crate::py_abstractions::Loading::FileData::FileData;
 use crate::py_abstractions::Loading::Loading::{self as load, download_file, load_file, write_to_file};
 
 
@@ -23,20 +23,20 @@ impl Loading {
     #[staticmethod]
     pub fn download_file_and_save(url: String, filepath: String)-> PyResult<()>{
         let data = download_file(&url)?;
-        write_to_file(data, filepath)
+        write_to_file(&data, filepath)
     }
 
 
     #[staticmethod]
-    pub fn download_file_and_save_and_load(url: String, filepath: String)-> PyResult<Vec<u8>>{
+    pub fn download_file_and_save_and_load(url: String, filepath: String)-> PyResult<FileData>{
         let data = download_file(&url)?;
-        write_to_file(data.clone(), filepath)?;
+        write_to_file(&data, filepath)?;
         Ok(data)
     }
 
     
     #[staticmethod]
-    fn download_file(url: &str) -> PyResult<Vec<u8>> {
+    fn download_file(url: &str) -> PyResult<FileData> {
         load::download_file(url)
     }
 
@@ -52,7 +52,7 @@ impl Loading {
             path_names.push(file_path);
         }
 
-        let res: Vec<Vec<u8>> = threaded_map(path_names, |s: String| {
+        let res: Vec<FileData> = threaded_map(path_names, |s: String| {
             load_file(&s) 
         })?;
 
@@ -67,8 +67,7 @@ impl Loading {
 
         let result_dict = PyDict::new(py);
 
-        for (var_name, byte_vec) in var_names.into_iter().zip(res.into_iter()) {
-            let file = FileData::Filedata::from_bytes(byte_vec);
+        for (var_name, file) in var_names.into_iter().zip(res.into_iter()) {
             result_dict.set_item(var_name, file)?;
         }
         Ok(result_dict)

@@ -103,7 +103,7 @@ pub fn pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCodeSet>()?;
 
      m.add_class::<crate::py_abstractions::Loading::ThreadedLoading::Loading>()?;
-     m.add_class::<crate::py_abstractions::Loading::FileData::Filedata>()?;
+     m.add_class::<crate::py_abstractions::Loading::FileData::FileData>()?;
      m.add_function(wrap_pyfunction!(load_file, m)?)?;
      m.add_function(wrap_pyfunction!(download_file, m)?)?;
      m.add_function(wrap_pyfunction!(write_to_file, m)?)?;

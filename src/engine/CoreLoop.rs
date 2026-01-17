@@ -242,24 +242,26 @@ pub async fn proccess_commands_loop() {
                         Object::Cube(cube) => cube,
                         _ => panic!("object type missmatch"),
                     };
+                    cube.mesh.recalculate_pos(cube.position, position);
                     cube.position = position;
-                    cube.mesh = CubeMesh::new(cube.scale, cube.position, cube.rotation, cube.mesh.texture.clone(), cube.color );
                 }
                 Command::SetCubeSize { key, size } => {
                     let cube = match  object_storage.get_mut(key){
                         Object::Cube(cube) => cube,
                         _ => panic!("object type missmatch"),
                     };
+                    cube.mesh.recalculate_scale(cube.position, cube.scale, size);
                     cube.scale = size;
-                    cube.mesh = CubeMesh::new(cube.scale, cube.position, cube.rotation, cube.mesh.texture.clone(), cube.color );
                 }
                 Command::SetCubeRotation { key, rotation } => {
                     let cube = match  object_storage.get_mut(key){
                         Object::Cube(cube) => cube,
                         _ => panic!("object type missmatch"),
                     };
+
+                    
+                    cube.mesh.recalculate_rot(cube.position, cube.rotation, rotation);
                     cube.rotation = rotation;
-                    cube.mesh = CubeMesh::new(cube.scale, cube.position, cube.rotation, cube.mesh.texture.clone(), cube.color );
                     
                 }
                 Command::CreateCube { size, position, rotation,color, pyAny, sender }=>{

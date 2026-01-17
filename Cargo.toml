@@ -50,6 +50,7 @@ slotmap = "1.0.7" # fast hasher for object management.
 hound = "3.5" #for converting audio formats
 symphonia = { version = "0.5", features = ["mp3"] } #for converting audio formats
 
+gltf = "1.4.1" # for parsing 3DAssets
 
 [dependencies.image] # for image decoding
 version = "0.25.8"

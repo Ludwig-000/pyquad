@@ -12,6 +12,7 @@ impl Sphere{
         color: mq::Color) -> Sphere {
 
         todo!()
+        
     }
     pub fn draw(){
         

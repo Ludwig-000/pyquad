@@ -1,4 +1,4 @@
-use crate::engine::{Objects::{Cube::Cube, Sphere::Sphere}, structures::Rectangle};
+use crate::engine::{Objects::{Cube::Cube, Mesh::Mesh, Sphere::Sphere}, structures::Rectangle};
 use pyo3::prelude::*;
 use pyo3::types::PyWeakref;
 use slotmap::*;
@@ -6,9 +6,9 @@ use std::{sync::Arc};
 use crate::engine::Objects::PhysicsWorld::Rapier::{ObjectHandle, RapierWorld};
 use std::sync::mpsc::SyncSender;
 pub enum Object {
-    Rectangle(Rectangle),
     Cube(Cube),
     Sphere(Sphere),
+    Mesh(Mesh)
 }
 
 #[derive(Clone, Copy)]

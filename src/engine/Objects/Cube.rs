@@ -1,5 +1,5 @@
 use macroquad::{color::Color, prelude as mq, window::InternalGlContext};
-use rapier3d::prelude::*;
+use glam::{Vec3A, Mat3A, Quat, EulerRot};
 
 #[derive( Debug, Clone)]
 pub struct Cube{
@@ -23,10 +23,7 @@ impl Cube {
             gl.geometry(&self.mesh.vertices, &self.mesh.indices);
         
     }
-
-
 }
-
 
 
 #[derive(Clone, Debug)]
@@ -35,7 +32,6 @@ pub struct CubeMesh{
     pub indices: [u16; 36],
     pub texture: Option<mq::Texture2D>,
 }
-
 impl CubeMesh {
     pub fn new(
         size: mq::Vec3, 
@@ -116,6 +112,68 @@ impl CubeMesh {
             vertices,
             indices,
             texture,
+        }
+    }
+
+
+    /// 1. Recalculate mesh based on a change in position.
+    /// Logic: Calculates the difference (delta) and adds it to every vertex.
+    pub fn recalculate_pos(&mut self, old_pos: mq::Vec3, new_pos: mq::Vec3) {
+        let old = Vec3A::from(glam::Vec3::from(old_pos));
+        let new = Vec3A::from(glam::Vec3::from(new_pos));
+        let delta = new - old;
+
+        for vertex in self.vertices.iter_mut() {
+            let mut pos = Vec3A::from(glam::Vec3::from(vertex.position));
+            pos += delta;
+            vertex.position = glam::Vec3::from(pos).into();
+        }
+    }
+
+    /// 2. Recalculate mesh based on a change in rotation.
+    /// Logic: Computes the "Delta Quaternion" needed to go from old_rot to new_rot,
+    /// converts it to a Mat3 for speed, and rotates vertices around the `pivot` (current position).
+    pub fn recalculate_rot(&mut self, pivot: mq::Vec3, old_rot: mq::Vec3, new_rot: mq::Vec3) {
+        let pivot_simd = Vec3A::from(glam::Vec3::from(pivot));
+
+        let q_old = Quat::from_euler(EulerRot::XYZ, old_rot.x, old_rot.y, old_rot.z);
+        let q_new = Quat::from_euler(EulerRot::XYZ, new_rot.x, new_rot.y, new_rot.z);
+
+        let q_delta = q_new * q_old.inverse();
+
+        let rot_matrix = Mat3A::from_quat(q_delta);
+
+        for vertex in self.vertices.iter_mut() {
+            let pos = Vec3A::from(glam::Vec3::from(vertex.position));
+            let local = pos - pivot_simd;
+            let rotated = rot_matrix * local;
+            vertex.position = glam::Vec3::from(pivot_simd + rotated).into();
+
+            let norm = Vec3A::new(vertex.normal.x, vertex.normal.y, vertex.normal.z);
+            let rot_norm = rot_matrix * norm;
+            
+            vertex.normal.x = rot_norm.x;
+            vertex.normal.y = rot_norm.y;
+            vertex.normal.z = rot_norm.z;
+        }
+    }
+
+    /// 3. Recalculate mesh based on a change in scale.
+    /// Logic: Calculates the ratio (new / old) and scales vertices relative to the pivot.
+    pub fn recalculate_scale(&mut self, pivot: mq::Vec3, old_scale: mq::Vec3, new_scale: mq::Vec3) {
+        let pivot_simd = Vec3A::from(glam::Vec3::from(pivot));
+        let old_s = Vec3A::from(glam::Vec3::from(old_scale));
+        let new_s = Vec3A::from(glam::Vec3::from(new_scale));
+
+        let ratio = new_s / old_s;
+
+        for vertex in self.vertices.iter_mut() {
+            let pos = Vec3A::from(glam::Vec3::from(vertex.position));
+            
+            let offset = pos - pivot_simd;
+            let final_pos = pivot_simd + (offset * ratio);
+
+            vertex.position = glam::Vec3::from(final_pos).into();
         }
     }
 

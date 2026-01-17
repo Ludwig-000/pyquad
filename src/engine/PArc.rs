@@ -9,7 +9,7 @@ use std::fmt::{Debug, Formatter};
 /// this Wrapper ensures the object gets dropped in the same Thread it was created in.
 /// (kinda)
 /// This is mostly useful for anything that implements 'Texture2D', since it has an
-/// unsafe destructor that panics if run in the python thread.
+/// unsafe destructor that panics if run on the python thread.
 pub struct PArc<T: Send + Sync + 'static>{
     item: Arc<T>,
     origin: thread::ThreadId,

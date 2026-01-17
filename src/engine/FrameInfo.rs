@@ -4,9 +4,12 @@ use macroquad::prelude as mq;
 use std::time::Instant;
 use std::sync::LazyLock;
 
-pub static DELTA_TIME: Mutex<f32>  = Mutex::new(0.0);
 
+/// Some information about the state of the engine, that is only updates once a frame,
+/// meaning it can be stored safely inside statics.
+pub static DELTA_TIME: Mutex<f32>  = Mutex::new(0.0);
 pub static FPS: AtomicI32 =  AtomicI32::new(0);
+
 
 /// this function should be run by 'next_frame'
 pub fn update_frame_info(){

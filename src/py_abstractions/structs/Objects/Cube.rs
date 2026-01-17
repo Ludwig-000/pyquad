@@ -245,6 +245,41 @@ impl Cube {
         Ok(())
     }
 
+    pub fn remove_tick(&mut self)-> PyResult<()>{
+
+        let mut storage = ObjectFunctionStorage::get_fun_storage();
+        let key = match self.function_key{
+            None => { 
+                return Err(
+                    PyRuntimeError::new_err("No function found, that can be removed.")
+                );
+            },
+            Some(key)=> { key },
+        };
+        storage.remove(key);
+        self.function_key  = None;
+        Ok(())
+    }
+
+    pub fn bind_location(&mut self, obj: Bound<'_, PyAny>){
+        todo!()
+    }
+    pub fn unbind_location(&mut self){
+        todo!()
+    }
+    pub fn bind_rotation(&mut self){
+        todo!()
+    }
+    pub fn unbind_rotation(&mut self){
+        todo!()
+    }
+    pub fn bind_scale(&mut self){
+        todo!()
+    }
+    pub fn unbind_scale(&mut self){
+        todo!()
+    }
+
 
     fn __eq__(&self, other: &Self) -> bool {
         self.key == other.key
@@ -271,6 +306,8 @@ impl Cube {
         format!("Cube at ({:.2}, {:.2}, {:.2})", pos.x, pos.y, pos.z)
     }
 
+
+
 }
 
 impl Drop for Cube{
@@ -284,7 +321,6 @@ impl Drop for Cube{
                 storage.remove(key);
             }
         }
-
         COMMAND_QUEUE.push( Command::DeleteObject { key: self.key });
     }
 }

@@ -1,5 +1,4 @@
 pub mod structures;
-pub mod load_ressources;
 pub mod SHADERS;
 pub mod Cubemap;
 
