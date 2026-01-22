@@ -49,6 +49,8 @@ impl FunctionStorage{
     }
 
     pub fn execute_all(&self, py: Python<'_>) -> PyResult<()> {
+
+        
         for (ptr_address, callback) in self.tasks.values() {
             
             unsafe {

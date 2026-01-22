@@ -15,7 +15,7 @@ The project is in early development and the repository exists for documentation 
 #
 **Hello rectangle:**
 ```Python
-from pyquad import *
+from pyroquad import *
 
 activate_engine()
 

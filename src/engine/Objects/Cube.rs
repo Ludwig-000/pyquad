@@ -1,4 +1,4 @@
-use macroquad::{color::Color, prelude as mq, window::InternalGlContext};
+use macroquad::{color::Color, prelude::{self as mq,}};
 use glam::{Vec3A, Mat3A, Quat, EulerRot};
 
 #[derive( Debug, Clone)]

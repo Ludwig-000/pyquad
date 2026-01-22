@@ -83,7 +83,7 @@ impl Sphere {
         }
 
         let (sender, receiver) = mpsc::sync_channel(1);
-        let command = Command::GetCubeSize { key: self.key, sender: sender };
+        let command = Command::GetObjectScale { key: self.key, sender: sender };
         COMMAND_QUEUE.push(command);
         receiver.recv().unwrap().into()
     }
@@ -94,7 +94,7 @@ impl Sphere {
             self.cache.scale = value.into();
         }
 
-        let command = Command::SetCubeSize { key: self.key, size: value.into() };
+        let command = Command::SetObjectScale { key: self.key, scale: value.into() };
         COMMAND_QUEUE.push(command);
     }
 
@@ -104,7 +104,7 @@ impl Sphere {
             return self.cache.location.into()
         }
         let (sender, receiver) = mpsc::sync_channel(1);
-        let command = Command::GetCubePos { key: self.key, sender: sender };
+        let command = Command::GetObjectPos { key: self.key, sender: sender };
         COMMAND_QUEUE.push(command);
         receiver.recv().unwrap().into()
     }
@@ -114,7 +114,7 @@ impl Sphere {
         if self.cache.can_be_cached == true{
             self.cache.location = value.into();
         }
-        let command = Command::SetCubePos { key: self.key, position: value.into() };
+        let command = Command::SetObjectPos { key: self.key, position: value.into() };
         COMMAND_QUEUE.push(command);
     }
 
@@ -125,7 +125,7 @@ impl Sphere {
         }
 
         let (sender, receiver) = mpsc::sync_channel(1);
-        let command = Command::GetCubeRotation{ key: self.key, sender: sender };
+        let command = Command::GetObjectRotation{ key: self.key, sender: sender };
         COMMAND_QUEUE.push(command);
         receiver.recv().unwrap().into()
     }
@@ -136,7 +136,7 @@ impl Sphere {
             self.cache.rotation = value.into();
         }
 
-        let command = Command::SetCubeRotation { key: self.key, rotation: value.into() };
+        let command = Command::SetObjectRotation { key: self.key, rotation: value.into() };
         COMMAND_QUEUE.push(command);
     }
 

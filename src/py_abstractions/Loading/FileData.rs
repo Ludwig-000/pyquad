@@ -62,7 +62,7 @@ impl FileData{
     /// Immediately returns a fully fledged Mesh object that has collision, is queued to be drawn,
     /// and is positioned at 0,0,0
     pub fn to_mesh_data(&self, py: Python<'_>)-> PyResult<Py<Mesh>>{
-        Mesh::from_file_data(py, self.clone(),Vec3::ZERO(), Vec3::ZERO(), Vec3::ONE())
+        Mesh::from_file_data(py, self.clone())
     }
     
 }

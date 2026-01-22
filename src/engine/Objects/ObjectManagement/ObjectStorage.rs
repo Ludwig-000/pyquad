@@ -5,6 +5,8 @@ use slotmap::*;
 use std::{sync::Arc};
 use crate::engine::Objects::PhysicsWorld::Rapier::{ObjectHandle, RapierWorld};
 use std::sync::mpsc::SyncSender;
+use macroquad::prelude as mq;
+
 pub enum Object {
     Cube(Cube),
     Sphere(Sphere),
@@ -64,7 +66,6 @@ impl ObjectStorage {
 
         let obj = object_factory();
 
-        // gets the glue data.
         let glue  = GlueData{  reverse_lookup: key, obj_handle: self.physics_world.insert_object(&obj, key)};
         self.glue_data.push(glue);
 
@@ -117,16 +118,21 @@ impl ObjectStorage {
         self.keymap.get(key).expect("WeakRef not found for key").1.clone()
     }
 
-    pub fn get_handle_mut(&mut self, key: DefaultKey) -> &mut ObjectHandle{
+    /// changing values here, may result in a de-sync with the mesh.
+    /// thats why its unsafe.
+    pub unsafe fn get_handle_mut(&mut self, key: DefaultKey) -> &mut ObjectHandle{
         let (vec_idx, _) = self.keymap.get(key).expect("key not known to the map.");
         &mut self.glue_data.get_mut(*vec_idx).expect("missing object data").obj_handle
     }
+
     pub fn get_handle(&self, key: DefaultKey) -> &ObjectHandle{
         let (vec_idx, _) = self.keymap.get(key).expect("key not known to the map.");
         &self.glue_data.get(*vec_idx).expect("missing object data").obj_handle
     }
 
-    pub fn get_mut(&mut self, key: DefaultKey) -> &mut Object {
+    /// changing values here, may result in a de-sync with the collider.
+    /// thats why its unsafe.
+    pub unsafe fn get_mut(&mut self, key: DefaultKey) -> &mut Object {
 
         let (vec_idx, _) = self.keymap.get(key).expect("key not known to the map.");
         self.storage.get_mut(*vec_idx).expect("missing object")
@@ -174,5 +180,34 @@ impl ObjectStorage {
             v.push(p);
         }
         v
+    }
+
+    /// the user-provided function is responsible for changing ALL internal obj values.
+    pub fn change_obj_location<T: FnOnce(&mut Object)>(&mut self, location: &mq::Vec3,  key: DefaultKey,obj_recalc: T){
+
+        {
+            let glue  = *self.get_handle(key);
+            self.physics_world.move_object(&glue.rigid_body_handle, location);
+        }
+        let obj  = unsafe {self.get_mut(key)};
+        obj_recalc(obj);
+        
+    }
+    /// the user-provided function is responsible for changing ALL internal obj values.
+    pub fn change_obj_rotation<T: FnOnce(&mut Object)>(&mut self, rotation: &mq::Vec3, key: DefaultKey,obj_recalc: T){
+
+        {
+            let glue  = *self.get_handle(key);
+            self.physics_world.rotate_object(&glue.rigid_body_handle, rotation);
+        }
+        let obj  = unsafe {self.get_mut(key)};
+        obj_recalc(obj);
+        
+    }
+    /// the user-provided function is responsible for changing ALL internal obj values.
+    pub fn change_obj_scale<T: FnOnce(&mut Object)>(&mut self, scale: &mq::Vec3, key: DefaultKey,obj_recalc: T){
+
+        todo!()
+        
     }
 }

@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "The Pyroquad game engine."
 readme = "README.md"
 requires-python = ">=3.10"
+keywords = ["Game Engine", "Rust", "Low Level","Macroquad", "2D Render", "3D Render"]
 
 [tool.maturin]
 include = ["pyroquad.pyi"]
@@ -12,3 +13,7 @@ abi3 = true
 [build-system]
 requires = ["maturin>=1.0"]
 build-backend = "maturin.build"
+
+
+[project.urls]
+Repository = "https://github.com/Ludwig-000/pyroquad"

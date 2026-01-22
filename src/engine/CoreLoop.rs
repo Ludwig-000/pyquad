@@ -38,13 +38,13 @@ pub enum Command {
     DeleteObject{
         key: DefaultKey, 
     },
-    GetCubeSize{ key: DefaultKey, sender: mpsc::SyncSender<mq::Vec3> },
-    GetCubePos{ key: DefaultKey, sender: mpsc::SyncSender<mq::Vec3> },
-    GetCubeRotation{ key: DefaultKey, sender: mpsc::SyncSender<mq::Vec3> },
+    GetObjectScale{ key: DefaultKey, sender: mpsc::SyncSender<mq::Vec3> },
+    GetObjectPos{ key: DefaultKey, sender: mpsc::SyncSender<mq::Vec3> },
+    GetObjectRotation{ key: DefaultKey, sender: mpsc::SyncSender<mq::Vec3> },
 
-    SetCubeSize{ key: DefaultKey, size: mq::Vec3 },
-    SetCubePos{ key: DefaultKey, position: mq::Vec3 },
-    SetCubeRotation{ key: DefaultKey, rotation: mq::Vec3 },
+    SetObjectScale{ key: DefaultKey, scale: mq::Vec3 },
+    SetObjectPos{ key: DefaultKey, position: mq::Vec3 },
+    SetObjectRotation{ key: DefaultKey, rotation: mq::Vec3 },
 
     CreateCube{
         size: mq::Vec3,
@@ -217,52 +217,76 @@ pub async fn proccess_commands_loop() {
                 Command::DeleteObject { key }=> {
                     object_storage.remove_object(key);
                 }
-                Command::GetCubePos { key, sender } => {
+                Command::GetObjectPos { key, sender } => {
                     let pos = match  object_storage.get(key){
                         Object::Cube(cube) => cube.position,
-                        _ => panic!("object type missmatch"),
+                        Object::Mesh(mesh) => mesh.position,
+                        _ => todo!(),
                     };
                     let _ = sender.send(pos);
                 }
-                Command::GetCubeSize { key, sender } => {
+                Command::GetObjectScale { key, sender } => {
                     let pos = match  object_storage.get(key){
                         Object::Cube(cube) => cube.scale,
-                        _ => panic!("object type missmatch"),
+                        Object::Mesh(mesh)=> mesh.scale,
+                        _ => todo!(),
                     };
                     let _ = sender.send(pos);
                 }
-                Command::GetCubeRotation { key, sender } => {
+                Command::GetObjectRotation { key, sender } => {
                     let pos = match  object_storage.get(key){
                         Object::Cube(cube) => cube.rotation,
-                        _ => panic!("object type missmatch"),
+                        Object::Mesh(mesh)=> mesh.rotation,
+                        _ => todo!(),
                     };
                     let _ = sender.send(pos);
                 }
-                Command::SetCubePos { key, position } => {
-                    let cube = match  object_storage.get_mut(key){
-                        Object::Cube(cube) => cube,
-                        _ => panic!("object type missmatch"),
-                    };
-                    cube.mesh.recalculate_pos(cube.position, position);
-                    cube.position = position;
+                Command::SetObjectPos { key, position } => {
+                    object_storage.change_obj_location(&position, key, 
+                    |obj|{
+                        match obj{
+                            Object::Cube(cube)=> {
+                                cube.mesh.recalculate_pos(cube.position, position);
+                                cube.position = position;
+                            }
+                            Object::Mesh(mesh) => {
+                                todo!()
+                            }
+                            _ => todo!()
+                        }
+                    });
                 }
-                Command::SetCubeSize { key, size } => {
-                    let cube = match  object_storage.get_mut(key){
-                        Object::Cube(cube) => cube,
-                        _ => panic!("object type missmatch"),
-                    };
-                    cube.mesh.recalculate_scale(cube.position, cube.scale, size);
-                    cube.scale = size;
-                }
-                Command::SetCubeRotation { key, rotation } => {
-                    let cube = match  object_storage.get_mut(key){
-                        Object::Cube(cube) => cube,
-                        _ => panic!("object type missmatch"),
-                    };
-
+                Command::SetObjectScale { key, scale: size } => {
                     
-                    cube.mesh.recalculate_rot(cube.position, cube.rotation, rotation);
-                    cube.rotation = rotation;
+                    object_storage.change_obj_scale(&size, key, 
+                        |obj|{
+                            match obj{
+                                Object::Cube(cube)=> {
+                                    cube.mesh.recalculate_scale(cube.position, cube.scale, size);
+                                    cube.scale = size;
+                                }
+                                Object::Mesh(mesh) => {
+                                    todo!()
+                                }
+                                _ => todo!()
+                            }
+                        });
+                }
+                Command::SetObjectRotation { key, rotation } => {
+
+                    object_storage.change_obj_rotation(&rotation, key, 
+                        |obj|{
+                            match obj{
+                                Object::Cube(cube)=> {
+                                    cube.mesh.recalculate_rot(cube.position, cube.rotation, rotation);
+                                    cube.rotation = rotation;
+                                }
+                                Object::Mesh(mesh) => {
+                                    todo!()
+                                }
+                                _ => todo!()
+                            }
+                        });
                     
                 }
                 Command::CreateCube { size, position, rotation,color, weak_ref: pyAny, sender }=>{

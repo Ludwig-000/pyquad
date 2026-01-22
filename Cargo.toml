@@ -15,7 +15,7 @@ doc = false
 
 
 [profile.release]
-overflow-checks = true
+overflow-checks = true #disable for release. The engine should NEVER panic.
 
 # Max Optimization for final release.
 # opt-level = 3
@@ -51,6 +51,8 @@ hound = "3.5" #for converting audio formats
 symphonia = { version = "0.5", features = ["mp3"] } #for converting audio formats
 
 gltf = "1.4.1" # for parsing 3DAssets
+
+rayon = "1.11.0" # delete later.
 
 [dependencies.image] # for image decoding
 version = "0.25.8"

@@ -4,7 +4,8 @@ use pyo3_stub_gen::derive::{gen_stub_pyclass, gen_stub_pymethods};
 
 use slotmap::DefaultKey;
 use slotmap::Key;
-
+use std::hash::{Hash, Hasher};
+use crate::engine::Objects::ObjectDataCache::ThreeDObjCache;
 use crate::engine::PError::PError;
 use crate::py_abstractions::{Loading::FileData::FileData, structs::Textures_and_Images::Texture2D};
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
@@ -17,31 +18,44 @@ use pyo3::prelude::*;
 use pyo3_stub_gen::derive::* ;
 use pyo3::types::{PyWeakref, PyWeakrefReference};
 
+use pyo3::prelude::*;
+use pyo3_stub_gen::derive::* ;
+
+use pyo3::exceptions::*;
+
+
+
+use crate::engine::Objects::ObjectDataCache;
+
+use crate::py_abstractions::structs::Objects::ObjectFunctionStorage;
+use crate::py_abstractions::Color::Color;
+
+
+
+
+
 #[gen_stub_pyclass]
 #[pyclass(subclass, weakref)]
 pub struct Mesh{
-	pub key: DefaultKey
+	pub key: DefaultKey,
+    pub function_key: Option<DefaultKey>,
+
+    pub cache: ObjectDataCache::ThreeDObjCache,
 }
 
 #[gen_stub_pymethods]
 #[pymethods]
 impl Mesh{
-    #[new]
-    fn new()-> Self{
-        todo!()
-    }
 
     #[staticmethod]
-    pub fn from_file_data(py: Python<'_>,data: FileData, position: Vec3, rotation: Vec3, scale: Vec3)-> PyResult<Py<Mesh>>{
+    pub fn from_file_data(py: Python<'_>,data: FileData)-> PyResult<Py<Mesh>>{
 
-        let mesh =  internal_mesh::Mesh::load_from_gltf(&data.bytes, None).map_err(|e|{
-            PError::GLTFError(e)
-        })?;
-
-        
         let (sender, receiver) = mpsc::sync_channel(1);
 
-        let placeholder_struct: Mesh = Mesh { key: DefaultKey::null()  };
+        let placeholder_struct: Mesh = Mesh { key: DefaultKey::null(), 
+            function_key: None, 
+            cache: ObjectDataCache::ThreeDObjCache::no_cache()  
+        };
         let mesh_handle: Py<Mesh> = Py::new(py, placeholder_struct)?; 
         
         let weak_ref_handle: Py<PyWeakref> = {
@@ -50,6 +64,9 @@ impl Mesh{
             weak_ref_ref.cast_into::<PyWeakref>()?.unbind() 
         };
 
+        let mesh =  internal_mesh::Mesh::load_from_gltf(&data.bytes, None).map_err(|e|{
+            PError::GLTFError(e)
+        })?;
 
         COMMAND_QUEUE.push(Command::CreateMesh { mesh, weak_ref: weak_ref_handle, sender });
         
@@ -58,5 +75,256 @@ impl Mesh{
         mesh_handle.borrow_mut(py).key = key;
 
         Ok(mesh_handle) 
+    }
+
+
+    /// Accesses the scale of the given object.
+    /// Note that individual values of an object can NOT be changed via:
+    /// ```
+    /// >>>object.scale.x += 1
+    /// ```
+    /// since object.scale returns a copy of its scale, one has to write:
+    /// ```
+    /// >>>object.scale += Vec3(1, 0, 0)
+    /// ```
+    #[getter]
+    pub fn scale(&self) -> Vec3 {
+        if self.cache.can_be_cached == true{
+            return self.cache.scale.into()
+        }
+
+        let (sender, receiver) = mpsc::sync_channel(1);
+        let command = Command::GetObjectScale { key: self.key, sender: sender };
+        COMMAND_QUEUE.push(command);
+        receiver.recv().unwrap().into()
+    }
+
+    #[setter]
+    pub fn set_scale(&mut self, value: Vec3) {
+        if self.cache.can_be_cached == true{
+            self.cache.scale = value.into();
+        }
+
+        let command = Command::SetObjectScale { key: self.key, scale: value.into() };
+        COMMAND_QUEUE.push(command);
+    }
+
+    /// Accesses the position of the given object.
+    /// Note that individual values of an object can NOT be changed via:
+    /// ```
+    /// >>>object.pos.x += 1
+    /// ```
+    /// since object.pos returns a copy of its position, one has to write:
+    /// ```
+    /// >>>object.pos += Vec3(1, 0, 0)
+    /// ```
+    #[getter]
+    pub fn pos(&self) -> Vec3 {
+        if self.cache.can_be_cached == true{
+            return self.cache.location.into()
+        }
+        let (sender, receiver) = mpsc::sync_channel(1);
+        let command = Command::GetObjectPos { key: self.key, sender: sender };
+        COMMAND_QUEUE.push(command);
+        receiver.recv().unwrap().into()
+    }
+
+    #[setter]
+    pub fn set_pos(&mut self, value: Vec3) {
+        if self.cache.can_be_cached == true{
+            self.cache.location = value.into();
+        }
+        let command = Command::SetObjectPos { key: self.key, position: value.into() };
+        COMMAND_QUEUE.push(command);
+    }
+
+    /// Accesses the rotation of the given object.
+    /// Note that individual values of an object can NOT be changed via:
+    /// ```
+    /// >>>object.rot.x += 1
+    /// ```
+    /// since object.rot returns a copy of its rotation, one has to write:
+    /// ```
+    /// >>>object.rot += Vec3(1, 0, 0)
+    /// ```
+    #[getter]
+    pub fn rot(&self) -> Vec3 {
+        if self.cache.can_be_cached == true{
+            return self.cache.rotation.into()
+        }
+
+        let (sender, receiver) = mpsc::sync_channel(1);
+        let command = Command::GetObjectRotation{ key: self.key, sender: sender };
+        COMMAND_QUEUE.push(command);
+        receiver.recv().unwrap().into()
+    }
+
+    #[setter]
+    pub fn set_rot(&mut self, value: Vec3) {
+        if self.cache.can_be_cached == true{
+            self.cache.rotation = value.into();
+        }
+
+        let command = Command::SetObjectRotation { key: self.key, rotation: value.into() };
+        COMMAND_QUEUE.push(command);
+    }
+
+    pub fn disable_collision(&self){
+        todo!()
+    }
+    pub fn enable_collision(&self){
+        todo!()
+    }
+
+    /// Returns any object, with active collision, that is either
+    /// intersected or inserted in the current object.
+    /// 
+    ///Example:
+    /// 
+    ///```
+    ///>>>bigCube: Cube = Cube(pos=Vec3.splat(50))
+    ///>>>intersected: list[Cube] = bigCube.check_collision()
+    ///...
+    ///...# since the returned objects are references, we can edit them directly
+    ///...# without creating duplicates.
+    ///>>>for cube in intersected:
+    ///...   cube.pos = Vec3.ZERO()
+    ///```
+    pub fn check_collision<'py>(&self, py: Python<'py> )-> Vec<Bound<'py, PyAny>>{
+
+        let (sender, receiver) = mpsc::sync_channel(1);
+        let command = Command::GetColissionObjects { key: self.key, sender };
+        COMMAND_QUEUE.push(command);
+        let res: Vec<std::sync::Arc<Py<PyWeakref>>> = receiver.recv().unwrap();
+
+        // we filter map, since any weakref we hold may already be invalid.
+        res.into_iter().filter_map(|pyObj|{
+
+            let weak_py: &Py<PyWeakref> = &*pyObj;
+
+            let weak_bound: Bound<'py, PyWeakref> = weak_py.bind(py).clone();
+
+            let upgraded: Bound<'py, PyAny> = weak_bound.call0().ok()?;
+
+            if upgraded.is_none() {
+                None
+            } else {
+                Some(upgraded)
+            }
+        }).collect()
+    }
+
+    /// Add a function to this object, which will automatically be executed each frame.
+    /// The function must take the object it is attatched to as an argument.
+    /// 
+    ///Example:
+    /// 
+    ///```
+    ///...# arguments from outside the scope may be included.
+    ///>>>delta_time = 0
+    ///>>>def updateCube(cube: Cube):
+    ///...    cube.rot += Vec3.splat(0.2*delta_time)
+    ///...
+    ///>>>myCube = Cube()
+    ///>>>myCube.tick(updateCube)
+    ///...
+    ///>>>while True:
+    ///...    # dt would have to get updated each frame.
+    ///...    delta_time = get_delta_time()
+    ///...
+    ///...    #'next_frame' runs the update function for every object.
+    ///...    next_frame()
+    /// ```
+    pub fn tick(slf: Bound<'_, Self>, function: Bound<'_,PyAny>)-> PyResult<()>{
+
+        if !function.is_callable(){
+            return Err(PyRuntimeError::new_err(format!("Attatched object {:?} is not callable.",function)));
+        }
+
+        let mut storage = ObjectFunctionStorage::get_fun_storage();
+        
+        let func_persistent = function.unbind();
+        let obj  = slf.into_any();
+
+        let key = storage.add(obj, func_persistent);
+
+        Ok(())
+    }
+
+    pub fn remove_tick(&mut self)-> PyResult<()>{
+
+        let mut storage = ObjectFunctionStorage::get_fun_storage();
+        let key = match self.function_key{
+            None => { 
+                return Err(
+                    PyRuntimeError::new_err("No function found, that can be removed.")
+                );
+            },
+            Some(key)=> { key },
+        };
+        storage.remove(key);
+        self.function_key  = None;
+        Ok(())
+    }
+
+    pub fn bind_location(&mut self, obj: Bound<'_, PyAny>){
+        todo!()
+    }
+    pub fn unbind_location(&mut self){
+        todo!()
+    }
+    pub fn bind_rotation(&mut self){
+        todo!()
+    }
+    pub fn unbind_rotation(&mut self){
+        todo!()
+    }
+    pub fn bind_scale(&mut self){
+        todo!()
+    }
+    pub fn unbind_scale(&mut self){
+        todo!()
+    }
+
+
+    fn __eq__(&self, other: &Self) -> bool {
+        self.key == other.key
+    }
+
+
+    fn __hash__(&self) -> u64 {
+        let mut s = std::collections::hash_map::DefaultHasher::new();
+        self.key.hash(&mut s);
+        s.finish()
+    }
+
+
+    fn __repr__(&self) -> String {
+        let pos = self.pos();
+        let rot = self.rot();
+        let scale  = self.scale();
+        let has_tick_function = if self.function_key == None {false} else {true};
+        format!("Mesh(position={:?}, rotation={:?}, scale={:?}, has_tick_function={has_tick_function})", pos, rot,scale)
+    }
+
+    fn __str__(&self)-> String{
+        let pos = self.pos();
+        format!("Mesh at ({:.2}, {:.2}, {:.2})", pos.x, pos.y, pos.z)
+    }
+}
+
+
+impl Drop for Mesh{
+    fn drop(&mut self) {
+
+        // function storage MUST be cleaned first, since a function inside fun-storage may rely on the object still living.
+        match self.function_key{
+            None => {},
+            Some(key)=> {
+                let mut storage = ObjectFunctionStorage::get_fun_storage();
+                storage.remove(key);
+            }
+        }
+        COMMAND_QUEUE.push( Command::DeleteObject { key: self.key });
     }
 }
