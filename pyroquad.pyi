@@ -5018,9 +5018,107 @@ class Loading:
     def load_multiple_files(paths:dict) -> dict: ...
 
 class Mesh:
-    def __new__(cls) -> Mesh: ...
+    @property
+    def scale(self) -> Vec3:
+        r"""
+        Accesses the scale of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>object.scale.x += 1
+        ```
+        since object.scale returns a copy of its scale, one has to write:
+        ```
+        >>>object.scale += Vec3(1, 0, 0)
+        ```
+        """
+    @scale.setter
+    def scale(self, value: Vec3) -> None: ...
+    @property
+    def pos(self) -> Vec3:
+        r"""
+        Accesses the position of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>object.pos.x += 1
+        ```
+        since object.pos returns a copy of its position, one has to write:
+        ```
+        >>>object.pos += Vec3(1, 0, 0)
+        ```
+        """
+    @pos.setter
+    def pos(self, value: Vec3) -> None: ...
+    @property
+    def rot(self) -> Vec3:
+        r"""
+        Accesses the rotation of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>object.rot.x += 1
+        ```
+        since object.rot returns a copy of its rotation, one has to write:
+        ```
+        >>>object.rot += Vec3(1, 0, 0)
+        ```
+        """
+    @rot.setter
+    def rot(self, value: Vec3) -> None: ...
     @staticmethod
-    def from_file_data(data:FileData, position:Vec3, rotation:Vec3, scale:Vec3) -> Mesh: ...
+    def from_file_data(data:FileData) -> Mesh: ...
+    def disable_collision(self) -> None: ...
+    def enable_collision(self) -> None: ...
+    def check_collision(self) -> builtins.list[typing.Any]:
+        r"""
+        Returns any object, with active collision, that is either
+        intersected or inserted in the current object.
+        
+        Example:
+        
+        ```
+        >>>bigCube: Cube = Cube(pos=Vec3.splat(50))
+        >>>intersected: list[Cube] = bigCube.check_collision()
+        ...
+        ...# since the returned objects are references, we can edit them directly
+        ...# without creating duplicates.
+        >>>for cube in intersected:
+        ...   cube.pos = Vec3.ZERO()
+        ```
+        """
+    def tick(self, slf:Mesh, function:typing.Any) -> None:
+        r"""
+        Add a function to this object, which will automatically be executed each frame.
+        The function must take the object it is attatched to as an argument.
+        
+        Example:
+        
+        ```
+        ...# arguments from outside the scope may be included.
+        >>>delta_time = 0
+        >>>def updateCube(cube: Cube):
+        ...    cube.rot += Vec3.splat(0.2*delta_time)
+        ...
+        >>>myCube = Cube()
+        >>>myCube.tick(updateCube)
+        ...
+        >>>while True:
+        ...    # dt would have to get updated each frame.
+        ...    delta_time = get_delta_time()
+        ...
+        ...    #'next_frame' runs the update function for every object.
+        ...    next_frame()
+        ```
+        """
+    def remove_tick(self) -> None: ...
+    def bind_location(self, obj:typing.Any) -> None: ...
+    def unbind_location(self) -> None: ...
+    def bind_rotation(self) -> None: ...
+    def unbind_rotation(self) -> None: ...
+    def bind_scale(self) -> None: ...
+    def unbind_scale(self) -> None: ...
+    def __eq__(self, other:Mesh) -> builtins.bool: ...
+    def __hash__(self) -> builtins.int: ...
+    def __repr__(self) -> builtins.str: ...
+    def __str__(self) -> builtins.str: ...
 
 class PlaySoundParams:
     @property
@@ -6534,7 +6632,7 @@ def load_file(path:builtins.str) -> FileData:
     Loads a file.
     """
 
-def next_frame() -> None:
+def next_frame(physics_step:typing.Optional[builtins.float]=0.0) -> None:
     r"""
     processes all drawing commands that have accumulated.
     blocks until the frame has been drawn.

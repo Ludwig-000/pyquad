@@ -28,7 +28,9 @@ struct Transforms<'a>{
     scale: &'a Vec3,
 }
 pub struct RapierWorld{
-    pipeline: CollisionPipeline,
+    // pipeline: CollisionPipeline,
+    pipeline: PhysicsPipeline,
+
     bvh: BroadPhaseBvh,
     coll: ColliderSet,
     narrowP: NarrowPhase,
@@ -38,11 +40,15 @@ pub struct RapierWorld{
     islands: IslandManager,
     impulse_joints: ImpulseJointSet,
     multibody_joints: MultibodyJointSet,
+
+    // possibly evil idk yet.
+    ccd_solver: CCDSolver,
+    integration_parameters: IntegrationParameters,
 }
 impl RapierWorld{
     pub fn new()-> RapierWorld{
         RapierWorld{
-            pipeline: CollisionPipeline::new(),
+            pipeline: PhysicsPipeline::new(),
             bvh: BroadPhaseBvh::new(),
             coll: ColliderSet::new(),
             narrowP: NarrowPhase::new(),
@@ -50,20 +56,23 @@ impl RapierWorld{
             islands: IslandManager::new(),
             impulse_joints: ImpulseJointSet::new(),
             multibody_joints: MultibodyJointSet::new(),
+            ccd_solver: CCDSolver::new(),
+            integration_parameters: IntegrationParameters::default(),
         }
     }
 
     pub fn move_object(&mut self, handle: &RigidBodyHandle, pos: &Vec3) {
-        if let Some(rb) = self.rigidBS.get_mut(*handle) {
-            rb.set_translation(vector![pos.x, pos.y, pos.z], true);
-        }
+        let rb  = self.rigidBS.get_mut(*handle).expect("Missing Rigid body handle!!??");
+        rb.set_translation(vector![pos.x, pos.y, pos.z], true);
+    
+
     }
     pub fn rotate_object(&mut self, handle: &RigidBodyHandle, rot: &Vec3) {
         use rapier3d::na::UnitQuaternion;
-        if let Some(rb) = self.rigidBS.get_mut(*handle) {
-            let rotation = UnitQuaternion::from_euler_angles(rot.x, rot.y, rot.z);
-            rb.set_rotation(rotation, true);
-        }
+        let rb = self.rigidBS.get_mut(*handle).expect("Missing Rigid body handle!!??");
+        let rotation = UnitQuaternion::from_euler_angles(rot.x, rot.y, rot.z);
+        rb.set_rotation(rotation, true);
+        
     }
     pub fn scale_object(&mut self, handle: &ColliderHandle, obj_type:  &obj::Object, scale: &Vec3){
         match obj_type{
@@ -77,12 +86,28 @@ impl RapierWorld{
     }
 
     pub fn step(&mut self, distance: f32) {
+        let gravity = vector![0.0, 0.0, 0.0];
+
+        // self.pipeline.step(
+        //     distance,
+        //     &mut self.bvh,
+        //     &mut self.narrowP,
+        //     &mut self.rigidBS,
+        //     &mut self.coll,
+        //     &(),
+        //     &(),
+        // );
         self.pipeline.step(
-            distance,
+            &gravity,
+            &self.integration_parameters,
+            &mut self.islands,
             &mut self.bvh,
             &mut self.narrowP,
             &mut self.rigidBS,
             &mut self.coll,
+            &mut self.impulse_joints,
+            &mut self.multibody_joints,
+            &mut self.ccd_solver,
             &(),
             &(),
         );

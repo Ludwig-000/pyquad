@@ -157,7 +157,7 @@ pub enum Command {
 
     GetKeysReleased(mpsc::SyncSender<HashSet<mq::KeyCode>>),
 
-    NextFrame(mpsc::SyncSender<()>),
+    NextFrame{physics_step: Option<f32>, sender: mpsc::SyncSender<()>},
 
     ImgToTexture {
         image: Arc<mq::Image>,
@@ -242,8 +242,8 @@ pub async fn proccess_commands_loop() {
                     let _ = sender.send(pos);
                 }
                 Command::SetObjectPos { key, position } => {
-                    object_storage.change_obj_location(&position, key, 
-                    |obj|{
+                    object_storage.change_obj_position(&position, key, 
+                        move |obj|{
                         match obj{
                             Object::Cube(cube)=> {
                                 cube.mesh.recalculate_pos(cube.position, position);
@@ -259,7 +259,7 @@ pub async fn proccess_commands_loop() {
                 Command::SetObjectScale { key, scale: size } => {
                     
                     object_storage.change_obj_scale(&size, key, 
-                        |obj|{
+                        move |obj|{
                             match obj{
                                 Object::Cube(cube)=> {
                                     cube.mesh.recalculate_scale(cube.position, cube.scale, size);
@@ -275,7 +275,7 @@ pub async fn proccess_commands_loop() {
                 Command::SetObjectRotation { key, rotation } => {
 
                     object_storage.change_obj_rotation(&rotation, key, 
-                        |obj|{
+                        move |obj|{
                             match obj{
                                 Object::Cube(cube)=> {
                                     cube.mesh.recalculate_rot(cube.position, cube.rotation, rotation);
@@ -409,11 +409,15 @@ pub async fn proccess_commands_loop() {
                     macroquad::prelude::clear_background(color);
                 }
         
-                Command::NextFrame(sender) => {
+                Command::NextFrame{physics_step, sender} => {
                     mq::next_frame().await;
                     crate::engine::SHADERS::shader_manager::new_frame_shader_update();
                     crate::engine::FrameInfo::update_frame_info();
                     let _ = sender.send(());
+                    
+                    if physics_step.is_some(){
+                        object_storage.step_physics(physics_step.unwrap());
+                    }
                 }
             
                 Command::DrawText { text, x, y, font_size, color }=>{

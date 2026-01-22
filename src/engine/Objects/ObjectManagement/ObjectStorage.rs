@@ -183,7 +183,7 @@ impl ObjectStorage {
     }
 
     /// the user-provided function is responsible for changing ALL internal obj values.
-    pub fn change_obj_location<T: FnOnce(&mut Object)>(&mut self, location: &mq::Vec3,  key: DefaultKey,obj_recalc: T){
+    pub fn change_obj_position<T: FnOnce(&mut Object)>(&mut self, location: &mq::Vec3,  key: DefaultKey,obj_recalc: T){
 
         {
             let glue  = *self.get_handle(key);

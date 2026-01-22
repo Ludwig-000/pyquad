@@ -259,13 +259,14 @@ pub fn clear_background(color: Color) {
 /// also, this function cleans up dropped memory such as Texture2D
 #[gen_stub_pyfunction]
 #[pyfunction]
-pub fn next_frame(py: Python<'_>) -> PyResult<()>{
+#[pyo3(signature = (physics_step = Some(0.0)))] 
+pub fn next_frame(py: Python<'_>, physics_step: Option<f32>) -> PyResult<()>{
     {
         let fn_storage = ObjectFunctionStorage::get_fun_storage();
         fn_storage.execute_all(py)?;
     }
     let (sender, receiver) = mpsc::sync_channel(1);
-    COMMAND_QUEUE.push(Command::NextFrame(sender));
+    COMMAND_QUEUE.push(Command::NextFrame { physics_step, sender });
 
     let _ = receiver.recv();
     Ok(())
