@@ -250,30 +250,31 @@ pub async fn proccess_commands_loop() {
                                 cube.position = position;
                             }
                             Object::Mesh(mesh) => {
-                                todo!()
+                                mesh.recalculate_pos(mesh.position, position);
+                                mesh.position =  position;
                             }
                             _ => todo!()
                         }
                     });
                 }
-                Command::SetObjectScale { key, scale: size } => {
-                    
-                    object_storage.change_obj_scale(&size, key, 
+                Command::SetObjectScale { key, scale } => {
+
+                    object_storage.change_obj_scale(&scale, key, 
                         move |obj|{
                             match obj{
                                 Object::Cube(cube)=> {
-                                    cube.mesh.recalculate_scale(cube.position, cube.scale, size);
-                                    cube.scale = size;
+                                    cube.mesh.recalculate_scale(cube.position, cube.scale, scale);
+                                    cube.scale = scale;
                                 }
                                 Object::Mesh(mesh) => {
-                                    todo!()
+                                    mesh.recalculate_scale(mesh.position,mesh.scale, scale);
+                                    mesh.scale =  scale;
                                 }
                                 _ => todo!()
                             }
                         });
                 }
                 Command::SetObjectRotation { key, rotation } => {
-
                     object_storage.change_obj_rotation(&rotation, key, 
                         move |obj|{
                             match obj{
@@ -282,7 +283,10 @@ pub async fn proccess_commands_loop() {
                                     cube.rotation = rotation;
                                 }
                                 Object::Mesh(mesh) => {
-                                    todo!()
+                                    mesh.recalculate_rot(mesh.position, mesh.rotation, rotation);
+                                    mesh.rotation =  rotation;
+                                    
+
                                 }
                                 _ => todo!()
                             }

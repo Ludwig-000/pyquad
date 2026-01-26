@@ -206,8 +206,12 @@ impl ObjectStorage {
     }
     /// the user-provided function is responsible for changing ALL internal obj values.
     pub fn change_obj_scale<T: FnOnce(&mut Object)>(&mut self, scale: &mq::Vec3, key: DefaultKey,obj_recalc: T){
-
-        todo!()
         
+        let obj  = unsafe {self.get_mut(key)};
+        obj_recalc(obj);
+
+        /// TODO: change object collision based on scale.
+        return;
+        todo!()
     }
 }
