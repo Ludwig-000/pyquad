@@ -52,8 +52,6 @@ symphonia = { version = "0.5", features = ["mp3"] } #for converting audio format
 
 gltf = "1.4.1" # for parsing 3DAssets
 
-rayon = "1.11.0" # delete later.
-
 [dependencies.image] # for image decoding
 version = "0.25.8"
 default-features = false

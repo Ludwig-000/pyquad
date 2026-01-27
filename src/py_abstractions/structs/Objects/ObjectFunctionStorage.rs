@@ -25,7 +25,6 @@ pub fn get_fun_storage() -> MutexGuard<'static, FunctionStorage> {
 
 
 
-
 pub struct FunctionStorage{
     tasks: DenseSlotMap<DefaultKey, 
     (usize, // raw object pointer, used as function input.

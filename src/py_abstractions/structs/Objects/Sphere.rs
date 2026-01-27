@@ -28,7 +28,7 @@ pub struct Sphere{
 
     /// we add a cache for trivial data, which can be used if the object is not
     /// influenced by outside forces F.E. Gravity.
-    cache: ObjectDataCache::ThreeDObjCache,
+    cache: Option<ObjectDataCache::ThreeDObjCache>,
 }
 
 #[gen_stub_pymethods]
@@ -78,8 +78,8 @@ impl Sphere {
         
     #[getter]
     fn scale(&self) -> Vec3 {
-        if self.cache.can_be_cached == true{
-            return self.cache.scale.into()
+        if let Some(cache) = self.cache {
+            return cache.scale.into()
         }
 
         let (sender, receiver) = mpsc::sync_channel(1);
@@ -90,8 +90,8 @@ impl Sphere {
 
     #[setter]
     fn set_scale(&mut self, value: Vec3) {
-        if self.cache.can_be_cached == true{
-            self.cache.scale = value.into();
+        if let Some(cache) = &mut self.cache {
+            cache.scale = value.into();
         }
 
         let command = Command::SetObjectScale { key: self.key, scale: value.into() };
@@ -100,8 +100,8 @@ impl Sphere {
 
     #[getter]
     fn pos(&self) -> Vec3 {
-        if self.cache.can_be_cached == true{
-            return self.cache.location.into()
+        if let Some(cache) = self.cache {
+            return cache.position.into()
         }
         let (sender, receiver) = mpsc::sync_channel(1);
         let command = Command::GetObjectPos { key: self.key, sender: sender };
@@ -111,8 +111,8 @@ impl Sphere {
 
     #[setter]
     fn set_pos(&mut self, value: Vec3) {
-        if self.cache.can_be_cached == true{
-            self.cache.location = value.into();
+        if let Some(cache) = &mut self.cache {
+            cache.position = value.into();
         }
         let command = Command::SetObjectPos { key: self.key, position: value.into() };
         COMMAND_QUEUE.push(command);
@@ -120,8 +120,8 @@ impl Sphere {
 
     #[getter]
     fn rot(&self) -> Vec3 {
-        if self.cache.can_be_cached == true{
-            return self.cache.rotation.into()
+        if let Some(cache) = self.cache {
+            return cache.rotation.into()
         }
 
         let (sender, receiver) = mpsc::sync_channel(1);
@@ -132,8 +132,8 @@ impl Sphere {
 
     #[setter]
     fn set_rot(&mut self, value: Vec3) {
-        if self.cache.can_be_cached == true{
-            self.cache.rotation = value.into();
+        if let Some(cache) = &mut self.cache {
+            cache.rotation = value.into();
         }
 
         let command = Command::SetObjectRotation { key: self.key, rotation: value.into() };

@@ -40,7 +40,9 @@ pub struct Mesh{
 	pub key: DefaultKey,
     pub function_key: Option<DefaultKey>,
 
-    pub cache: ObjectDataCache::ThreeDObjCache,
+    // an object's data can only be cached, if it can NOT be influenced by anything external.
+    // F.E.: gravity.
+    pub cache: Option<ObjectDataCache::ThreeDObjCache>,
 }
 
 #[gen_stub_pymethods]
@@ -89,8 +91,8 @@ impl Mesh{
     /// ```
     #[getter]
     pub fn scale(&self) -> Vec3 {
-        if self.cache.can_be_cached == true{
-            return self.cache.scale.into()
+        if let Some(cache) = self.cache {
+            return cache.scale.into()
         }
 
         let (sender, receiver) = mpsc::sync_channel(1);
@@ -101,8 +103,8 @@ impl Mesh{
 
     #[setter]
     pub fn set_scale(&mut self, value: Vec3) {
-        if self.cache.can_be_cached == true{
-            self.cache.scale = value.into();
+        if let Some(cache) = &mut self.cache {
+            cache.scale = value.into();
         }
 
         let command = Command::SetObjectScale { key: self.key, scale: value.into() };
@@ -120,8 +122,8 @@ impl Mesh{
     /// ```
     #[getter]
     pub fn pos(&self) -> Vec3 {
-        if self.cache.can_be_cached == true{
-            return self.cache.location.into()
+        if let Some(cache) = self.cache {
+            return cache.position.into()
         }
         let (sender, receiver) = mpsc::sync_channel(1);
         let command = Command::GetObjectPos { key: self.key, sender: sender };
@@ -131,8 +133,8 @@ impl Mesh{
 
     #[setter]
     pub fn set_pos(&mut self, value: Vec3) {
-        if self.cache.can_be_cached == true{
-            self.cache.location = value.into();
+        if let Some(cache) = &mut self.cache {
+            cache.position = value.into();
         }
         let command = Command::SetObjectPos { key: self.key, position: value.into() };
         COMMAND_QUEUE.push(command);
@@ -149,8 +151,8 @@ impl Mesh{
     /// ```
     #[getter]
     pub fn rot(&self) -> Vec3 {
-        if self.cache.can_be_cached == true{
-            return self.cache.rotation.into()
+        if let Some(cache) = self.cache {
+            return cache.rotation.into()
         }
 
         let (sender, receiver) = mpsc::sync_channel(1);
@@ -161,8 +163,8 @@ impl Mesh{
 
     #[setter]
     pub fn set_rot(&mut self, value: Vec3) {
-        if self.cache.can_be_cached == true{
-            self.cache.rotation = value.into();
+        if let Some(cache) = &mut self.cache {
+            cache.rotation = value.into();
         }
 
         let command = Command::SetObjectRotation { key: self.key, rotation: value.into() };
