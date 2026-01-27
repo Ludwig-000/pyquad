@@ -16,7 +16,7 @@ pub enum Object {
 #[derive(Clone, Copy)]
 pub struct GlueData{
     pub reverse_lookup: DefaultKey,
-    pub obj_handle:  ObjectHandle,
+    pub obj_handle:  Option<ObjectHandle>,
 }
 pub struct ObjectStorage {
     // Maps: Object Key -> (Vector Index, WeakRef)
@@ -46,7 +46,7 @@ impl ObjectStorage {
         let key = self.keymap.insert((idx, Arc::new(weak_ref_handle)));
 
         // gets the glue data.
-        let glue  = GlueData{  reverse_lookup: key, obj_handle: self.physics_world.insert_object(&obj, key)};
+        let glue  = GlueData{  reverse_lookup: key, obj_handle: Some(self.physics_world.insert_object(&obj, key))};
         self.glue_data.push(glue);
 
         self.storage.push(obj);
@@ -66,7 +66,7 @@ impl ObjectStorage {
 
         let obj = object_factory();
 
-        let glue  = GlueData{  reverse_lookup: key, obj_handle: self.physics_world.insert_object(&obj, key)};
+        let glue  = GlueData{  reverse_lookup: key, obj_handle: Some(self.physics_world.insert_object(&obj, key))};
         self.glue_data.push(glue);
 
         self.storage.push(obj);
@@ -99,7 +99,10 @@ impl ObjectStorage {
         
 
         let obj_data=  self.glue_data.pop().expect("tried to remove obj-data, but array is empty.");
-        self.physics_world.remove_object(obj_data.obj_handle);
+
+        if let Some(obj_handle ) = obj_data.obj_handle {
+            self.physics_world.remove_object(obj_handle);
+        }
         
         self.keymap.remove(key);
     
@@ -120,12 +123,12 @@ impl ObjectStorage {
 
     /// changing values here, may result in a de-sync with the mesh.
     /// thats why its unsafe.
-    pub unsafe fn get_handle_mut(&mut self, key: DefaultKey) -> &mut ObjectHandle{
+    pub unsafe fn get_handle_mut(&mut self, key: DefaultKey) -> &mut Option<ObjectHandle>{
         let (vec_idx, _) = self.keymap.get(key).expect("key not known to the map.");
         &mut self.glue_data.get_mut(*vec_idx).expect("missing object data").obj_handle
     }
 
-    pub fn get_handle(&self, key: DefaultKey) -> &ObjectHandle{
+    pub fn get_handle(&self, key: DefaultKey) -> &Option<ObjectHandle>{
         let (vec_idx, _) = self.keymap.get(key).expect("key not known to the map.");
         &self.glue_data.get(*vec_idx).expect("missing object data").obj_handle
     }
@@ -161,16 +164,22 @@ impl ObjectStorage {
     pub fn step_physics(&mut self, distance: f32){
         self.physics_world.step(distance);
     }
+
+    /// returns false if collision is disabled.
     pub fn does_collide(&mut self, key: DefaultKey)-> bool{
-        let (vec_idx, _) = self.keymap.get(key).expect("key not known to the map.");
-        let glue  = self.glue_data.get(*vec_idx).expect("missing object for 'does_collide'");
-        self.physics_world.has_collision(*(&glue.obj_handle.collider_handle))
+
+        if let Some(object_handle )= self.get_handle(key){
+            return self.physics_world.has_collision(*(&object_handle.collider_handle))
+        }
+        return false
     }
 
+    /// returns empty if collision is disabled.
     pub fn collides_with(&mut self, key: DefaultKey)-> Vec<DefaultKey>{
-        let (vec_idx, _) = self.keymap.get(key).expect("key not known to the map.");
-        let glue  = self.glue_data.get(*vec_idx).expect("missing object for 'collides_with'");
-        self.physics_world.get_collided_keys(*(&glue.obj_handle.collider_handle))
+        if let Some(object_handle )= self.get_handle(key){
+            return self.physics_world.get_collided_keys(*(&object_handle.collider_handle))
+        }
+        return Vec::new()
     }
 
     pub fn keys_to_py(&mut self, keys: Vec<DefaultKey>)-> Vec<Arc<Py<PyWeakref>>>{
@@ -186,8 +195,9 @@ impl ObjectStorage {
     pub fn change_obj_position<T: FnOnce(&mut Object)>(&mut self, location: &mq::Vec3,  key: DefaultKey,obj_recalc: T){
 
         {
-            let glue  = *self.get_handle(key);
-            self.physics_world.move_object(&glue.rigid_body_handle, location);
+            if let Some(glue) = *self.get_handle(key){
+                self.physics_world.move_object(&glue.rigid_body_handle, location);
+            }
         }
         let obj  = unsafe {self.get_mut(key)};
         obj_recalc(obj);
@@ -197,8 +207,9 @@ impl ObjectStorage {
     pub fn change_obj_rotation<T: FnOnce(&mut Object)>(&mut self, rotation: &mq::Vec3, key: DefaultKey,obj_recalc: T){
 
         {
-            let glue  = *self.get_handle(key);
-            self.physics_world.rotate_object(&glue.rigid_body_handle, rotation);
+            if let Some(glue) = *self.get_handle(key){
+                self.physics_world.rotate_object(&glue.rigid_body_handle, rotation);
+            }
         }
         let obj  = unsafe {self.get_mut(key)};
         obj_recalc(obj);
@@ -212,6 +223,15 @@ impl ObjectStorage {
 
         /// TODO: change object collision based on scale.
         return;
+        todo!()
+    }
+
+    pub fn remove_collision_for_object(&mut self, key: DefaultKey){
+        if let Some(handle) = *self.get_handle(key) {
+            self.physics_world.remove_object(handle);
+        }
+    }
+    pub fn add_collision_for_object(&mut self, key: DefaultKey){
         todo!()
     }
 

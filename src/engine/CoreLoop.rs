@@ -29,7 +29,8 @@ use crate::engine::Objects::ObjectManagement::ObjectManagement;
 
 pub enum Command {
     ManuallyStepPhysics(f32),
-    
+    EnableCollisionForObject(DefaultKey),
+    DisableCollisionForObject(DefaultKey),
     GetColissionObjects{
         key: DefaultKey, sender: mpsc::SyncSender<Vec<Arc<Py<PyWeakref>>>>,
     },
@@ -197,6 +198,12 @@ pub async fn proccess_commands_loop() {
         while let Some(command) = COMMAND_QUEUE.pop() {
             
             match command {
+                Command::DisableCollisionForObject(key)=> {
+                    object_storage.remove_collision_for_object(key);
+                }
+                Command::EnableCollisionForObject(key)=> {
+                    object_storage.add_collision_for_object(key);
+                }
                 Command::GetColissionObjects { key, sender }=>{
                     let keys = object_storage.collides_with(key);
                     let py_refs  = object_storage.keys_to_py(keys);

@@ -172,10 +172,12 @@ impl Mesh{
     }
 
     pub fn disable_collision(&self){
-        todo!()
+        let command = Command::DisableCollisionForObject(self.key);
+        COMMAND_QUEUE.push(command);
     }
     pub fn enable_collision(&self){
-        todo!()
+        let command = Command::EnableCollisionForObject(self.key);
+        COMMAND_QUEUE.push(command);
     }
 
     /// Returns any object, with active collision, that is either

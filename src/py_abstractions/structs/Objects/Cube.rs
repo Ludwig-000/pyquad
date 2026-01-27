@@ -164,6 +164,8 @@ impl Cube {
         COMMAND_QUEUE.push(command);
     }
 
+    /// Disables collision and physics for this object.
+    /// This will do nothing if collision is already disabled.
     pub fn disable_collision(&self){
         todo!()
     }
