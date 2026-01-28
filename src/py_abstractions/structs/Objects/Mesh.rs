@@ -146,7 +146,7 @@ impl Mesh{
     /// ```
     /// >>>object.rot.x += 1
     /// ```
-    /// since object.rot returns a copy of its rotation, one has to write:
+    /// since object.rot is immutable and returns a copy of its rotation, one has to write:
     /// ```
     /// >>>object.rot += Vec3(1, 0, 0)
     /// ```

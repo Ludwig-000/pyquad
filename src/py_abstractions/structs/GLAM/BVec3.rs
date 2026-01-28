@@ -6,8 +6,8 @@ use pyo3_stub_gen::derive::*;
 
 /// An immutable Boolean Vector with 3 elements: x,y,z.
 #[gen_stub_pyclass]
-#[cfg_attr(feature = "abi_ge_314", pyclass(immutable_type))]
-#[cfg_attr(feature = "abi_le_310", pyclass(frozen))]
+#[cfg_attr(feature = "abi_314", pyclass(frozen, immutable_type))]
+#[cfg_attr(not(feature = "abi_314"), pyclass(frozen))]
 #[derive(Clone, Copy, PartialEq,Debug,Eq, Hash)]
 pub struct BVec3 {
     #[pyo3(get)]

@@ -13,12 +13,13 @@ use pyo3_stub_gen::derive::*;
 // This file implements all functionality from Glam, replacing uses of BVec2 and Vec2 with the pyabstracted versions.
 //
 #[gen_stub_pyclass]
-#[pyclass]
+#[cfg_attr(feature = "abi_314", pyclass(frozen, immutable_type))]
+#[cfg_attr(not(feature = "abi_314"), pyclass(frozen))]
 #[derive(Clone, Copy, PartialEq,Debug)]
 pub struct Vec2 {
-    #[pyo3(get, set)]
+    #[pyo3(get)]
     pub x: f32,
-    #[pyo3(get, set)]
+    #[pyo3(get)]
     pub y: f32,
 }
 
@@ -164,23 +165,14 @@ impl Vec2 {
 
     /// Creates a 3D vector from `self` with the given value of `x`.
     #[inline]
-    pub fn with_x(&mut self, x: f32) -> Self {
-        self.x = x;
-        *self
+    pub fn with_x(&self, x: f32) -> Self {
+        Self::const_new(x, self.y)
     }
 
     /// Creates a 3D vector from `self` with the given value of `y`.
     #[inline]
-    pub fn with_y(&mut self, y: f32) -> Self {
-        self.y = y;
-        *self
-    }
-
-    /// Creates a 2D vector from `self` with the given value of `y`.
-    #[inline]
-    pub fn with_z(&mut self, y: f32) -> Self {
-        self.y = y;
-        *self
+    pub fn with_y(&self, y: f32) -> Self {
+        Self::const_new(self.x, y)
     }
 
     #[inline]

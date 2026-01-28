@@ -59,10 +59,11 @@ features = ["png", "jpeg", "webp"]
 
 
 # compile using:
-# maturin build --release --features abi_ge_314 --no-default-features
+# maturin build --release --features abi_314 --no-default-features
 #or:
 # maturin build --release
 [features]
-abi_ge_314 = ["pyo3/abi3", "pyo3/abi3-py314"]
-abi_le_310 = ["pyo3/abi3", "pyo3/abi3-py310"]
-default = ["abi_le_310"]
+abi_314 = ["pyo3/abi3", "pyo3/abi3-py314"] # python 3.14 and up
+abi_310 = ["pyo3/abi3", "pyo3/abi3-py310"] # python 3.10 and up
+abi_39 = ["pyo3/abi3", "pyo3/abi3-py39"] # python 3.9 and up
+default = ["abi_310"]
