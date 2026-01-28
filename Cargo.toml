@@ -30,7 +30,7 @@ overflow-checks = true #disable for release. The engine should NEVER panic.
 macroquad = { version = "0.4.14", features = ["audio"] }
 
 #used to build the python library
-pyo3 = { version = "0.26", features = ["extension-module", "abi3-py310"] }
+pyo3 = { version = "0.26", features = ["extension-module"] }
 
 # a VERY slightly modified version of pyo3 stub gen, which allows it to compile to python 3.7 and 3.8
 # modification was only one line, so feel free to drop support for python 3.7 if any cool new features release
@@ -56,3 +56,13 @@ gltf = "1.4.1" # for parsing 3DAssets
 version = "0.25.8"
 default-features = false
 features = ["png", "jpeg", "webp"]
+
+
+# compile using:
+# maturin build --release --features abi_ge_314 --no-default-features
+#or:
+# maturin build --release
+[features]
+abi_ge_314 = ["pyo3/abi3", "pyo3/abi3-py314"]
+abi_le_310 = ["pyo3/abi3", "pyo3/abi3-py310"]
+default = ["abi_le_310"]
