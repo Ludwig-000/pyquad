@@ -19,6 +19,7 @@ use crate::engine::SHADERS::shader_manager as sm;
 use crate::engine::PError::PError;
 use crate::engine::PArc::PArc;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::*;
+use crate::py_abstractions::structs::Objects::ColliderOptions::ColliderOptions;
 use pyo3::{Py};
 use pyo3::types::{PyWeakref};
 
@@ -29,8 +30,7 @@ use crate::engine::Objects::ObjectManagement::ObjectManagement;
 
 pub enum Command {
     ManuallyStepPhysics(f32),
-    EnableCollisionForObject(DefaultKey),
-    DisableCollisionForObject(DefaultKey),
+    SetCollisionForObject{key: DefaultKey, collider: ColliderOptions},
     GetColissionObjects{
         key: DefaultKey, sender: mpsc::SyncSender<Vec<Arc<Py<PyWeakref>>>>,
     },
@@ -52,12 +52,14 @@ pub enum Command {
         position: mq::Vec3,
         rotation: mq::Vec3,
         color: mq::Color,
+        collider: ColliderOptions,
         weak_ref: Py<PyWeakref>,
         sender: mpsc::SyncSender<DefaultKey>,
     },
 
     CreateMesh{
         mesh: Mesh,
+        collider: ColliderOptions,
         weak_ref: Py<PyWeakref>,
         sender: mpsc::SyncSender<DefaultKey>,
     },
@@ -67,6 +69,7 @@ pub enum Command {
         position: mq::Vec3,
         rotation: mq::Vec3,
         color: mq::Color,
+        collider: ColliderOptions,
         weak_ref: Py<PyWeakref>,
         sender: mpsc::SyncSender<DefaultKey>,
     },
@@ -198,11 +201,8 @@ pub async fn proccess_commands_loop() {
         while let Some(command) = COMMAND_QUEUE.pop() {
             
             match command {
-                Command::DisableCollisionForObject(key)=> {
-                    object_storage.remove_collision_for_object(key);
-                }
-                Command::EnableCollisionForObject(key)=> {
-                    object_storage.add_collision_for_object(key);
+                Command::SetCollisionForObject{key, collider}=> {
+                    object_storage.set_collision_for_object(key, collider);
                 }
                 Command::GetColissionObjects { key, sender }=>{
                     let keys = object_storage.collides_with(key);
@@ -300,25 +300,25 @@ pub async fn proccess_commands_loop() {
                         });
                     
                 }
-                Command::CreateCube { size, position, rotation,color, weak_ref: pyAny, sender }=>{
+                Command::CreateCube { size, position, rotation,color,collider, weak_ref: pyAny, sender }=>{
 
-                    object_storage.quick_push(sender, pyAny, 
+                    object_storage.quick_push(collider,sender, pyAny, 
                         move || {
                             let internal_cube = Cube::new(size, position, rotation, color);
                             Object::Cube(internal_cube)
                         });
                         
                 }
-                Command::CreateMesh { mesh, weak_ref, sender }=>{
+                Command::CreateMesh { mesh,collider, weak_ref, sender }=>{
 
-                    object_storage.quick_push(sender, weak_ref, 
+                    object_storage.quick_push(collider,sender, weak_ref, 
                         move || {
                             Object::Mesh(mesh)
                         });
                 }
-                Command::CreateSphere { size, position, rotation,color, weak_ref: pyAny, sender }=>{
+                Command::CreateSphere { size, position, rotation,color, collider,weak_ref: pyAny, sender }=>{
 
-                    object_storage.quick_push(sender, pyAny, 
+                    object_storage.quick_push(collider,sender, pyAny, 
                         move || {
                             let internal_sphere = Sphere::new(size, position, rotation, color);
                             Object::Sphere(internal_sphere)

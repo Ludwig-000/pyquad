@@ -315,6 +315,27 @@ class Camera3D:
 class Circle(TwoDObject):
     ...
 
+class ColliderOptions:
+    r"""
+    A Settings-Class for Colliders.
+    the following options exist:
+    
+    ```
+    ...# no collision or physics
+    >>>ColliderOptions.NONE 
+    ...
+    ...# collision but no physics
+    >>>ColliderOptions.STATIC
+    ...
+    ...# both physics and collision.
+    >>>ColliderOptions.DYNAMIC(...)
+    ```
+    """
+    NONE: ColliderOptions
+    STATIC: ColliderOptions
+    @staticmethod
+    def DYNAMIC(gravity:Vec3) -> ColliderOptions: ...
+
 class Color:
     CLOUDY_BLUE: Color
     r"""
@@ -4836,9 +4857,11 @@ class Cube:
         """
     @rot.setter
     def rot(self, value: Vec3) -> None: ...
-    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=...) -> Cube: ...
-    def disable_collision(self) -> None: ...
-    def enable_collision(self) -> None: ...
+    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., collider_type:ColliderOptions=...) -> Cube: ...
+    def set_collider(self, collider_type:ColliderOptions) -> None:
+        r"""
+        overwrites the current collider with the input option.
+        """
     def check_collision(self) -> builtins.list[typing.Any]:
         r"""
         Returns any object, with active collision, that is either
@@ -4939,7 +4962,7 @@ class FileData:
         r"""
         Attempts to parse the file data as a Sound.
         """
-    def to_mesh_data(self) -> Mesh:
+    def to_mesh_data(self, collider_type:ColliderOptions=...) -> Mesh:
         r"""
         Attempts to parse the file as a mesh.
         Immediately returns a fully fledged Mesh object that has collision, is queued to be drawn,
@@ -5064,7 +5087,7 @@ class Mesh:
     @rot.setter
     def rot(self, value: Vec3) -> None: ...
     @staticmethod
-    def from_file_data(data:FileData) -> Mesh: ...
+    def from_file_data(data:FileData, collider_type:ColliderOptions) -> Mesh: ...
     def disable_collision(self) -> None: ...
     def enable_collision(self) -> None: ...
     def check_collision(self) -> builtins.list[typing.Any]:
@@ -5276,7 +5299,7 @@ class Sphere:
     def rot(self) -> Vec3: ...
     @rot.setter
     def rot(self, value: Vec3) -> None: ...
-    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=...) -> Sphere: ...
+    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., collider_type:ColliderOptions=...) -> Sphere: ...
     def disable_collision(self) -> None: ...
     def enable_collision(self) -> None: ...
     def check_collision(self) -> builtins.list[typing.Any]:

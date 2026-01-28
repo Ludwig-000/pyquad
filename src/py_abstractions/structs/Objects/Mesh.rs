@@ -7,6 +7,7 @@ use slotmap::Key;
 use std::hash::{Hash, Hasher};
 use crate::engine::Objects::ObjectDataCache::ThreeDObjCache;
 use crate::engine::PError::PError;
+use crate::py_abstractions::structs::Objects::ColliderOptions::ColliderOptions;
 use crate::py_abstractions::{Loading::FileData::FileData, structs::Textures_and_Images::Texture2D};
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::engine::Objects::Mesh as internal_mesh;
@@ -50,7 +51,7 @@ pub struct Mesh{
 impl Mesh{
 
     #[staticmethod]
-    pub fn from_file_data(py: Python<'_>,data: FileData)-> PyResult<Py<Mesh>>{
+    pub fn from_file_data(py: Python<'_>,data: FileData, collider_type: ColliderOptions)-> PyResult<Py<Mesh>>{
 
         let (sender, receiver) = mpsc::sync_channel(1);
 
@@ -70,7 +71,7 @@ impl Mesh{
             PError::GLTFError(e)
         })?;
 
-        COMMAND_QUEUE.push(Command::CreateMesh { mesh, weak_ref: weak_ref_handle, sender });
+        COMMAND_QUEUE.push(Command::CreateMesh { mesh, collider: collider_type, weak_ref: weak_ref_handle, sender });
         
         let key: DefaultKey = receiver.recv().unwrap();
         
@@ -171,12 +172,9 @@ impl Mesh{
         COMMAND_QUEUE.push(command);
     }
 
-    pub fn disable_collision(&self){
-        let command = Command::DisableCollisionForObject(self.key);
-        COMMAND_QUEUE.push(command);
-    }
-    pub fn enable_collision(&self){
-        let command = Command::EnableCollisionForObject(self.key);
+
+    pub fn set_collision(&self, collision_type: ColliderOptions){
+        let command = Command::SetCollisionForObject{key: self.key, collider: collision_type};
         COMMAND_QUEUE.push(command);
     }
 

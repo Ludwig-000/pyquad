@@ -14,6 +14,7 @@ use crate::engine::CoreLoop::COMMAND_QUEUE;
 use crate::engine::CoreLoop::Command;
 
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
+use crate::py_abstractions::structs::Objects::ColliderOptions::ColliderOptions;
 use crate::py_abstractions::structs::Objects::ObjectFunctionStorage;
 use crate::py_abstractions::Color::Color;
 
@@ -35,7 +36,7 @@ pub struct Sphere{
 #[pymethods]
 impl Sphere {
 
-    #[pyo3(signature = (position= Vec3::ZERO(), rotation = Vec3::ZERO(),scale= Vec3::ONE(), color = Color::WHITE()))]
+    #[pyo3(signature = (position= Vec3::ZERO(), rotation = Vec3::ZERO(),scale= Vec3::ONE(), color = Color::WHITE(), collider_type = ColliderOptions::NONE()))]
     #[new]
     pub fn new(
         py: Python<'_>,
@@ -43,6 +44,7 @@ impl Sphere {
         rotation: Vec3,
         scale: Vec3,
         color: Color,
+        collider_type: ColliderOptions,
     ) -> PyResult<Py<Sphere>> {
 
         let (sender, receiver) = mpsc::sync_channel(1);
@@ -66,6 +68,7 @@ impl Sphere {
             position: position.into(), 
             rotation: rotation.into(), 
             color: color.into(),
+            collider: collider_type,
             weak_ref: weak_ref_handle,
             sender 
         });

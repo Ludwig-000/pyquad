@@ -1,7 +1,7 @@
 
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::* ;
-use crate::py_abstractions::structs::{Audio::Sound, Objects::Mesh::Mesh, Textures_and_Images::{self, Image, Texture2D}};
+use crate::py_abstractions::structs::{Audio::Sound, Objects::{ColliderOptions::ColliderOptions, Mesh::Mesh}, Textures_and_Images::{self, Image, Texture2D}};
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 
 
@@ -61,8 +61,9 @@ impl FileData{
     /// Attempts to parse the file as a mesh.
     /// Immediately returns a fully fledged Mesh object that has collision, is queued to be drawn,
     /// and is positioned at 0,0,0
-    pub fn to_mesh_data(&self, py: Python<'_>)-> PyResult<Py<Mesh>>{
-        Mesh::from_file_data(py, self.clone())
+    #[pyo3(signature = (collider_type = ColliderOptions::NONE()))]
+    pub fn to_mesh_data(&self, py: Python<'_>, collider_type: ColliderOptions)-> PyResult<Py<Mesh>>{
+        Mesh::from_file_data(py, self.clone(),collider_type)
     }
     
 }

@@ -14,6 +14,7 @@ use crate::engine::CoreLoop::COMMAND_QUEUE;
 use crate::engine::CoreLoop::Command;
 
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
+use crate::py_abstractions::structs::Objects::ColliderOptions::ColliderOptions;
 use crate::py_abstractions::structs::Objects::ObjectFunctionStorage;
 use crate::py_abstractions::Color::Color;
 
@@ -35,7 +36,7 @@ pub struct Cube{
 #[pymethods]
 impl Cube {
 
-    #[pyo3(signature = (position= Vec3::ZERO(), rotation = Vec3::ZERO(),scale= Vec3::ONE(), color = Color::WHITE()))]
+    #[pyo3(signature = (position= Vec3::ZERO(), rotation = Vec3::ZERO(),scale= Vec3::ONE(), color = Color::WHITE(), collider_type = ColliderOptions::NONE()))]
     #[new]
     pub fn new(
         py: Python<'_>,
@@ -43,6 +44,7 @@ impl Cube {
         rotation: Vec3,
         scale: Vec3,
         color: Color,
+        collider_type: ColliderOptions,
     ) -> PyResult<Py<Cube>> {
 
         let (sender, receiver) = mpsc::sync_channel(1);
@@ -62,6 +64,7 @@ impl Cube {
             position: position.into(), 
             rotation: rotation.into(), 
             color: color.into(),
+            collider: collider_type,
             weak_ref: weak_ref_handle,
             sender 
         });
@@ -164,12 +167,8 @@ impl Cube {
         COMMAND_QUEUE.push(command);
     }
 
-    /// Disables collision and physics for this object.
-    /// This will do nothing if collision is already disabled.
-    pub fn disable_collision(&self){
-        todo!()
-    }
-    pub fn enable_collision(&self){
+    /// overwrites the current collider with the input option.
+    pub fn set_collider(&self, collider_type: ColliderOptions){
         todo!()
     }
 

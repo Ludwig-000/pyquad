@@ -1,4 +1,4 @@
-use crate::engine::{Objects::{Cube::Cube, Mesh::Mesh, Sphere::Sphere}, structures::Rectangle};
+use crate::{engine::{Objects::{Cube::Cube, Mesh::Mesh, Sphere::Sphere}, structures::Rectangle}, py_abstractions::structs::Objects::ColliderOptions::ColliderOptions};
 use pyo3::prelude::*;
 use pyo3::types::PyWeakref;
 use slotmap::*;
@@ -39,14 +39,14 @@ impl ObjectStorage {
         }
     }
 
-    pub fn push(&mut self, obj: Object, weak_ref_handle: Py<PyWeakref>) -> DefaultKey {
+    pub fn push(&mut self, obj: Object,collider: ColliderOptions, weak_ref_handle: Py<PyWeakref>) -> DefaultKey {
 
         
         let idx = self.storage.len(); // the index of where the obj will be placed eventually.
         let key = self.keymap.insert((idx, Arc::new(weak_ref_handle)));
 
         // gets the glue data.
-        let glue  = GlueData{  reverse_lookup: key, obj_handle: Some(self.physics_world.insert_object(&obj, key))};
+        let glue  = GlueData{  reverse_lookup: key, obj_handle: self.physics_world.insert_object(&obj, key,collider)};
         self.glue_data.push(glue);
 
         self.storage.push(obj);
@@ -56,6 +56,7 @@ impl ObjectStorage {
 
     /// Returns the Oject key through the Sender, before the object has been created.
     pub fn quick_push<F: FnOnce()-> Object>(&mut self,
+        collider: ColliderOptions,
         sender: SyncSender<DefaultKey>,
         weak_ref_handle: Py<PyWeakref>,
         object_factory: F){
@@ -66,7 +67,7 @@ impl ObjectStorage {
 
         let obj = object_factory();
 
-        let glue  = GlueData{  reverse_lookup: key, obj_handle: Some(self.physics_world.insert_object(&obj, key))};
+        let glue  = GlueData{  reverse_lookup: key, obj_handle: self.physics_world.insert_object(&obj, key,collider)};
         self.glue_data.push(glue);
 
         self.storage.push(obj);
@@ -226,12 +227,7 @@ impl ObjectStorage {
         todo!()
     }
 
-    pub fn remove_collision_for_object(&mut self, key: DefaultKey){
-        if let Some(handle) = *self.get_handle(key) {
-            self.physics_world.remove_object(handle);
-        }
-    }
-    pub fn add_collision_for_object(&mut self, key: DefaultKey){
+    pub fn set_collision_for_object(&mut self, key: DefaultKey, collider: ColliderOptions){
         todo!()
     }
 

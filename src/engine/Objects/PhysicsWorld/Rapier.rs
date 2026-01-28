@@ -4,7 +4,7 @@ use rapier3d::{pipeline, prelude::*};
 use glam::Vec3;
 use std::sync::Mutex;
 use slotmap::{DefaultKey, Key, KeyData};
-use crate::engine::Objects::ObjectManagement::ObjectStorage as obj;
+use crate::{engine::Objects::ObjectManagement::ObjectStorage as obj, py_abstractions::structs::Objects::ColliderOptions::{ColliderOptions, InnerColliderOptions}};
 
 
 pub fn physics_thread(){
@@ -22,6 +22,10 @@ pub struct ObjectHandle {
     pub rigid_body_handle: RigidBodyHandle,
     pub collider_handle: ColliderHandle,
 }
+
+
+
+
 struct Transforms<'a>{
     pos: &'a Vec3,
     rot: &'a Vec3,
@@ -86,7 +90,7 @@ impl RapierWorld{
     }
 
     pub fn step(&mut self, distance: f32) {
-        let gravity = vector![0.0, 0.0, 0.0];
+        let gravity = vector![0.0, -9.81, 0.0];
 
         // self.pipeline.step(
         //     distance,
@@ -112,16 +116,29 @@ impl RapierWorld{
             &(),
         );
     }
-    pub fn insert_object(&mut self, obj: &obj::Object, key: DefaultKey) -> ObjectHandle {
+    pub fn insert_object(&mut self, obj: &obj::Object, key: DefaultKey, collider: ColliderOptions) -> Option<ObjectHandle> {
+        match collider.0{
+            InnerColliderOptions::None => {
+                return None;
+            }
+            InnerColliderOptions::Static=> {
+                return Some(self.static_collider_builder(obj, key))
+            }
+            InnerColliderOptions::Dynamic { gravity } =>{
+                Some(self.dynamic_collider_builder(obj,key,collider))
+            }
+        }
+    }
+
+    fn dynamic_collider_builder(&mut self, obj: &obj::Object, key: DefaultKey, options: ColliderOptions)-> ObjectHandle{
+        todo!()
+    }
+    fn static_collider_builder(&mut self, obj: &obj::Object, key: DefaultKey)-> ObjectHandle{
+
         let t: Transforms<'_>  = extract_object_transforms(obj);
-        
-        let rigid_body = RigidBodyBuilder::kinematic_position_based()
-            .translation(vector![t.pos.x,t.pos.y,t.pos.z])
-            .rotation(rapier3d::na::Vector3::new(t.rot.x, t.rot.y, t.rot.z))
-            .build();
-        
-        // NOTE: cuboid takes half-extents. We divide size by 2.0.
-        let mut collider  = match obj{
+
+        let mut collider =  match obj{
+            // NOTE: cuboid takes half-extents. We divide size by 2.0.
             obj::Object::Cube(_) => {
                 ColliderBuilder::cuboid(t.scale.x / 2.0, t.scale.y / 2.0, t.scale.z / 2.0)
                     .sensor(true)
@@ -177,8 +194,17 @@ impl RapierWorld{
             },
             _ => todo!()
         };
+
+
+        let rigid_body = RigidBodyBuilder::kinematic_position_based()
+            .translation(vector![t.pos.x,t.pos.y,t.pos.z])
+            .rotation(rapier3d::na::Vector3::new(t.rot.x, t.rot.y, t.rot.z))
+            .build();
         
+
         collider.user_data = key_to_u128(key);
+        
+
 
         let rigid_body_handle = self.rigidBS.insert(rigid_body);
         
