@@ -4,14 +4,14 @@ use glam::BVec2 as gl;
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
 
-/// A Boolean Vector with 2 elements: x,y.
+/// An immutable Boolean Vector with 2 elements: x,y.
 #[gen_stub_pyclass]
-#[pyclass]
+#[pyclass(frozen)]
 #[derive(Clone, Copy, PartialEq,Debug,Eq, Hash)]
 pub struct BVec2 {
-    #[pyo3(get, set)]
+    #[pyo3(get)]
     pub x: bool,
-    #[pyo3(get, set)]
+    #[pyo3(get)]
     pub y: bool,
 }
 
@@ -89,10 +89,10 @@ impl BVec2 {
 
     /// Sets the value of index 1 or index 2.
     #[inline]
-    pub fn set(&mut self, index: usize, value: bool) {
+    pub fn set(&self, index: usize, value: bool)-> Self {
         match index {
-            0 => self.x = value,
-            1 => self.y = value,
+            0 => Self::new(value, self.y),
+            1 => Self::new(self.x, value),
             _ => panic!("index out of bounds"),
         }
     }

@@ -4969,6 +4969,44 @@ class FileData:
         and is positioned at 0,0,0
         """
 
+class FozenBVec2:
+    r"""
+    A Boolean Vector with 2 elements: x,y.
+    """
+    FALSE: FozenBVec2
+    r"""
+    All false.
+    """
+    TRUE: FozenBVec2
+    r"""
+    All true.
+    """
+    @property
+    def x(self) -> builtins.bool: ...
+    @property
+    def y(self) -> builtins.bool: ...
+    def __new__(cls, x:builtins.bool, y:builtins.bool) -> FozenBVec2: ...
+    def bitmask(self) -> builtins.int: ...
+    def any(self) -> builtins.bool:
+        r"""
+        Returns true if any of the elements are true, false otherwise.
+        """
+    def all(self) -> builtins.bool:
+        r"""
+        Returns true if all the elements are true, false otherwise.
+        """
+    def test(self, index:builtins.int) -> builtins.bool:
+        r"""
+        Returns the value of index 1 or index 2.
+        """
+    def into_bool_array(self) -> builtins.list[builtins.bool]: ...
+    def into_u32_array(self) -> builtins.list[builtins.int]: ...
+    def bitand(self, rhs:FozenBVec2) -> FozenBVec2: ...
+    def bitor(self, rhs:FozenBVec2) -> FozenBVec2: ...
+    def bitxor(self, rhs:FozenBVec2) -> FozenBVec2: ...
+    def not(self) -> FozenBVec2: ...
+    def __str__(self) -> builtins.str: ...
+
 class Image:
     r"""
     Image, data stored in CPU memory
@@ -5088,8 +5126,7 @@ class Mesh:
     def rot(self, value: Vec3) -> None: ...
     @staticmethod
     def from_file_data(data:FileData, collider_type:ColliderOptions) -> Mesh: ...
-    def disable_collision(self) -> None: ...
-    def enable_collision(self) -> None: ...
+    def set_collision(self, collision_type:ColliderOptions) -> None: ...
     def check_collision(self) -> builtins.list[typing.Any]:
         r"""
         Returns any object, with active collision, that is either

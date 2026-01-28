@@ -1,8 +1,5 @@
-use rapier3d::na::Dynamic;
-
-
 use pyo3::prelude::*;
-use crate::py_abstractions::structs::{GLAM::Vec3::Vec3, Objects::Two_D_Object::TwoDObject};
+use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use pyo3_stub_gen::derive::* ;
 
 
@@ -33,11 +30,12 @@ impl ColliderOptions{
     pub fn NONE() -> ColliderOptions {
         ColliderOptions(InnerColliderOptions::None)
     }
+
     #[classattr]
     pub fn STATIC() -> ColliderOptions {
         ColliderOptions(InnerColliderOptions::Static)
     }
-
+    
     #[staticmethod]
     pub fn DYNAMIC(gravity: Vec3) -> ColliderOptions {
         ColliderOptions(InnerColliderOptions::Dynamic { gravity })

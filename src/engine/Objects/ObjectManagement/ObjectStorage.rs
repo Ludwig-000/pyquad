@@ -22,7 +22,6 @@ pub struct ObjectStorage {
     // Maps: Object Key -> (Vector Index, WeakRef)
     keymap: SlotMap<DefaultKey, (usize, Arc<Py<PyWeakref>>)>,
     
-    // The actual objects (Packed array)
     storage: Vec<Object>,
     
     glue_data: Vec<GlueData>,

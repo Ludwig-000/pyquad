@@ -4,16 +4,16 @@ use glam::BVec3 as gl;
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
 
-/// A Boolean Vector with 3 elements: x,y,z.
+/// An immutable Boolean Vector with 3 elements: x,y,z.
 #[gen_stub_pyclass]
-#[pyclass]
+#[pyclass(frozen)]
 #[derive(Clone, Copy, PartialEq,Debug,Eq, Hash)]
 pub struct BVec3 {
-    #[pyo3(get, set)]
+    #[pyo3(get)]
     pub x: bool,
-    #[pyo3(get, set)]
+    #[pyo3(get)]
     pub y: bool,
-    #[pyo3(get, set)]
+    #[pyo3(get)]
     pub z: bool,
 }
 
@@ -46,7 +46,7 @@ const MASK: [u32; 2] = [0, 0xff_ff_ff_ff];
 impl BVec3 {
     #[new]
     pub fn new(x: bool, y: bool, z: bool) -> Self {
-    Self { x, y, z }
+        Self { x, y, z }
     }
 
     /// All false.
@@ -89,11 +89,11 @@ impl BVec3 {
     }
 
     #[inline]
-    pub fn set(&mut self, index: usize, value: bool) {
+    pub fn set(&self, index: usize, value: bool) -> Self{
         match index {
-            0 => self.x = value,
-            1 => self.y = value,
-            2 => self.z = value,
+            0 => Self::new(value, self.y, self.z),
+            1 => Self::new(self.x, value, self.z),
+            2 => Self::new(self.x, self.y, value),
             _ => panic!("index out of bounds"),
         }
     }
