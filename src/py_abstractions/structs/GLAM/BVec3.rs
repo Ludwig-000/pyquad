@@ -92,9 +92,9 @@ impl BVec3 {
     #[inline]
     pub fn set(&self, index: usize, value: bool) -> Self{
         match index {
-            0 => Self::new(value, self.y, self.z),
-            1 => Self::new(self.x, value, self.z),
-            2 => Self::new(self.x, self.y, value),
+            0 => Self::const_new(value, self.y, self.z),
+            1 => Self::const_new(self.x, value, self.z),
+            2 => Self::const_new(self.x, self.y, value),
             _ => panic!("index out of bounds"),
         }
     }

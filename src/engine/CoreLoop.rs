@@ -12,7 +12,7 @@ use crossbeam::queue::SegQueue;
 use macroquad::prelude as mq;
 use macroquad::audio as au;
 use slotmap::DefaultKey;
-
+use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 use crate::engine::Objects::Mesh::Mesh;
 use crate::engine::Objects::Sphere::Sphere;
 use crate::engine::SHADERS::shader_manager as sm;
@@ -30,22 +30,22 @@ use crate::engine::Objects::ObjectManagement::ObjectManagement;
 
 pub enum Command {
     ManuallyStepPhysics(f32),
-    SetCollisionForObject{key: DefaultKey, collider: ColliderOptions},
+    SetCollisionForObject{key: ObjectKey, collider: ColliderOptions},
     GetColissionObjects{
-        key: DefaultKey, sender: mpsc::SyncSender<Vec<Arc<Py<PyWeakref>>>>,
+        key: ObjectKey, sender: mpsc::SyncSender<Vec<Arc<Py<PyWeakref>>>>,
     },
     DrawAll3DObjects(),
 
     DeleteObject{
-        key: DefaultKey, 
+        key: ObjectKey, 
     },
-    GetObjectScale{ key: DefaultKey, sender: mpsc::SyncSender<mq::Vec3> },
-    GetObjectPos{ key: DefaultKey, sender: mpsc::SyncSender<mq::Vec3> },
-    GetObjectRotation{ key: DefaultKey, sender: mpsc::SyncSender<mq::Vec3> },
+    GetObjectScale{ key: ObjectKey, sender: mpsc::SyncSender<mq::Vec3> },
+    GetObjectPos{ key: ObjectKey, sender: mpsc::SyncSender<mq::Vec3> },
+    GetObjectRotation{ key: ObjectKey, sender: mpsc::SyncSender<mq::Vec3> },
 
-    SetObjectScale{ key: DefaultKey, scale: mq::Vec3 },
-    SetObjectPos{ key: DefaultKey, position: mq::Vec3 },
-    SetObjectRotation{ key: DefaultKey, rotation: mq::Vec3 },
+    SetObjectScale{ key: ObjectKey, scale: mq::Vec3 },
+    SetObjectPos{ key: ObjectKey, position: mq::Vec3 },
+    SetObjectRotation{ key: ObjectKey, rotation: mq::Vec3 },
 
     CreateCube{
         size: mq::Vec3,
@@ -54,14 +54,14 @@ pub enum Command {
         color: mq::Color,
         collider: ColliderOptions,
         weak_ref: Py<PyWeakref>,
-        sender: mpsc::SyncSender<DefaultKey>,
+        sender: mpsc::SyncSender<ObjectKey>,
     },
 
     CreateMesh{
         mesh: Mesh,
         collider: ColliderOptions,
         weak_ref: Py<PyWeakref>,
-        sender: mpsc::SyncSender<DefaultKey>,
+        sender: mpsc::SyncSender<ObjectKey>,
     },
 
     CreateSphere{
@@ -71,7 +71,7 @@ pub enum Command {
         color: mq::Color,
         collider: ColliderOptions,
         weak_ref: Py<PyWeakref>,
-        sender: mpsc::SyncSender<DefaultKey>,
+        sender: mpsc::SyncSender<ObjectKey>,
     },
 
     DropThisItem(Arc<dyn Any + Send + Sync>), // drops it's item.  >_<

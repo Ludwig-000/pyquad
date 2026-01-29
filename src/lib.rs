@@ -24,6 +24,7 @@ use crate::py_abstractions::Loading::Loading::*;
 
 
 #[pymodule]
+#[pyo3(gil_used = false)] 
 pub fn pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
 
     m.add_function(wrap_pyfunction!(activate_engine, m)?)?;

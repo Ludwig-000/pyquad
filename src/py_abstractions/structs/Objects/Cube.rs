@@ -6,7 +6,6 @@ use pyo3::exceptions::*;
 use std::sync::mpsc;
 use std::hash::{Hash, Hasher};
 
-use slotmap::DefaultKey;
 use slotmap::Key;
 
 use crate::engine::Objects::ObjectDataCache;
@@ -17,15 +16,15 @@ use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::py_abstractions::structs::Objects::ColliderOptions::ColliderOptions;
 use crate::py_abstractions::structs::Objects::ObjectFunctionStorage;
 use crate::py_abstractions::Color::Color;
-
-
+use crate::py_abstractions::structs::Objects::ObjectFunctionStorage::FunctionKey;
+use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 #[gen_stub_pyclass]
 #[pyclass(subclass, weakref)]
 pub struct Cube{
-    key: DefaultKey, // The key to the actual underlying cube, stored inside "ObjectStorage".
+    key: ObjectKey, // The key to the actual underlying cube, stored inside "ObjectStorage".
 
     // Key to a function inside 'function storage', which will be run each frame by the engine.
-    function_key: Option<DefaultKey>,
+    function_key: Option<FunctionKey>,
 
     /// we add a cache for trivial data, which can be used if the object is not
     /// influenced by outside forces F.E. Gravity.
@@ -50,7 +49,7 @@ impl Cube {
         let (sender, receiver) = mpsc::sync_channel(1);
 
         let cache = ObjectDataCache::ThreeDObjCache::new(true, position.into(), rotation.into(), scale.into(), color.into());
-        let placeholder_struct: Cube = Cube { key: DefaultKey::null(),function_key: None,  cache};
+        let placeholder_struct: Cube = Cube { key: ObjectKey::null(),function_key: None,  cache};
         let cube_handle: Py<Cube> = Py::new(py, placeholder_struct)?; 
         
         let weak_ref_handle: Py<PyWeakref> = {
@@ -69,7 +68,7 @@ impl Cube {
             sender 
         });
         
-        let key: DefaultKey = receiver.recv().unwrap();
+        let key = receiver.recv().unwrap();
         
         cube_handle.borrow_mut(py).key = key;
         Ok(cube_handle) 

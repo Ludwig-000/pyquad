@@ -97,13 +97,13 @@ impl Vec2 {
     /// The unit vector in the X direction `(1.0, 0.0)`.
     #[classattr]
     pub fn X() -> Vec2 {
-        Self::new(1.0, 0.0)
+        Self::const_new(1.0, 0.0)
     }
 
     /// The unit vector in the Y direction `(0.0, 1.0)`.
     #[classattr]
     pub fn Y() -> Vec2 {
-        Self::new(0.0, 1.0)
+        Self::const_new(0.0, 1.0)
     }
 
     /// The unit vector in the negative X direction `(-1.0, 0.0)`.
@@ -115,7 +115,7 @@ impl Vec2 {
     /// The unit vector in the negative Y direction `(0.0, -1.0)`.
     #[classattr]
     pub fn NEG_Y() -> Vec2 {
-        Self::new(0.0, -1.0)
+        Self::const_new(0.0, -1.0)
     }
 
 
@@ -153,7 +153,7 @@ impl Vec2 {
     #[staticmethod]
     #[inline]
     pub fn from_array(a: [f32; 2]) -> Self {
-        Self::new(a[0], a[1])
+        Self::const_new(a[0], a[1])
     }
 
     /// `[x, y, z]`

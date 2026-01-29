@@ -1,6 +1,7 @@
 use std::sync::Mutex;
 use std::sync::MutexGuard;
 
+use slotmap::SlotMap;
 /// stores functions to be executed by Python each frame.
 /// 
 /// 
@@ -10,6 +11,8 @@ use pyo3::prelude::*;
 use pyo3::ffi;
 use pyo3::types::*;
 use std::sync::{OnceLock};
+use slotmap::{new_key_type};
+
 
 static FUN_STORAGE: OnceLock<Mutex<FunctionStorage>> = OnceLock::new();
 
@@ -25,32 +28,54 @@ pub fn get_fun_storage() -> MutexGuard<'static, FunctionStorage> {
 
 
 
-pub struct FunctionStorage{
-    tasks: DenseSlotMap<DefaultKey, 
-    (usize, // raw object pointer, used as function input.
-    Py<PyAny>)>, // Owned python function.
-}
+new_key_type! { pub struct FunctionKey; }
 
-impl FunctionStorage{
+
+pub struct FunctionStorage{
+    map: SlotMap<FunctionKey, usize>,
+    values: Vec<(usize, // raw object pointer as function input.
+         Py<PyAny>,     // owned function
+         FunctionKey)>, // reverse lookup
+}
+impl FunctionStorage {
     pub fn new() -> Self {
-        Self { tasks: DenseSlotMap::default() }
+        Self {
+            map: SlotMap::with_key(),
+            values: Vec::new(),
+        }
     }
-    
-    pub fn add(&mut self, target: Bound<'_, PyAny>, func: Py<PyAny>)-> DefaultKey {
-        // Gets the raw pointer without incrementing the refcount
+
+    pub fn add(&mut self, target: Bound<'_, PyAny>, func: Py<PyAny>) -> FunctionKey {
         let ptr = target.as_ptr() as usize;
-        let key =self.tasks.insert((ptr, func));
+        let index = self.values.len();
+        
+        // 1. Create a stable key pointing to the end of the vector
+        let key = self.map.insert(index);
+        
+        // 2. Store the data and the key (needed for swap_remove updates)
+        self.values.push((ptr, func, key));
         key
     }
 
-    pub fn remove(&mut self, target: DefaultKey){
-        self.tasks.remove(target);
+    pub fn remove(&mut self, key: FunctionKey) {
+        if let Some(index) = self.map.remove(key) {
+            // Standard O(1) swap_remove
+            self.values.swap_remove(index);
+
+            // If we didn't remove the very last element, the element that was 
+            // at the end moved to 'index'. we must update its location in the map.
+            if index < self.values.len() {
+                let (_, _, moved_key) = &self.values[index];
+                if let Some(idx_ref) = self.map.get_mut(*moved_key) {
+                    *idx_ref = index;
+                }
+            }
+        }
     }
 
+    
     pub fn execute_all(&self, py: Python<'_>) -> PyResult<()> {
-
-        
-        for (ptr_address, callback) in self.tasks.values() {
+        for (ptr_address, callback, _) in self.values.iter() {
             
             unsafe {
                 let raw_ptr = *ptr_address as *mut ffi::PyObject;
@@ -64,6 +89,40 @@ impl FunctionStorage{
                 }
             }
         }
+        Ok(())
+    }
+
+    
+    #[cfg(false)]
+    /// Should massively speed up execution in theory, if free threading is enabled.
+    /// for now, this is still slower than linear execution
+    pub fn execute_all(&self, py: Python<'_>) -> PyResult<()> {
+        use rayon::prelude::*;
+        
+        const BATCH_SIZE: usize = 64;
+
+        py.detach(|| {
+            self.values.par_chunks(BATCH_SIZE).for_each(|chunk| {
+                
+                let err=Python::attach(|py| {
+                    for (ptr_address, callback, _) in chunk {
+                        unsafe {
+                            let raw_ptr = *ptr_address as *mut ffi::PyObject;
+                            
+                            let target_bound = Bound::from_borrowed_ptr(py, raw_ptr);
+                            let func_bound = callback.bind(py);
+                            
+                            if let Err(e) = func_bound.call1((target_bound,)) {
+                                self.report_error(py, &e, func_bound);
+                                return Err(e);
+                            }
+                        }
+                    }
+                    Ok(())
+                });
+            });
+        });
+
         Ok(())
     }
 }

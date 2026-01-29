@@ -17,15 +17,16 @@ use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::py_abstractions::structs::Objects::ColliderOptions::ColliderOptions;
 use crate::py_abstractions::structs::Objects::ObjectFunctionStorage;
 use crate::py_abstractions::Color::Color;
-
+use crate::py_abstractions::structs::Objects::ObjectFunctionStorage::FunctionKey;
+use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 
 #[gen_stub_pyclass]
 #[pyclass(subclass, weakref)]
 pub struct Sphere{
-    key: DefaultKey, // The key to the actual underlying cube, stored inside "ObjectStorage".
+    key: ObjectKey, // The key to the actual underlying cube, stored inside "ObjectStorage".
 
     // Key to a function inside 'function storage', which will be run each frame by the engine.
-    function_key: Option<DefaultKey>,
+    function_key: Option<FunctionKey>,
 
     /// we add a cache for trivial data, which can be used if the object is not
     /// influenced by outside forces F.E. Gravity.
@@ -52,7 +53,7 @@ impl Sphere {
         let cache = ObjectDataCache::ThreeDObjCache::new(
             true, position.into(), rotation.into(), scale.into(), color.into());
             
-        let placeholder_struct: Sphere = Sphere { key: DefaultKey::null(),function_key: None,  cache};
+        let placeholder_struct: Sphere = Sphere { key: ObjectKey::null(),function_key: None,  cache};
         let cube_handle: Py<Sphere> = Py::new(py, placeholder_struct)?; 
         
         let weak_ref_handle: Py<PyWeakref> = {
@@ -73,7 +74,7 @@ impl Sphere {
             sender 
         });
         
-        let key: DefaultKey = receiver.recv().unwrap();
+        let key = receiver.recv().unwrap();
         
         cube_handle.borrow_mut(py).key = key;
         Ok(cube_handle) 

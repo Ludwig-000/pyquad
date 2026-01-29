@@ -7,7 +7,7 @@ from enum import Enum
 
 class BVec2:
     r"""
-    A Boolean Vector with 2 elements: x,y.
+    An immutable Boolean Vector with 2 elements: x,y.
     """
     FALSE: BVec2
     r"""
@@ -19,12 +19,8 @@ class BVec2:
     """
     @property
     def x(self) -> builtins.bool: ...
-    @x.setter
-    def x(self, value: builtins.bool) -> None: ...
     @property
     def y(self) -> builtins.bool: ...
-    @y.setter
-    def y(self, value: builtins.bool) -> None: ...
     def __new__(cls, x:builtins.bool, y:builtins.bool) -> BVec2: ...
     def bitmask(self) -> builtins.int: ...
     def any(self) -> builtins.bool:
@@ -39,7 +35,7 @@ class BVec2:
         r"""
         Returns the value of index 1 or index 2.
         """
-    def set(self, index:builtins.int, value:builtins.bool) -> None:
+    def set(self, index:builtins.int, value:builtins.bool) -> BVec2:
         r"""
         Sets the value of index 1 or index 2.
         """
@@ -53,7 +49,7 @@ class BVec2:
 
 class BVec3:
     r"""
-    A Boolean Vector with 3 elements: x,y,z.
+    An immutable Boolean Vector with 3 elements: x,y,z.
     """
     FALSE: BVec3
     r"""
@@ -65,16 +61,10 @@ class BVec3:
     """
     @property
     def x(self) -> builtins.bool: ...
-    @x.setter
-    def x(self, value: builtins.bool) -> None: ...
     @property
     def y(self) -> builtins.bool: ...
-    @y.setter
-    def y(self, value: builtins.bool) -> None: ...
     @property
     def z(self) -> builtins.bool: ...
-    @z.setter
-    def z(self, value: builtins.bool) -> None: ...
     def __new__(cls, x:builtins.bool, y:builtins.bool, z:builtins.bool) -> BVec3: ...
     def bitmask(self) -> builtins.int: ...
     def any(self) -> builtins.bool: ...
@@ -83,7 +73,7 @@ class BVec3:
         Returns true if all the elements are true, false otherwise.
         """
     def test(self, index:builtins.int) -> builtins.bool: ...
-    def set(self, index:builtins.int, value:builtins.bool) -> None: ...
+    def set(self, index:builtins.int, value:builtins.bool) -> BVec3: ...
     def into_bool_array(self) -> builtins.list[builtins.bool]: ...
     def into_u32_array(self) -> builtins.list[builtins.int]: ...
     def bitand(self, rhs:BVec3) -> BVec3: ...
@@ -4969,44 +4959,6 @@ class FileData:
         and is positioned at 0,0,0
         """
 
-class FozenBVec2:
-    r"""
-    A Boolean Vector with 2 elements: x,y.
-    """
-    FALSE: FozenBVec2
-    r"""
-    All false.
-    """
-    TRUE: FozenBVec2
-    r"""
-    All true.
-    """
-    @property
-    def x(self) -> builtins.bool: ...
-    @property
-    def y(self) -> builtins.bool: ...
-    def __new__(cls, x:builtins.bool, y:builtins.bool) -> FozenBVec2: ...
-    def bitmask(self) -> builtins.int: ...
-    def any(self) -> builtins.bool:
-        r"""
-        Returns true if any of the elements are true, false otherwise.
-        """
-    def all(self) -> builtins.bool:
-        r"""
-        Returns true if all the elements are true, false otherwise.
-        """
-    def test(self, index:builtins.int) -> builtins.bool:
-        r"""
-        Returns the value of index 1 or index 2.
-        """
-    def into_bool_array(self) -> builtins.list[builtins.bool]: ...
-    def into_u32_array(self) -> builtins.list[builtins.int]: ...
-    def bitand(self, rhs:FozenBVec2) -> FozenBVec2: ...
-    def bitor(self, rhs:FozenBVec2) -> FozenBVec2: ...
-    def bitxor(self, rhs:FozenBVec2) -> FozenBVec2: ...
-    def not(self) -> FozenBVec2: ...
-    def __str__(self) -> builtins.str: ...
-
 class Image:
     r"""
     Image, data stored in CPU memory
@@ -5117,7 +5069,7 @@ class Mesh:
         ```
         >>>object.rot.x += 1
         ```
-        since object.rot returns a copy of its rotation, one has to write:
+        since object.rot is immutable and returns a copy of its rotation, one has to write:
         ```
         >>>object.rot += Vec3(1, 0, 0)
         ```
@@ -5453,12 +5405,8 @@ class Vec2:
     """
     @property
     def x(self) -> builtins.float: ...
-    @x.setter
-    def x(self, value: builtins.float) -> None: ...
     @property
     def y(self) -> builtins.float: ...
-    @y.setter
-    def y(self, value: builtins.float) -> None: ...
     def __new__(cls, x:builtins.float, y:builtins.float) -> Vec2: ...
     @staticmethod
     def select(mask:BVec2, if_true:Vec2, if_false:Vec2) -> Vec2:
@@ -5487,10 +5435,6 @@ class Vec2:
     def with_y(self, y:builtins.float) -> Vec2:
         r"""
         Creates a 3D vector from `self` with the given value of `y`.
-        """
-    def with_z(self, y:builtins.float) -> Vec2:
-        r"""
-        Creates a 2D vector from `self` with the given value of `y`.
         """
     def dot(self, rhs:Vec2) -> builtins.float: ...
     def dot_into_vec(self, rhs:Vec2) -> Vec2:
@@ -5951,16 +5895,10 @@ class Vec3:
     """
     @property
     def x(self) -> builtins.float: ...
-    @x.setter
-    def x(self, value: builtins.float) -> None: ...
     @property
     def y(self) -> builtins.float: ...
-    @y.setter
-    def y(self, value: builtins.float) -> None: ...
     @property
     def z(self) -> builtins.float: ...
-    @z.setter
-    def z(self, value: builtins.float) -> None: ...
     def __new__(cls, x:builtins.float, y:builtins.float, z:builtins.float) -> Vec3: ...
     @staticmethod
     def select(mask:BVec3, if_true:Vec3, if_false:Vec3) -> Vec3:

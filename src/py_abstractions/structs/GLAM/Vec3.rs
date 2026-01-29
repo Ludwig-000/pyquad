@@ -99,37 +99,37 @@ impl Vec3 {
     /// The unit vector in the X direction `(1.0, 0.0, 0.0)`.
     #[classattr]
     pub fn X() -> Vec3 {
-        Self::new(1.0, 0.0, 0.0)
+        Self::const_new(1.0, 0.0, 0.0)
     }
 
     /// The unit vector in the Y direction `(0.0, 1.0, 0.0)`.
     #[classattr]
     pub fn Y() -> Vec3 {
-        Self::new(0.0, 1.0, 0.0)
+        Self::const_new(0.0, 1.0, 0.0)
     }
 
     /// The unit vector in the Z direction `(0.0, 0.0, 1.0)`.
     #[classattr]
     pub fn Z() -> Vec3 {
-        Self::new(0.0, 0.0, 1.0)
+        Self::const_new(0.0, 0.0, 1.0)
     }
 
     /// The unit vector in the negative X direction `(-1.0, 0.0, 0.0)`.
     #[classattr]
     pub fn NEG_X() -> Vec3 {
-        Self::new(-1.0, 0.0, 0.0)
+        Self::const_new(-1.0, 0.0, 0.0)
     }
 
     /// The unit vector in the negative Y direction `(0.0, -1.0, 0.0)`.
     #[classattr]
     pub fn NEG_Y() -> Vec3 {
-        Self::new(0.0, -1.0, 0.0)
+        Self::const_new(0.0, -1.0, 0.0)
     }
 
     /// The unit vector in the negative Z direction `(0.0, 0.0, -1.0)`.
     #[classattr]
     pub fn NEG_Z() -> Vec3 {
-        Self::new(0.0, 0.0, -1.0)
+        Self::const_new(0.0, 0.0, -1.0)
     }
 
     /// The X, Y, and Z unit vectors as a list `[X, Y, Z]`.
@@ -160,7 +160,7 @@ impl Vec3 {
     #[staticmethod]
     #[inline]
     pub fn from_array(a: [f32; 3]) -> Self {
-        Self::new(a[0], a[1], a[2])
+        Self::const_new(a[0], a[1], a[2])
     }
 
     // constructor for splat values

@@ -92,8 +92,8 @@ impl BVec2 {
     #[inline]
     pub fn set(&self, index: usize, value: bool)-> Self {
         match index {
-            0 => Self::new(value, self.y),
-            1 => Self::new(self.x, value),
+            0 => Self::const_new(value, self.y),
+            1 => Self::const_new(self.x, value),
             _ => panic!("index out of bounds"),
         }
     }

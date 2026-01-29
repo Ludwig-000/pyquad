@@ -18,7 +18,7 @@ use std::sync::mpsc;
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::* ;
 use pyo3::types::{PyWeakref, PyWeakrefReference};
-
+use crate::py_abstractions::structs::Objects::ObjectFunctionStorage::FunctionKey;
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::* ;
 
@@ -30,7 +30,7 @@ use crate::engine::Objects::ObjectDataCache;
 
 use crate::py_abstractions::structs::Objects::ObjectFunctionStorage;
 use crate::py_abstractions::Color::Color;
-
+use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 
 
 
@@ -38,8 +38,8 @@ use crate::py_abstractions::Color::Color;
 #[gen_stub_pyclass]
 #[pyclass(subclass, weakref)]
 pub struct Mesh{
-	pub key: DefaultKey,
-    pub function_key: Option<DefaultKey>,
+	pub key: ObjectKey,
+    pub function_key: Option<FunctionKey>,
 
     // an object's data can only be cached, if it can NOT be influenced by anything external.
     // F.E.: gravity.
@@ -55,7 +55,7 @@ impl Mesh{
 
         let (sender, receiver) = mpsc::sync_channel(1);
 
-        let placeholder_struct: Mesh = Mesh { key: DefaultKey::null(), 
+        let placeholder_struct: Mesh = Mesh { key: ObjectKey::null(), 
             function_key: None, 
             cache: ObjectDataCache::ThreeDObjCache::no_cache()  
         };
@@ -73,7 +73,7 @@ impl Mesh{
 
         COMMAND_QUEUE.push(Command::CreateMesh { mesh, collider: collider_type, weak_ref: weak_ref_handle, sender });
         
-        let key: DefaultKey = receiver.recv().unwrap();
+        let key = receiver.recv().unwrap();
         
         mesh_handle.borrow_mut(py).key = key;
 

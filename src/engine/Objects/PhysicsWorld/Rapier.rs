@@ -5,7 +5,7 @@ use glam::Vec3;
 use std::sync::Mutex;
 use slotmap::{DefaultKey, Key, KeyData};
 use crate::{engine::Objects::ObjectManagement::ObjectStorage as obj, py_abstractions::structs::Objects::ColliderOptions::{ColliderOptions, InnerColliderOptions}};
-
+use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 
 pub fn physics_thread(){
     let c = RapierWorld::new();
@@ -116,7 +116,7 @@ impl RapierWorld{
             &(),
         );
     }
-    pub fn insert_object(&mut self, obj: &obj::Object, key: DefaultKey, collider: ColliderOptions) -> Option<ObjectHandle> {
+    pub fn insert_object(&mut self, obj: &obj::Object, key: ObjectKey, collider: ColliderOptions) -> Option<ObjectHandle> {
         match collider.0{
             InnerColliderOptions::None => {
                 return None;
@@ -130,10 +130,10 @@ impl RapierWorld{
         }
     }
 
-    fn dynamic_collider_builder(&mut self, obj: &obj::Object, key: DefaultKey, options: ColliderOptions)-> ObjectHandle{
+    fn dynamic_collider_builder(&mut self, obj: &obj::Object, key: ObjectKey, options: ColliderOptions)-> ObjectHandle{
         todo!()
     }
-    fn static_collider_builder(&mut self, obj: &obj::Object, key: DefaultKey)-> ObjectHandle{
+    fn static_collider_builder(&mut self, obj: &obj::Object, key: ObjectKey)-> ObjectHandle{
 
         let t: Transforms<'_>  = extract_object_transforms(obj);
 
@@ -251,7 +251,7 @@ impl RapierWorld{
     }
 
 
-    pub fn get_collided_keys(&self, handle: ColliderHandle) -> Vec<DefaultKey> {
+    pub fn get_collided_keys(&self, handle: ColliderHandle) -> Vec<ObjectKey> {
     
         let pairs =  self.narrowP.contact_pairs_with(handle).filter_map(|collider|{
             if collider.has_any_active_contact{
@@ -283,12 +283,12 @@ impl RapierWorld{
 
 
 
-fn u128_to_key(val: u128) -> DefaultKey {
+fn u128_to_key(val: u128) -> ObjectKey {
     let as_u64 = val as u64;
     KeyData::from_ffi(as_u64).into()
 }
 
-fn key_to_u128(key: DefaultKey) -> u128 {
+fn key_to_u128(key: ObjectKey) -> u128 {
     let data = key.data();
     let as_u64 = data.as_ffi();
     as_u64 as u128
