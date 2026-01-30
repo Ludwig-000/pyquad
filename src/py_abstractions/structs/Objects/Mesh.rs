@@ -52,12 +52,12 @@ impl Mesh{
 
     #[staticmethod]
     pub fn from_file_data(py: Python<'_>,data: FileData, collider_type: ColliderOptions)-> PyResult<Py<Mesh>>{
-
+        
         let (sender, receiver) = mpsc::sync_channel(1);
 
         let placeholder_struct: Mesh = Mesh { key: ObjectKey::null(), 
             function_key: None, 
-            cache: ObjectDataCache::ThreeDObjCache::no_cache()  
+            cache: None,
         };
         let mesh_handle: Py<Mesh> = Py::new(py, placeholder_struct)?; 
         

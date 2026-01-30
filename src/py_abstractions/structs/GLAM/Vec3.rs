@@ -937,22 +937,23 @@ impl Vec3 {
         }
     }
 
-    //#[pyo3(name = "__iadd__")]
-    //#[inline]
-    //pub fn __iadd__ (&mut self, rhs: &PyAny) -> PyResult<Self> {
+    // #[pyo3(name = "__iadd__")]
+    // #[inline]
+    // pub fn __iadd__ (&self, rhs: &Vec3OrF32) -> PyResult<Self> {
     //    let mut lhs: gl = (*self).into();
 
-    //    if let Ok(rhs_self) = rhs.extract::<Self>() {
-    //        let b: gl = rhs_self.into();
-    //        lhs+=b;
-    //        Ok(lhs.into())
-    //    } else if let Ok(val_f32) = rhs.extract::<f32>() {
-    //        lhs+=val_f32;
-    //        Ok(lhs.into())
-    //    } else {
-    //        Err(PyNotImplementedError::new_err("Unsupported operand type for +=",))
+    //    match rhs {
+    //     Vec3OrF32::Vec3(rhs) => {
+    //         let rhs: gl  = *rhs.into();
+    //         (lhs + rhs.into()).into()
+    //     }
+    //     Vec3OrF32::F32(rhs) => {
+    //         (lhs + rhs).into()
+    //     }
+        
     //    }
-    //}
+       
+    // }
 
     #[pyo3(name = "__radd__")]
     #[inline]
@@ -1060,11 +1061,7 @@ impl From<Vec3> for gl {
 
 impl From<gl> for Vec3 {
     fn from(v: gl) -> Self {
-        Vec3 {
-        x: v.x,
-        y: v.y,
-        z: v.z,
-        }
+        Vec3 { x: v.x, y: v.y, z: v.z, }
     }
 }
 

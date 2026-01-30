@@ -1,6 +1,5 @@
 use macroquad::{color::Color, prelude as mq, window::InternalGlContext};
 use glam::{Vec3A, Mat3A, Quat, EulerRot};
-// This fix for Error #1: Explicitly import the enum
 use gltf::mesh::util::ReadIndices;
 
 use crate::engine::PError::PError;

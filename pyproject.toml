@@ -7,9 +7,10 @@ requires-python = ">=3.10"
 keywords = ["Game Engine", "Rust", "Low Level","Macroquad", "2D Render", "3D Render"]
 
 [tool.maturin]
-include = ["pyroquad.pyi", "pyroquad/examples/**/*"]
+module-name = "pyroquad._pyroquad"
+include = ["pyroquad.pyi"]
 abi3 = true
-python-source = "."
+python-source = "src/python"
 
 
 [build-system]

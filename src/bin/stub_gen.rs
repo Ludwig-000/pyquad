@@ -1,6 +1,6 @@
 use pyo3_stub_gen::Result;
 use std::path::PathBuf;
-use pyroquad::stub_info;
+use _pyroquad::stub_info;
 
 /// Running this generates the stub info for the engine. With stub info being 'projectname.pyi'.
 fn main() -> Result<()> {

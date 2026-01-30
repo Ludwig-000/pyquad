@@ -20,10 +20,9 @@ impl ThreeDObjCache{
             color,
         })
     }
-    pub fn no_cache()-> Option<ThreeDObjCache>{
-        None
-    }
+
 }
+
 
 #[derive(Clone,Copy,PartialEq)]
 pub struct TwoDObjCache{
@@ -49,7 +48,5 @@ impl TwoDObjCache {
             color,
         })
     }
-    pub fn no_cache()-> Option<TwoDObjCache>{
-        None
-    }
+
 }
