@@ -1,3 +1,3 @@
 from ._pyroquad import *
-from examples import *
+from . import examples
 print("import test")

@@ -3,6 +3,7 @@ use std::sync::mpsc;
 use std::collections::HashSet;
 use std::sync::Arc;
 use std::any::Any;
+use macroquad::color::BLACK;
 use pyo3::prelude::PyResult;
 use crossbeam::channel::SendTimeoutError;
 use lazy_static::*;
@@ -429,6 +430,9 @@ pub async fn proccess_commands_loop() {
                     if physics_step.is_some(){
                         object_storage.step_physics(physics_step.unwrap());
                     }
+
+
+                    mq::clear_background(BLACK); // 3d rendering is bugged if we don't clear.
                 }
             
                 Command::DrawText { text, x, y, font_size, color }=>{

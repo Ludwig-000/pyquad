@@ -1,1 +1,1 @@
-from PlayerCamera import *
+from .PlayerCamera import PlayerCamera
