@@ -1,5 +1,4 @@
 from pyroquad import *
-
 import math
 
 
@@ -9,8 +8,6 @@ import math
 
 class PlayerCamera:
 
-    
-
     movespeed = 0.2
     cam: Camera3D
     yaw: float = 0.0
@@ -18,13 +15,13 @@ class PlayerCamera:
     speed: float = 0.1
     rot_speed: float = 2.0
     pitch_speed: float= 2.0
-    middleMousePos: tuple[float, float]= get_mouse_position()
+    middleMousePos: tuple[float, float]
 
     def __init__(self):
         show_mouse(False)
         set_cursor_grab(True)
         self.cam =  Camera3D()
-
+        self.middleMousePos =  get_mouse_position()
         
         self.cam.position = Vec3(5.0, 5.0, 5.0)
         self.cam.target = Vec3(0.0, 0.0, 0.0)
