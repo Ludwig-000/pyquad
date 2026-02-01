@@ -6,6 +6,7 @@
 // also, any conversion between my abstracted pyclasses and the structs used in macroquad is being done here.
 // ( example:  Color -> mq::Color )
 
+use crate::py_abstractions::structs::MouseButton::MouseButton;
 use crate::py_abstractions::structs::Objects::ObjectFunctionStorage;
 use crate::py_abstractions::structs::Textures_and_Images::*;
 use macroquad::prelude as mq;
@@ -35,6 +36,11 @@ static ENGINE_CURRENTLY_ACTIVE: AtomicBool = AtomicBool::new(false);
 ///
 /// Turns on the pyroquad engine, creates an open-gl window and allows for engine-calls to be processed.
 ///
+/// Note that calling functions of the engine before this call is undefined behavious.
+/// Some things, like Vector-maths will run fine, some functions like 'get_keys_pressed' will return a default value, 
+/// but other functions may result in a deadlock.
+/// 
+/// The engine is built, assuming none of it's library calls are ever executed without the engine being active.
 #[gen_stub_pyfunction]
 #[pyfunction]
 #[pyo3(signature = (conf = None))] // overloads activate_engine with config
@@ -353,16 +359,23 @@ pub fn get_delta_time() -> f32 {
 
 
 
+
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn get_screen_data() -> Image {
+    todo!()
+}
+
+
 /// returns an list of all keys that have been pressed since the last check.
 /// pressed = key down + key up
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_keys_pressed() -> PyResult<KeyCodeSet> {
-    //actually, i am not 100% sure how get_keys_pressed() works, so might wanna look into that.
-    let (sender, receiver) = mpsc::sync_channel(1);
-    COMMAND_QUEUE.push(Command::GetKeysPressed(sender));
+    
+    use crate::engine::FrameInfo as fi;
+    let keyset = fi::KEYS_PRESSED.lock().unwrap().clone();
 
-    let keyset = receiver.recv().unwrap();
 
     let converted_keys: HashSet<KeyCode> = keyset
         .into_iter()
@@ -380,11 +393,10 @@ pub fn get_keys_pressed() -> PyResult<KeyCodeSet> {
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_keys_released() -> KeyCodeSet {
-    //actually, i am not 100% sure how get_keys_released() works, so might wanna look into that.
-    let (sender, receiver) = mpsc::sync_channel(1);
-    COMMAND_QUEUE.push(Command::GetKeysReleased(sender));
+    
+    use crate::engine::FrameInfo as fi;
+    let keyset = fi::KEYS_RELEASED.lock().unwrap().clone();
 
-    let keyset = receiver.recv().unwrap();
 
     let converted_keys: HashSet<KeyCode> = keyset
         .into_iter()
@@ -398,15 +410,15 @@ pub fn get_keys_released() -> KeyCodeSet {
 }
 
 
+
 /// returns an list of all keys that are currently in the process of being pressed.
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_keys_down() -> KeyCodeSet {
 
-    let (sender, receiver) = mpsc::sync_channel(1);
-    COMMAND_QUEUE.push(Command::GetKeysDown(sender));
+    use crate::engine::FrameInfo as fi;
+    let keyset = fi::KEYS_DOWN.lock().unwrap().clone();
 
-    let keyset = receiver.recv().unwrap();
 
     let converted_keys: HashSet<KeyCode> = keyset
         .into_iter()
@@ -416,6 +428,62 @@ pub fn get_keys_down() -> KeyCodeSet {
     let k = KeyCodeSet::new(converted_keys);
 
     k
+}
+
+
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn get_mouse_buttons_down() -> HashSet<MouseButton> {
+
+    use crate::engine::FrameInfo as fi;
+    fi::MOUSE_BUTTON_DOWN.lock().unwrap()
+        .iter()
+        .map(|key| (*key).into())
+        .collect()
+}
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn get_mouse_buttons_pressed() -> HashSet<MouseButton> {
+
+    use crate::engine::FrameInfo as fi;
+    fi::MOUSE_BUTTON_PRESSED.lock().unwrap()
+        .iter()
+        .map(|key| (*key).into())
+        .collect()
+}
+
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn get_mouse_buttons_released() -> HashSet<MouseButton> {
+
+    use crate::engine::FrameInfo as fi;
+    fi::MOUSE_BUTTON_RELEASED.lock().unwrap()
+        .iter()
+        .map(|key| (*key).into())
+        .collect()
+}
+
+
+
+/// Return the last pressed key.
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn get_last_key_pressed() -> Option<KeyCode> {
+    use crate::engine::FrameInfo as fi;
+    let keyset = *fi::LASK_KEY_PRESSED.lock().unwrap();
+    keyset.map(|key| key.into() )
+}
+
+
+/// Return the last pressed char.
+/// Each "get_char_pressed" call will consume a character from the input queue.
+#[gen_stub_pyfunction]
+#[pyfunction]
+pub fn get_char_pressed() -> Option<char> {
+
+    use crate::engine::FrameInfo as fi;
+    let keyset = *fi::CHAR_PRESSED.lock().unwrap();
+    keyset
 }
 
 

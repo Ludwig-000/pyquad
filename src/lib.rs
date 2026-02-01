@@ -46,6 +46,13 @@ pub fn _pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::get_keys_pressed, m)?)?;
     m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::get_keys_down, m)?)?;
     m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::get_keys_released, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::get_char_pressed, m)?)?;
+
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::get_mouse_buttons_down, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::get_mouse_buttons_pressed, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::get_mouse_buttons_released, m)?)?;
+
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::get_last_key_pressed, m)?)?;
     m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::draw_grid, m)?)?;
     m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::draw_texture, m)?)?;
     m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::draw_plane, m)?)?;
@@ -100,6 +107,8 @@ pub fn _pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<crate::py_abstractions::structs::Shader::Shader>()?;
     m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCode>()?;
     m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCodeSet>()?;
+
+    m.add_class::<crate::py_abstractions::structs::MouseButton::MouseButton>()?;
 
 
 

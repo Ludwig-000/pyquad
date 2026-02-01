@@ -7,3 +7,4 @@ pub mod Config;
 pub mod Audio;
 pub mod Objects;
 pub mod Shader;
+pub mod MouseButton;

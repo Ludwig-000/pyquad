@@ -1,0 +1,31 @@
+use pyo3::prelude::*;
+ 
+//use pyo3::type_gen::generate_type;
+//use pyo3::type_gen::generate_type_as_function;
+
+use pyo3_stub_gen::derive::gen_stub_pyclass_enum;
+use macroquad::prelude as mq;
+
+#[gen_stub_pyclass_enum]
+#[pyclass]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum MouseButton {
+    Left = 0,
+    Middle = 1,
+    Right = 2,
+    Unknown = 255,
+}
+
+
+
+impl From<mq::MouseButton> for MouseButton {
+
+    fn from(mq_key: mq::MouseButton) -> Self {
+        match mq_key {
+            mq::MouseButton::Left => MouseButton::Left,
+            mq::MouseButton::Middle => MouseButton::Middle,
+            mq::MouseButton::Right => MouseButton::Right,
+            mq::MouseButton::Unknown => MouseButton::Unknown,
+        }
+    }
+}

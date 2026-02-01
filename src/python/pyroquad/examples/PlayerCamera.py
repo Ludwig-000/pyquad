@@ -3,9 +3,6 @@ import math
 
 
 
-
-
-
 class PlayerCamera:
 
     movespeed = 0.2
@@ -18,6 +15,7 @@ class PlayerCamera:
     middleMousePos: tuple[float, float]
 
     def __init__(self):
+        r"""run once at the start of the program after engine initialization."""
         show_mouse(False)
         set_cursor_grab(True)
         self.cam =  Camera3D()
@@ -31,6 +29,7 @@ class PlayerCamera:
 
 
     def update(self):
+        r"""run at the start of every frame."""
         delta_time = get_delta_time()
         keys = get_keys_down()
         currentMousePos = get_mouse_position()

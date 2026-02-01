@@ -8,7 +8,7 @@ use pyo3_stub_gen::derive::gen_stub_pyclass_enum;
 
 use std::collections::HashSet;
 
-
+/// TODO: Replace with a regular HashSet
 #[gen_stub_pyclass]
 #[pyclass]
 #[derive(Clone)]

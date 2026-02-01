@@ -93,20 +93,20 @@ pub enum Command {
     RenderTargetMsaa{ width: u32, height: u32, sender: mpsc::SyncSender< PArc<mq::RenderTarget>  > },
     RenderTargetEx{ width: u32, height: u32, params: Option<mq::RenderTargetParams>, sender: mpsc::SyncSender<PArc<mq::RenderTarget> > },
     DrawArc{ x: f32,
-    y: f32,
-    sides: u8,
-    radius: f32,
-    rotation: f32,
-    thickness: f32,
-    arc: f32,
-    color: mq::Color,},
+        y: f32,
+        sides: u8,
+        radius: f32,
+        rotation: f32,
+        thickness: f32,
+        arc: f32,
+        color: mq::Color,},
     DrawCubeWires{position: mq::Vec3, size: mq::Vec3, color: mq::Color},
     DrawCylinder{ position: mq::Vec3,
-    radius_top: f32,
-    radius_bottom: f32,
-    height: f32,
-    texture: Option<mq::Texture2D>,
-    color: mq::Color,},
+        radius_top: f32,
+        radius_bottom: f32,
+        height: f32,
+        texture: Option<mq::Texture2D>,
+        color: mq::Color,},
     DrawCylinderWires{ position: mq::Vec3,
         radius_top: f32,
         radius_bottom: f32,
@@ -155,12 +155,6 @@ pub enum Command {
 
 
     GetMousePosition(mpsc::SyncSender<(f32,f32)>),
-    
-    GetKeysPressed(mpsc::SyncSender<HashSet<mq::KeyCode>>),
-
-    GetKeysDown(mpsc::SyncSender<HashSet<mq::KeyCode>>),
-
-    GetKeysReleased(mpsc::SyncSender<HashSet<mq::KeyCode>>),
 
     NextFrame{physics_step: Option<f32>, sender: mpsc::SyncSender<()>},
 
@@ -443,18 +437,6 @@ pub async fn proccess_commands_loop() {
                 Command::GetMousePosition(sender) => {
                 let pos = mq::mouse_position();
                 let _ = sender.send(pos);
-                }
-                Command::GetKeysPressed(sender) => {
-                let keyset = mq::get_keys_pressed();
-                let _ = sender.send(keyset);
-                }
-                Command::GetKeysReleased(sender) => {
-                let keyset = mq::get_keys_released();
-                let _ = sender.send(keyset);
-                }
-                Command::GetKeysDown(sender) => {
-                let keyset = mq::get_keys_down();
-                let _ = sender.send(keyset);
                 }
                 Command::ImgToTexture { image, sender }=>{
                     let tex: PArc<mq::Texture2D> = PArc::new(  mq::Texture2D::from_image(&image));
