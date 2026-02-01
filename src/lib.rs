@@ -106,7 +106,6 @@ pub fn _pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
 
     m.add_class::<crate::py_abstractions::structs::Shader::Shader>()?;
     m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCode>()?;
-    m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCodeSet>()?;
 
     m.add_class::<crate::py_abstractions::structs::MouseButton::MouseButton>()?;
 

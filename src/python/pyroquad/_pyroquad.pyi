@@ -5007,12 +5007,6 @@ class Image:
         supported image formats are: ".png", ".jpeg"
         """
 
-class KeyCodeSet:
-    @property
-    def inner(self) -> builtins.set[KeyCode]: ...
-    @inner.setter
-    def inner(self, value: builtins.set[KeyCode]) -> None: ...
-
 class Loading:
     r"""
     Namespace for static Download-related functions.
@@ -6485,6 +6479,12 @@ class KeyCode(Enum):
     Back = ...
     Unknown = ...
 
+class MouseButton(Enum):
+    Left = ...
+    Middle = ...
+    Right = ...
+    Unknown = ...
+
 class Projection(Enum):
     Perspective = ...
     Orthographics = ...
@@ -6494,6 +6494,12 @@ def activate_engine(conf:typing.Optional[Config]=None) -> None:
     [!] This should generally be the first function call.
     
     Turns on the pyroquad engine, creates an open-gl window and allows for engine-calls to be processed.
+    
+    Note that calling functions of the engine before this call is undefined behavious.
+    Some things, like Vector-maths will run fine, some functions like 'get_keys_pressed' will return a default value, 
+    but other functions may result in a deadlock.
+    
+    The engine is built, assuming none of it's library calls are ever executed without the engine being active.
     """
 
 def clear_background(color:Color) -> None:
@@ -6583,6 +6589,12 @@ def draw_texture(texture:Texture2D, x:builtins.float, y:builtins.float, color:Co
     a texture gets created by calling `Texture2D.from_image( image )`
     """
 
+def get_char_pressed() -> typing.Optional[builtins.str]:
+    r"""
+    Return the last pressed char.
+    Each "get_char_pressed" call will consume a character from the input queue.
+    """
+
 def get_delta_time() -> builtins.float:
     r"""
     Returns duration in seconds of the last frame drawn.
@@ -6607,23 +6619,36 @@ def get_fps() -> builtins.int:
     returns the current frames per second
     """
 
-def get_keys_down() -> KeyCodeSet:
+def get_keys_down() -> builtins.set[KeyCode]:
     r"""
     returns an list of all keys that are currently in the process of being pressed.
     """
 
-def get_keys_pressed() -> KeyCodeSet:
+def get_keys_pressed() -> builtins.set[KeyCode]:
     r"""
     returns an list of all keys that have been pressed since the last check.
     pressed = key down + key up
     """
 
-def get_keys_released() -> KeyCodeSet:
+def get_keys_released() -> builtins.set[KeyCode]:
     r"""
     returns an list of all keys that have been released since the last check.
     """
 
+def get_last_key_pressed() -> typing.Optional[KeyCode]:
+    r"""
+    Return the last pressed key.
+    """
+
+def get_mouse_buttons_down() -> builtins.set[MouseButton]: ...
+
+def get_mouse_buttons_pressed() -> builtins.set[MouseButton]: ...
+
+def get_mouse_buttons_released() -> builtins.set[MouseButton]: ...
+
 def get_mouse_position() -> tuple[builtins.float, builtins.float]: ...
+
+def get_screen_data() -> Image: ...
 
 def load_file(path:builtins.str) -> FileData:
     r"""

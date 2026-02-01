@@ -4,10 +4,13 @@ use pyo3::prelude::*;
 //use pyo3::type_gen::generate_type_as_function;
 
 use pyo3_stub_gen::derive::gen_stub_pyclass_enum;
+
+use pyo3_stub_gen::derive::* ;
 use macroquad::prelude as mq;
 
 #[gen_stub_pyclass_enum]
-#[pyclass]
+#[cfg_attr(feature = "abi_314", pyclass(eq, hash, frozen, immutable_type))]
+#[cfg_attr(not(feature = "abi_314"), pyclass(eq, hash, frozen))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum MouseButton {
     Left = 0,
@@ -15,7 +18,6 @@ pub enum MouseButton {
     Right = 2,
     Unknown = 255,
 }
-
 
 
 impl From<mq::MouseButton> for MouseButton {

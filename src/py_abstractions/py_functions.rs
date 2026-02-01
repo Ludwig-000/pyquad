@@ -371,7 +371,7 @@ pub fn get_screen_data() -> Image {
 /// pressed = key down + key up
 #[gen_stub_pyfunction]
 #[pyfunction]
-pub fn get_keys_pressed() -> PyResult<KeyCodeSet> {
+pub fn get_keys_pressed() -> HashSet<KeyCode> {
     
     use crate::engine::FrameInfo as fi;
     let keyset = fi::KEYS_PRESSED.lock().unwrap().clone();
@@ -382,9 +382,7 @@ pub fn get_keys_pressed() -> PyResult<KeyCodeSet> {
         .map(KeyCode::from)
         .collect();
 
-    let k = KeyCodeSet::new(converted_keys);
-
-    Ok(k)
+    converted_keys
 
 }
 
@@ -392,7 +390,7 @@ pub fn get_keys_pressed() -> PyResult<KeyCodeSet> {
 /// returns an list of all keys that have been released since the last check.
 #[gen_stub_pyfunction]
 #[pyfunction]
-pub fn get_keys_released() -> KeyCodeSet {
+pub fn get_keys_released() -> HashSet<KeyCode> {
     
     use crate::engine::FrameInfo as fi;
     let keyset = fi::KEYS_RELEASED.lock().unwrap().clone();
@@ -403,9 +401,7 @@ pub fn get_keys_released() -> KeyCodeSet {
         .map(KeyCode::from)
         .collect();
 
-    let k = KeyCodeSet::new(converted_keys);
-
-    k
+    converted_keys
 
 }
 
@@ -414,7 +410,7 @@ pub fn get_keys_released() -> KeyCodeSet {
 /// returns an list of all keys that are currently in the process of being pressed.
 #[gen_stub_pyfunction]
 #[pyfunction]
-pub fn get_keys_down() -> KeyCodeSet {
+pub fn get_keys_down() -> HashSet<KeyCode> {
 
     use crate::engine::FrameInfo as fi;
     let keyset = fi::KEYS_DOWN.lock().unwrap().clone();
@@ -425,9 +421,7 @@ pub fn get_keys_down() -> KeyCodeSet {
         .map(KeyCode::from)
         .collect();
 
-    let k = KeyCodeSet::new(converted_keys);
-
-    k
+    converted_keys
 }
 
 
