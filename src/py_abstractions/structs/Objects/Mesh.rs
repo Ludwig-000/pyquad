@@ -2,6 +2,7 @@ use macroquad::prelude::Vertex as mq_vert;
 use pyo3::{pyclass, pymethods};
 use pyo3_stub_gen::derive::{gen_stub_pyclass, gen_stub_pymethods};
 
+use pyo3_stub_gen::inventory::submit;
 use slotmap::DefaultKey;
 use slotmap::Key;
 use std::hash::{Hash, Hasher};
@@ -238,7 +239,7 @@ impl Mesh{
     ///...    next_frame()
     /// ```
     pub fn tick(slf: Bound<'_, Self>, function: Bound<'_,PyAny>)-> PyResult<()>{
-
+        
         if !function.is_callable(){
             return Err(PyRuntimeError::new_err(format!("Attatched object {:?} is not callable.",function)));
         }
