@@ -3,7 +3,7 @@ use pyo3_stub_gen::derive::* ;
 use crate::engine::PError::PError;
 
 use crate::py_abstractions::Loading::FileData::FileData;
-use std::sync::mpsc;
+
 use crate::engine::CoreLoop::COMMAND_QUEUE;
 use crate::engine::CoreLoop::Command;
 
@@ -32,10 +32,12 @@ pub fn load_file(path: &str)-> PyResult<FileData>{
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn load_file(path: &str)-> PyResult<FileData>{
-    let (tx, rx) = mpsc::sync_channel(1);
+    use crate::engine::PChannel::PChannel;
+
+    let (tx, rx) = PChannel::sync_channel(1);
     let p_str = path.to_string();
     COMMAND_QUEUE.push( Command::LoadFile { path: p_str, sender: tx } );
-    let res = rx.recv().unwrap();
+    let res = rx.recv()?;
     return match res{
         Ok(r) => Ok(
             FileData { bytes: r }

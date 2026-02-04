@@ -15,7 +15,7 @@ pub enum PChannelError{
 pub struct PChannel<T> {
     _marker: PhantomData<T>,
 }
-pub struct PSynSender<T> {
+pub struct PSyncSender<T> {
     inner: mpsc::SyncSender<Result<T, PChannelError>>,
 }
 pub struct PReceiver<T> {
@@ -23,22 +23,22 @@ pub struct PReceiver<T> {
 }
 
 impl<T> PChannel<T>{
-    pub fn sync_channel(bound: usize) -> (PSynSender<T>, PReceiver<T>) {
+    pub fn sync_channel(bound: usize) -> (PSyncSender<T>, PReceiver<T>) {
         let (tx, rx) = mpsc::sync_channel(bound);
         (
-            PSynSender { inner: tx },
+            PSyncSender { inner: tx },
             PReceiver { inner: rx }
         )
     }
 }
 
 
-impl<T> PSynSender<T> {
+impl<T> PSyncSender<T> {
     pub fn send(&self, t: T) -> Result<(), SendError<Result<T, PChannelError>>> {
         self.inner.send(Ok(t))
     }
 }
-impl<T> Drop for PSynSender<T>{
+impl<T> Drop for PSyncSender<T>{
     fn drop(&mut self) {
         let _ = self.inner.send(Err(PChannelError::PanicError));
     }
@@ -51,7 +51,7 @@ impl<T> PReceiver<T> {
             match res {
                 Ok(val)=> break val,
                 Err(e)=> {
-                    if deadlock_check().is_some(){ 
+                    if !crate::py_abstractions::py_functions::ENGINE_CURRENTLY_ACTIVE.load(Ordering::Relaxed){ 
                         return Err(PChannelError::DeadlockError)  
                     }
                 }
@@ -67,13 +67,7 @@ impl<T> PReceiver<T> {
 
     
 }
-fn deadlock_check()-> Option<DeadlockError>{
-    if !crate::py_abstractions::py_functions::ENGINE_CURRENTLY_ACTIVE.load(Ordering::Relaxed){
-        return Some(());
-    }
-    None
-}
-type DeadlockError=();
+
 
 
 use pyo3::PyErr;
@@ -82,7 +76,7 @@ impl From<PChannelError> for pyo3::PyErr {
         match value{
             PChannelError::DeadlockError=> {
                 PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(
-                    format!("Deadlock error encounterd. Waiting for a blocking channel, but the engine has not yet been initialized.
+                    format!("Deadlock error encounterd. Waiting for a blocking channel that may never resolve, since the engine has not yet been initialized.
                     Make sure to call 'activate_engine()' before making engine calls.")
                 )
             }

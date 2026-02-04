@@ -2,8 +2,7 @@ use pyo3::prelude::*;
 use pyo3_stub_gen::derive::* ;
 use pyo3::types::{PyWeakref, PyWeakrefReference};
 use pyo3::exceptions::*;
-
-use std::sync::mpsc;
+use crate::engine::PChannel::PChannel;
 use std::hash::{Hash, Hasher};
 
 use slotmap::DefaultKey;
@@ -48,7 +47,7 @@ impl Sphere {
         collider_type: ColliderOptions,
     ) -> PyResult<Py<Sphere>> {
 
-        let (sender, receiver) = mpsc::sync_channel(1);
+        let (sender, receiver) = PChannel::sync_channel(1);
 
         let cache = ObjectDataCache::ThreeDObjCache::new(
             true, position.into(), rotation.into(), scale.into(), color.into());
@@ -74,22 +73,31 @@ impl Sphere {
             sender 
         });
         
-        let key = receiver.recv().unwrap();
+        let key = receiver.recv()?;
         
         cube_handle.borrow_mut(py).key = key;
         Ok(cube_handle) 
     }
         
+    /// Accesses the scale of the given object.
+    /// Note that individual values of an object can NOT be changed via:
+    /// ```
+    /// >>>object.scale.x += 1
+    /// ```
+    /// since object.scale returns a copy of its scale, one has to write:
+    /// ```
+    /// >>>object.scale += Vec3(1, 0, 0)
+    /// ```
     #[getter]
-    fn scale(&self) -> Vec3 {
+    fn scale(&self) -> PyResult<Vec3> {
         if let Some(cache) = self.cache {
-            return cache.scale.into()
+            return Ok(cache.scale.into())
         }
 
-        let (sender, receiver) = mpsc::sync_channel(1);
+        let (sender, receiver) = PChannel::sync_channel(1);
         let command = Command::GetObjectScale { key: self.key, sender: sender };
         COMMAND_QUEUE.push(command);
-        receiver.recv().unwrap().into()
+        Ok(receiver.recv()?.into())
     }
 
     #[setter]
@@ -102,15 +110,25 @@ impl Sphere {
         COMMAND_QUEUE.push(command);
     }
 
+    /// Accesses the position of the given object.
+    /// Note that individual values of an object can NOT be changed via:
+    /// ```
+    /// >>>object.pos.x += 1
+    /// ```
+    /// since object.pos returns a copy of its position, one has to write:
+    /// ```
+    /// >>>object.pos += Vec3(1, 0, 0)
+    /// ```
     #[getter]
-    fn pos(&self) -> Vec3 {
+    fn pos(&self) -> PyResult<Vec3> {
         if let Some(cache) = self.cache {
-            return cache.position.into()
+            return Ok(cache.position.into())
         }
-        let (sender, receiver) = mpsc::sync_channel(1);
+
+        let (sender, receiver) = PChannel::sync_channel(1);
         let command = Command::GetObjectPos { key: self.key, sender: sender };
         COMMAND_QUEUE.push(command);
-        receiver.recv().unwrap().into()
+        Ok(receiver.recv()?.into())
     }
 
     #[setter]
@@ -122,16 +140,25 @@ impl Sphere {
         COMMAND_QUEUE.push(command);
     }
 
+    /// Accesses the rotation of the given object.
+    /// Note that individual values of an object can NOT be changed via:
+    /// ```
+    /// >>>object.rot.x += 1
+    /// ```
+    /// since object.rot returns a copy of its rotation, one has to write:
+    /// ```
+    /// >>>object.rot += Vec3(1, 0, 0)
+    /// ```
     #[getter]
-    fn rot(&self) -> Vec3 {
+    fn rot(&self) -> PyResult<Vec3> {
         if let Some(cache) = self.cache {
-            return cache.rotation.into()
+            return Ok(cache.rotation.into())
         }
 
-        let (sender, receiver) = mpsc::sync_channel(1);
+        let (sender, receiver) = PChannel::sync_channel(1);
         let command = Command::GetObjectRotation{ key: self.key, sender: sender };
         COMMAND_QUEUE.push(command);
-        receiver.recv().unwrap().into()
+        Ok(receiver.recv()?.into())
     }
 
     #[setter]
@@ -165,15 +192,15 @@ impl Sphere {
     ///>>>for cube in intersected:
     ///...   cube.pos = Vec3.ZERO()
     ///```
-    pub fn check_collision<'py>(&self, py: Python<'py> )-> Vec<Bound<'py, PyAny>>{
+    pub fn check_collision<'py>(&self, py: Python<'py> )-> PyResult<Vec<Bound<'py, PyAny>>>{
 
-        let (sender, receiver) = mpsc::sync_channel(1);
+        let (sender, receiver) = PChannel::sync_channel(1);
         let command = Command::GetColissionObjects { key: self.key, sender };
         COMMAND_QUEUE.push(command);
-        let res: Vec<std::sync::Arc<Py<PyWeakref>>> = receiver.recv().unwrap();
+        let res: Vec<std::sync::Arc<Py<PyWeakref>>> = receiver.recv()?;
 
         // we filter map, since any weakref we hold may already be invalid.
-        res.into_iter().filter_map(|pyObj|{
+        Ok(res.into_iter().filter_map(|pyObj|{
 
             let weak_py: &Py<PyWeakref> = &*pyObj;
 
@@ -186,7 +213,7 @@ impl Sphere {
             } else {
                 Some(upgraded)
             }
-        }).collect()
+        }).collect())
     }
 
     /// Add a function to this object, which will automatically be executed each frame.
@@ -247,9 +274,9 @@ impl Sphere {
         format!("Cube(position={:?}, rotation={:?}, scale={:?}, has_tick_function={has_tick_function})", pos, rot,scale)
     }
 
-    fn __str__(&self)-> String{
-        let pos = self.pos();
-        format!("Cube at ({:.2}, {:.2}, {:.2})", pos.x, pos.y, pos.z)
+    fn __str__(&self)-> PyResult<String>{
+        let pos = self.pos()?;
+        Ok(format!("Cube at ({:.2}, {:.2}, {:.2})", pos.x, pos.y, pos.z))
     }
 
 }

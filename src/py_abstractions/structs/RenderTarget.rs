@@ -1,7 +1,9 @@
 use macroquad::prelude as mq;
+use pyo3::PyResult;
 use pyo3::{pyclass, pyfunction,pymethods};
 use pyo3_stub_gen::derive::gen_stub_pyfunction;
-use std::sync::mpsc;
+
+use crate::engine::PChannel::PChannel;
 use pyo3_stub_gen::derive::*;
 use crate::engine::CoreLoop::COMMAND_QUEUE;
 use crate::engine::CoreLoop::Command;
@@ -43,26 +45,26 @@ impl From<&RenderTarget> for mq::RenderTarget{
 /// A shortcut to create a render target with no depth buffer and `sample_count: 4`
 #[gen_stub_pyfunction]
 #[pyfunction]
-pub fn render_target_msaa(width: u32, height: u32) -> RenderTarget {
-    let (sender, receiver) = mpsc::sync_channel(1);
+pub fn render_target_msaa(width: u32, height: u32) -> PyResult<RenderTarget> {
+    let (sender, receiver) = PChannel::sync_channel(1);
     COMMAND_QUEUE.push( Command::RenderTargetMsaa{width,height,sender} );
 
-    let render_target = receiver.recv().unwrap();
-    RenderTarget { render_target }
+    let render_target = receiver.recv()?;
+    Ok(RenderTarget { render_target })
 }
 
 
 #[gen_stub_pyfunction]
 #[pyfunction]
 #[pyo3(signature = (width, height, params = None))]
-pub fn render_target(width: u32, height: u32, params: Option<RenderTargetParams>) -> RenderTarget {
+pub fn render_target(width: u32, height: u32, params: Option<RenderTargetParams>) -> PyResult<RenderTarget> {
 
-    let (sender, receiver) = mpsc::sync_channel(1);
+    let (sender, receiver) = PChannel::sync_channel(1);
 
     COMMAND_QUEUE.push( Command::RenderTargetEx { width, height, params: params.map(Into::into), sender});
 
-    let render_target = receiver.recv().unwrap();
-    RenderTarget { render_target }
+    let render_target = receiver.recv()?;
+    Ok(RenderTarget { render_target })
 }
 
 

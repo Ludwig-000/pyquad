@@ -1,5 +1,4 @@
 use std::panic;
-use std::sync::mpsc;
 use std::collections::HashSet;
 use std::sync::Arc;
 use std::any::Any;
@@ -23,7 +22,7 @@ use crate::engine::Objects::ObjectManagement::ObjectStorage::*;
 use crate::py_abstractions::structs::Objects::ColliderOptions::ColliderOptions;
 use pyo3::{Py};
 use pyo3::types::{PyWeakref};
-
+use crate::engine::PChannel;
 use crate::engine::Objects::Cube::*;
 use crate::engine::Objects::ObjectManagement::ObjectStorage;
 use crate::engine::Objects::ObjectManagement::ObjectManagement;
@@ -33,16 +32,16 @@ pub enum Command {
     ManuallyStepPhysics(f32),
     SetCollisionForObject{key: ObjectKey, collider: ColliderOptions},
     GetColissionObjects{
-        key: ObjectKey, sender: mpsc::SyncSender<Vec<Arc<Py<PyWeakref>>>>,
+        key: ObjectKey, sender: PChannel::PSyncSender<Vec<Arc<Py<PyWeakref>>>>,
     },
     DrawAll3DObjects(),
 
     DeleteObject{
         key: ObjectKey, 
     },
-    GetObjectScale{ key: ObjectKey, sender: mpsc::SyncSender<mq::Vec3> },
-    GetObjectPos{ key: ObjectKey, sender: mpsc::SyncSender<mq::Vec3> },
-    GetObjectRotation{ key: ObjectKey, sender: mpsc::SyncSender<mq::Vec3> },
+    GetObjectScale{ key: ObjectKey, sender: PChannel::PSyncSender<mq::Vec3> },
+    GetObjectPos{ key: ObjectKey, sender: PChannel::PSyncSender<mq::Vec3> },
+    GetObjectRotation{ key: ObjectKey, sender: PChannel::PSyncSender<mq::Vec3> },
 
     SetObjectScale{ key: ObjectKey, scale: mq::Vec3 },
     SetObjectPos{ key: ObjectKey, position: mq::Vec3 },
@@ -55,14 +54,14 @@ pub enum Command {
         color: mq::Color,
         collider: ColliderOptions,
         weak_ref: Py<PyWeakref>,
-        sender: mpsc::SyncSender<ObjectKey>,
+        sender: PChannel::PSyncSender<ObjectKey>,
     },
 
     CreateMesh{
         mesh: Mesh,
         collider: ColliderOptions,
         weak_ref: Py<PyWeakref>,
-        sender: mpsc::SyncSender<ObjectKey>,
+        sender: PChannel::PSyncSender<ObjectKey>,
     },
 
     CreateSphere{
@@ -72,15 +71,15 @@ pub enum Command {
         color: mq::Color,
         collider: ColliderOptions,
         weak_ref: Py<PyWeakref>,
-        sender: mpsc::SyncSender<ObjectKey>,
+        sender: PChannel::PSyncSender<ObjectKey>,
     },
 
     DropThisItem(Arc<dyn Any + Send + Sync>), // drops it's item.  >_<
 
-    LoadFile{ path: String, sender: mpsc::SyncSender<Result<Vec<u8>, PError>> },
-    LoadSound{ path: String, sender: mpsc::SyncSender<Result<PArc<au::Sound>, PError>> },
+    LoadFile{ path: String, sender: PChannel::PSyncSender<Result<Vec<u8>, PError>> },
+    LoadSound{ path: String, sender: PChannel::PSyncSender<Result<PArc<au::Sound>, PError>> },
     
-    LoadSoundFromBytes{data: Vec<u8>, sender: mpsc::SyncSender<Result<PArc<au::Sound>, PError>> },
+    LoadSoundFromBytes{data: Vec<u8>, sender: PChannel::PSyncSender<Result<PArc<au::Sound>, PError>> },
 
     PlaySound{ sound: au::Sound, params: au::PlaySoundParams },
 
@@ -90,8 +89,8 @@ pub enum Command {
 
     StopSound{ sound: au::Sound },
 
-    RenderTargetMsaa{ width: u32, height: u32, sender: mpsc::SyncSender< PArc<mq::RenderTarget>  > },
-    RenderTargetEx{ width: u32, height: u32, params: Option<mq::RenderTargetParams>, sender: mpsc::SyncSender<PArc<mq::RenderTarget> > },
+    RenderTargetMsaa{ width: u32, height: u32, sender: PChannel::PSyncSender< PArc<mq::RenderTarget>  > },
+    RenderTargetEx{ width: u32, height: u32, params: Option<mq::RenderTargetParams>, sender: PChannel::PSyncSender<PArc<mq::RenderTarget> > },
     DrawArc{ x: f32,
         y: f32,
         sides: u8,
@@ -154,18 +153,18 @@ pub enum Command {
     ClearBackground { color: mq::Color },
 
 
-    GetMousePosition(mpsc::SyncSender<(f32,f32)>),
+    GetMousePosition(PChannel::PSyncSender<(f32,f32)>),
 
-    NextFrame{physics_step: Option<f32>, sender: mpsc::SyncSender<()>},
+    NextFrame{physics_step: Option<f32>, sender: PChannel::PSyncSender<()>},
 
     ImgToTexture {
         image: Arc<mq::Image>,
-        sender: mpsc::SyncSender<PArc<mq::Texture2D>>,
+        sender: PChannel::PSyncSender<PArc<mq::Texture2D>>,
     },
 
     LoadImage {
         path: String,
-        sender: mpsc::SyncSender<Result<mq::Image, PError>>,
+        sender: PChannel::PSyncSender<Result<mq::Image, PError>>,
     },
 
     SetCamera{camera_2d: Option<mq::Camera2D>, camera_3d: Option<mq::Camera3D>},

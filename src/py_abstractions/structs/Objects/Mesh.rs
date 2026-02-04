@@ -16,7 +16,9 @@ use crate::engine::Objects::Mesh as internal_mesh;
 use pyo3::prelude::PyResult;
 use crate::engine::CoreLoop::{Command,COMMAND_QUEUE};
 use pyo3::prelude::*;
-use std::sync::mpsc;
+
+use crate::engine::PChannel::PChannel;
+
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::* ;
 use pyo3::types::{PyWeakref, PyWeakrefReference};
@@ -55,7 +57,7 @@ impl Mesh{
     #[staticmethod]
     pub fn from_file_data(py: Python<'_>,data: FileData, collider_type: ColliderOptions)-> PyResult<Py<Mesh>>{
         
-        let (sender, receiver) = mpsc::sync_channel(1);
+        let (sender, receiver) = PChannel::sync_channel(1);
 
         let placeholder_struct: Mesh = Mesh { key: ObjectKey::null(), 
             function_key: None, 
@@ -75,7 +77,7 @@ impl Mesh{
 
         COMMAND_QUEUE.push(Command::CreateMesh { mesh, collider: collider_type, weak_ref: weak_ref_handle, sender });
         
-        let key = receiver.recv().unwrap();
+        let key = receiver.recv()?;
         
         mesh_handle.borrow_mut(py).key = key;
 
@@ -93,19 +95,19 @@ impl Mesh{
     /// >>>object.scale += Vec3(1, 0, 0)
     /// ```
     #[getter]
-    pub fn scale(&self) -> Vec3 {
+    fn scale(&self) -> PyResult<Vec3> {
         if let Some(cache) = self.cache {
-            return cache.scale.into()
+            return Ok(cache.scale.into())
         }
 
-        let (sender, receiver) = mpsc::sync_channel(1);
+        let (sender, receiver) = PChannel::sync_channel(1);
         let command = Command::GetObjectScale { key: self.key, sender: sender };
         COMMAND_QUEUE.push(command);
-        receiver.recv().unwrap().into()
+        Ok(receiver.recv()?.into())
     }
 
     #[setter]
-    pub fn set_scale(&mut self, value: Vec3) {
+    fn set_scale(&mut self, value: Vec3) {
         if let Some(cache) = &mut self.cache {
             cache.scale = value.into();
         }
@@ -124,18 +126,19 @@ impl Mesh{
     /// >>>object.pos += Vec3(1, 0, 0)
     /// ```
     #[getter]
-    pub fn pos(&self) -> Vec3 {
+    fn pos(&self) -> PyResult<Vec3> {
         if let Some(cache) = self.cache {
-            return cache.position.into()
+            return Ok(cache.position.into())
         }
-        let (sender, receiver) = mpsc::sync_channel(1);
+
+        let (sender, receiver) = PChannel::sync_channel(1);
         let command = Command::GetObjectPos { key: self.key, sender: sender };
         COMMAND_QUEUE.push(command);
-        receiver.recv().unwrap().into()
+        Ok(receiver.recv()?.into())
     }
 
     #[setter]
-    pub fn set_pos(&mut self, value: Vec3) {
+    fn set_pos(&mut self, value: Vec3) {
         if let Some(cache) = &mut self.cache {
             cache.position = value.into();
         }
@@ -148,24 +151,24 @@ impl Mesh{
     /// ```
     /// >>>object.rot.x += 1
     /// ```
-    /// since object.rot is immutable and returns a copy of its rotation, one has to write:
+    /// since object.rot returns a copy of its rotation, one has to write:
     /// ```
     /// >>>object.rot += Vec3(1, 0, 0)
     /// ```
     #[getter]
-    pub fn rot(&self) -> Vec3 {
+    fn rot(&self) -> PyResult<Vec3> {
         if let Some(cache) = self.cache {
-            return cache.rotation.into()
+            return Ok(cache.rotation.into())
         }
 
-        let (sender, receiver) = mpsc::sync_channel(1);
+        let (sender, receiver) = PChannel::sync_channel(1);
         let command = Command::GetObjectRotation{ key: self.key, sender: sender };
         COMMAND_QUEUE.push(command);
-        receiver.recv().unwrap().into()
+        Ok(receiver.recv()?.into())
     }
 
     #[setter]
-    pub fn set_rot(&mut self, value: Vec3) {
+    fn set_rot(&mut self, value: Vec3) {
         if let Some(cache) = &mut self.cache {
             cache.rotation = value.into();
         }
@@ -173,7 +176,6 @@ impl Mesh{
         let command = Command::SetObjectRotation { key: self.key, rotation: value.into() };
         COMMAND_QUEUE.push(command);
     }
-
 
     pub fn set_collision(&self, collision_type: ColliderOptions){
         let command = Command::SetCollisionForObject{key: self.key, collider: collision_type};
@@ -194,15 +196,15 @@ impl Mesh{
     ///>>>for cube in intersected:
     ///...   cube.pos = Vec3.ZERO()
     ///```
-    pub fn check_collision<'py>(&self, py: Python<'py> )-> Vec<Bound<'py, PyAny>>{
+    pub fn check_collision<'py>(&self, py: Python<'py> )-> PyResult<Vec<Bound<'py, PyAny>>>{
 
-        let (sender, receiver) = mpsc::sync_channel(1);
+        let (sender, receiver) = PChannel::sync_channel(1);
         let command = Command::GetColissionObjects { key: self.key, sender };
         COMMAND_QUEUE.push(command);
-        let res: Vec<std::sync::Arc<Py<PyWeakref>>> = receiver.recv().unwrap();
+        let res: Vec<std::sync::Arc<Py<PyWeakref>>> = receiver.recv()?;
 
         // we filter map, since any weakref we hold may already be invalid.
-        res.into_iter().filter_map(|pyObj|{
+        Ok(res.into_iter().filter_map(|pyObj|{
 
             let weak_py: &Py<PyWeakref> = &*pyObj;
 
@@ -215,7 +217,7 @@ impl Mesh{
             } else {
                 Some(upgraded)
             }
-        }).collect()
+        }).collect())
     }
 
     /// Add a function to this object, which will automatically be executed each frame.
@@ -311,9 +313,9 @@ impl Mesh{
         format!("Mesh(position={:?}, rotation={:?}, scale={:?}, has_tick_function={has_tick_function})", pos, rot,scale)
     }
 
-    fn __str__(&self)-> String{
-        let pos = self.pos();
-        format!("Mesh at ({:.2}, {:.2}, {:.2})", pos.x, pos.y, pos.z)
+    fn __str__(&self)-> PyResult<String>{
+        let pos = self.pos()?;
+        Ok(format!("Mesh at ({:.2}, {:.2}, {:.2})", pos.x, pos.y, pos.z))
     }
 }
 

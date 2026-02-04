@@ -1,6 +1,6 @@
 use macroquad::audio as au;
 use pyo3::{pyclass,pymethods};
-use std::sync::mpsc;
+use crate::engine::PChannel::PChannel;
 use pyo3_stub_gen::derive::*;
 use crate::engine::CoreLoop::COMMAND_QUEUE;
 use crate::engine::CoreLoop::Command;
@@ -29,11 +29,11 @@ impl Sound {
     #[staticmethod]
     pub fn load_sound(path: String)-> PyResult<Sound>{
 
-        let (sender, receiver) = mpsc::sync_channel(1);
+        let (sender, receiver) = PChannel::sync_channel(1);
 
         COMMAND_QUEUE.push( Command::LoadSound { path: path, sender } );
 
-        let sound  = receiver.recv().unwrap();
+        let sound  = receiver.recv()?;
 
         match sound{
             Ok(s) => { Ok( Sound{audio: s}   )  },
@@ -50,11 +50,11 @@ impl Sound {
     #[staticmethod]
     pub fn load_sound_from_bytes(data: Vec<u8>)-> PyResult<Sound> {
 
-        let (sender, receiver) = mpsc::sync_channel(1);
+        let (sender, receiver) = PChannel::sync_channel(1);
         
         COMMAND_QUEUE.push( Command::LoadSoundFromBytes { data: data, sender} );
 
-        let sound =  receiver.recv().unwrap();
+        let sound =  receiver.recv()?;
         match sound{
             Ok(s) => { Ok( Sound{audio: s} )  },
             Err(e) => {

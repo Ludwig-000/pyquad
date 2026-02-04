@@ -15,7 +15,7 @@ use pyo3::prelude::*;
  
 use pyo3_stub_gen::{derive::gen_stub_pyfunction};
 
-use std::sync::mpsc;
+use crate::engine::PChannel;
 use std::collections::HashSet;
 
 use crate::engine::CoreLoop::COMMAND_QUEUE;
@@ -50,19 +50,19 @@ pub static ENGINE_CURRENTLY_ACTIVE: AtomicBool = AtomicBool::new(false);
 #[pyo3(signature = (conf = None))] // overloads activate_engine with config
 pub fn activate_engine( conf: Option<Config>) -> PyResult<()>{
 
-
+    
     let conf = match conf {
         Some(config) => config,
         None => Config::default(),
     };
     let macroConf =  Config::to_window_config(conf.clone());
 
-    
+    ENGINE_CURRENTLY_ACTIVE.store(true, Ordering::SeqCst);
     std::thread::spawn(move || {
         let panic_catcher = panic::catch_unwind(AssertUnwindSafe(|| {
 
             macroquad::Window::from_config(macroConf, async move  {
-                ENGINE_CURRENTLY_ACTIVE.store(true, Ordering::SeqCst);
+                
                 crate::engine::EngineSetup::setup_engine();
                 crate::engine::CoreLoop::proccess_commands_loop().await;
     
@@ -277,10 +277,10 @@ pub fn next_frame(py: Python<'_>, physics_step: Option<f32>) -> PyResult<()>{
         let fn_storage = ObjectFunctionStorage::get_fun_storage();
         fn_storage.execute_all(py)?;
     }
-    let (sender, receiver) = mpsc::sync_channel(1);
+    let (sender, receiver) = PChannel::PChannel::sync_channel(1);
     COMMAND_QUEUE.push(Command::NextFrame { physics_step, sender });
 
-    let _ = receiver.recv();
+    let _ = receiver.recv()?;
     Ok(())
 }
 

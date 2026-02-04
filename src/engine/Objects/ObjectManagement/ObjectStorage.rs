@@ -4,7 +4,8 @@ use pyo3::types::PyWeakref;
 use slotmap::*;
 use std::{sync::Arc};
 use crate::engine::Objects::PhysicsWorld::Rapier::{ObjectHandle, RapierWorld};
-use std::sync::mpsc::SyncSender;
+
+use crate::engine::PChannel::PSyncSender;
 use macroquad::prelude as mq;
 
 pub enum Object {
@@ -58,7 +59,7 @@ impl ObjectStorage {
     /// Returns the Oject key through the Sender, before the object has been created.
     pub fn quick_push<F: FnOnce()-> Object>(&mut self,
         collider: ColliderOptions,
-        sender: SyncSender<ObjectKey>,
+        sender: PSyncSender<ObjectKey>,
         weak_ref_handle: Py<PyWeakref>,
         object_factory: F){
 

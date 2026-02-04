@@ -2,7 +2,8 @@ use pyo3::prelude::*;
  
 use macroquad::prelude as mq;
 use std::sync::Arc;
-use std::sync::mpsc;
+
+use crate::engine::PChannel::PChannel;
 use crate::engine::CoreLoop::COMMAND_QUEUE;
 use crate::engine::CoreLoop::Command;
 use pyo3::exceptions::PyValueError;use pyo3_stub_gen::derive::*;
@@ -212,7 +213,7 @@ pub struct Texture2D {
 impl Texture2D {
    
     #[staticmethod]
-    pub fn from_image(image: Image) -> Texture2D {
+    pub fn from_image(image: Image) -> PyResult<Texture2D> {
         
         let inner_im = mq::Image {
             bytes: image.bytes,
@@ -221,7 +222,7 @@ impl Texture2D {
         };
         let imagePointer = Arc::new(inner_im);
         
-        let (sender, receiver) = mpsc::sync_channel(1);
+        let (sender, receiver) = PChannel::sync_channel(1);
         
         let command = Command::ImgToTexture {
             image: imagePointer.clone(),
@@ -230,11 +231,11 @@ impl Texture2D {
 
         COMMAND_QUEUE.push(command);
 
-        let mq_texture = receiver.recv().unwrap();
+        let mq_texture = receiver.recv()?;
         let ourTexture=  Texture2D{
             texture: mq_texture,
         };
-        ourTexture
+        Ok(ourTexture)
         
     }
 

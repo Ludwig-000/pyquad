@@ -1,13 +1,14 @@
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::gen_stub_pyfunction;
-use std::sync::mpsc;
+
+use crate::engine::PChannel::PChannel;
 use crate::engine::CoreLoop::COMMAND_QUEUE;
 use crate::engine::CoreLoop::Command;
 
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn get_mouse_position() -> PyResult<(f32,f32)> {
-    let (sender, receiver) = mpsc::sync_channel(1);
+    let (sender, receiver) = PChannel::sync_channel(1);
     COMMAND_QUEUE.push(Command::GetMousePosition(sender));
 
     match receiver.recv() {
