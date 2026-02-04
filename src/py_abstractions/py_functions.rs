@@ -28,8 +28,12 @@ use crate::py_abstractions::structs::Config::Config;
 use std::process;
 use std::sync::atomic::{AtomicBool, Ordering};
 use pyo3::exceptions::PyRuntimeError;
+use std::panic::{self, AssertUnwindSafe};
+use std::thread;
 
-static ENGINE_CURRENTLY_ACTIVE: AtomicBool = AtomicBool::new(false);
+
+
+pub static ENGINE_CURRENTLY_ACTIVE: AtomicBool = AtomicBool::new(false);
 
 
 /// [!] This should generally be the first function call.
@@ -46,13 +50,6 @@ static ENGINE_CURRENTLY_ACTIVE: AtomicBool = AtomicBool::new(false);
 #[pyo3(signature = (conf = None))] // overloads activate_engine with config
 pub fn activate_engine( conf: Option<Config>) -> PyResult<()>{
 
-    if ENGINE_CURRENTLY_ACTIVE.load(Ordering::SeqCst){
-        return Err(PyRuntimeError::new_err("Only one instance of the engine can exist."));
-    }
-
-    ENGINE_CURRENTLY_ACTIVE.store(true, Ordering::SeqCst);
-    let (engine_setup_complete, rx_) = mpsc::channel();
-
 
     let conf = match conf {
         Some(config) => config,
@@ -60,24 +57,33 @@ pub fn activate_engine( conf: Option<Config>) -> PyResult<()>{
     };
     let macroConf =  Config::to_window_config(conf.clone());
 
+    
     std::thread::spawn(move || {
-        macroquad::Window::from_config(macroConf, async move  {
-            crate::engine::EngineSetup::setup_engine();
-            let _ = engine_setup_complete.send(());
+        let panic_catcher = panic::catch_unwind(AssertUnwindSafe(|| {
 
-            crate::engine::CoreLoop::proccess_commands_loop().await;
+            macroquad::Window::from_config(macroConf, async move  {
+                ENGINE_CURRENTLY_ACTIVE.store(true, Ordering::SeqCst);
+                crate::engine::EngineSetup::setup_engine();
+                crate::engine::CoreLoop::proccess_commands_loop().await;
+    
+            });
+    
+            ENGINE_CURRENTLY_ACTIVE.store(false, Ordering::SeqCst);
+    
+            if conf.stop_pyton_when_closing_window{
+                println!("Pyquad window closed. Exiting process.");
+                process::exit(0);
+            }
+            
+        }));
 
-        });
-
-        ENGINE_CURRENTLY_ACTIVE.store(false, Ordering::SeqCst);
-
-        if conf.stop_pyton_when_closing_window{
-            println!("Pyquad window closed. Exiting process.");
-            process::exit(0);
+        // check if the engine paniced. if yes, run cleanup.
+        if let Err(cause) = panic_catcher {
+            
         }
+        
     });
 
-    rx_.recv().expect("Engine thread failed to initialize");
     return Ok(());
 }
 

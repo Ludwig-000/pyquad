@@ -324,7 +324,7 @@ class ColliderOptions:
     NONE: ColliderOptions
     STATIC: ColliderOptions
     @staticmethod
-    def DYNAMIC(gravity:Vec3) -> ColliderOptions: ...
+    def DYNAMIC(gravity_scale:builtins.float=1.0, friction:builtins.float=0.5, restitution:builtins.float=0.699999988079071, density:builtins.float=1.0) -> ColliderOptions: ...
 
 class Color:
     CLOUDY_BLUE: Color

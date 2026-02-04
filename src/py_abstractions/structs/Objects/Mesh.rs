@@ -1,4 +1,5 @@
 use macroquad::prelude::Vertex as mq_vert;
+use pyo3::ffi::PyCallable_Check;
 use pyo3::{pyclass, pymethods};
 use pyo3_stub_gen::derive::{gen_stub_pyclass, gen_stub_pymethods};
 
@@ -238,8 +239,8 @@ impl Mesh{
     ///...    #'next_frame' runs the update function for every object.
     ///...    next_frame()
     /// ```
+    /// 
     pub fn tick(slf: Bound<'_, Self>, function: Bound<'_,PyAny>)-> PyResult<()>{
-        
         if !function.is_callable(){
             return Err(PyRuntimeError::new_err(format!("Attatched object {:?} is not callable.",function)));
         }

@@ -4,9 +4,9 @@ use rapier3d::{pipeline, prelude::*};
 use glam::Vec3;
 use std::sync::Mutex;
 use slotmap::{DefaultKey, Key, KeyData};
-use crate::{engine::Objects::ObjectManagement::ObjectStorage as obj, py_abstractions::structs::Objects::ColliderOptions::{ColliderOptions, InnerColliderOptions}};
+use crate::{engine::Objects::ObjectManagement::ObjectStorage::{self as obj, ObjectStorage}, py_abstractions::structs::Objects::ColliderOptions::{ColliderOptions, InnerColliderOptions}};
 use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
-
+use crate::engine::Objects::ObjectManagement::ObjectStorage::Object;
 pub fn physics_thread(){
     let c = RapierWorld::new();
     
@@ -33,21 +33,21 @@ struct Transforms<'a>{
 }
 pub struct RapierWorld{
     // pipeline: CollisionPipeline,
-    pipeline: PhysicsPipeline,
+    pub pipeline: PhysicsPipeline,
 
-    bvh: BroadPhaseBvh,
-    coll: ColliderSet,
-    narrowP: NarrowPhase,
-    rigidBS: RigidBodySet,
+    pub bvh: BroadPhaseBvh,
+    pub coll: ColliderSet,
+    pub narrowP: NarrowPhase,
+    pub rigidBS: RigidBodySet,
 
     // unused stuff Rapier needs to function.
-    islands: IslandManager,
-    impulse_joints: ImpulseJointSet,
-    multibody_joints: MultibodyJointSet,
+    pub islands: IslandManager,
+    pub impulse_joints: ImpulseJointSet,
+    pub multibody_joints: MultibodyJointSet,
 
     // possibly evil idk yet.
-    ccd_solver: CCDSolver,
-    integration_parameters: IntegrationParameters,
+    pub ccd_solver: CCDSolver,
+    pub integration_parameters: IntegrationParameters,
 }
 impl RapierWorld{
     pub fn new()-> RapierWorld{
@@ -124,21 +124,89 @@ impl RapierWorld{
             InnerColliderOptions::Static=> {
                 return Some(self.static_collider_builder(obj, key))
             }
-            InnerColliderOptions::Dynamic { gravity } =>{
+            InnerColliderOptions::Dynamic { gravity_scale,friction,restitution,density } =>{
                 Some(self.dynamic_collider_builder(obj,key,collider))
             }
         }
     }
 
-    fn dynamic_collider_builder(&mut self, obj: &obj::Object, key: ObjectKey, options: ColliderOptions)-> ObjectHandle{
-        todo!()
+    fn dynamic_collider_builder(&mut self, obj: &obj::Object, key: ObjectKey, options: ColliderOptions) -> ObjectHandle {
+
+        let (gravity_scale, friction_val, restitution_val, density_val) = match options.0 {
+            InnerColliderOptions::Dynamic { gravity_scale, friction, restitution, density } =>
+            (gravity_scale,friction,restitution,density),
+            _ => unreachable!()
+        };
+
+        let t: Transforms<'_> = extract_object_transforms(obj);
+
+        // 2. Build the Collider (Shape)
+        let mut collider = match obj {
+            obj::Object::Cube(_) => {
+                ColliderBuilder::cuboid(t.scale.x / 2.0, t.scale.y / 2.0, t.scale.z / 2.0)
+                    .friction(friction_val)
+                    .restitution(restitution_val)
+                    .density(density_val)
+                    .build()
+            },
+            obj::Object::Mesh(mesh_wrapper) => {
+                 // ... (Mesh processing logic remains the same) ...
+                let vertices: Vec<rapier3d::na::Point3<f32>> = mesh_wrapper.mesh.vertices
+                    .iter()
+                    .map(|v| {
+                        rapier3d::na::Point3::new(
+                            v.position.x * mesh_wrapper.scale.x,
+                            v.position.y * mesh_wrapper.scale.y,
+                            v.position.z * mesh_wrapper.scale.z,
+                        )
+                    })
+                    .collect();
+
+                let indices: Vec<[u32; 3]> = mesh_wrapper.mesh.indices
+                    .chunks_exact(3)
+                    .map(|chunk| [chunk[0] as u32, chunk[1] as u32, chunk[2] as u32])
+                    .collect();
+
+                ColliderBuilder::trimesh(vertices, indices)
+                    .expect("Could not build dynamic mesh collider")
+                    .friction(friction_val)
+                    .restitution(restitution_val)
+                    .density(density_val)
+                    .build()
+            },
+            _ => todo!("Other object types not implemented for dynamic colliders"),
+        };
+
+        // 3. Build the RigidBody
+        // CHANGE HERE: Added .user_data()
+        let rigid_body = RigidBodyBuilder::dynamic()
+            .translation(vector![t.pos.x, t.pos.y, t.pos.z])
+            .rotation(rapier3d::na::Vector3::new(t.rot.x, t.rot.y, t.rot.z))
+            .gravity_scale(gravity_scale)
+            .linear_damping(0.0) 
+            .angular_damping(0.0)
+            .user_data(key_to_u128(key)) // <--- ADDED THIS
+            .build();
+
+        // 4. Link User Data to Collider (You already had this)
+        collider.user_data = key_to_u128(key);
+
+        // 5. Insert into Sets
+        let rigid_body_handle = self.rigidBS.insert(rigid_body);
+        
+        let collider_handle = self.coll.insert_with_parent(
+            collider,
+            rigid_body_handle,
+            &mut self.rigidBS
+        );
+
+        ObjectHandle { rigid_body_handle, collider_handle }
     }
     fn static_collider_builder(&mut self, obj: &obj::Object, key: ObjectKey)-> ObjectHandle{
 
         let t: Transforms<'_>  = extract_object_transforms(obj);
 
         let mut collider =  match obj{
-            // NOTE: cuboid takes half-extents. We divide size by 2.0.
             obj::Object::Cube(_) => {
                 ColliderBuilder::cuboid(t.scale.x / 2.0, t.scale.y / 2.0, t.scale.z / 2.0)
                     .sensor(true)
@@ -154,9 +222,7 @@ impl RapierWorld{
                     .build()
             },
             obj::Object::Mesh(mesh_wrapper) => {
-                // 1. Bake Scale & Convert Vertices
-                // We iterate over the Macroquad vertices, applying the object's scale immediately.
-                // We convert them into Rapier's Point3<f32>.
+                // ... (Mesh processing logic remains the same) ...
                 let vertices: Vec<rapier3d::na::Point3<f32>> = mesh_wrapper.mesh.vertices
                     .iter()
                     .map(|v| {
@@ -168,16 +234,11 @@ impl RapierWorld{
                     })
                     .collect();
             
-                // 2. Convert Indices
-                // Macroquad uses a flat Vec<u16>, but Rapier needs [u32; 3] for triangles.
-                // We use chunks_exact(3) to group them into triangles.
                 let indices: Vec<[u32; 3]> = mesh_wrapper.mesh.indices
                     .chunks_exact(3)
                     .map(|chunk| [chunk[0] as u32, chunk[1] as u32, chunk[2] as u32])
                     .collect();
             
-                // 3. Build the Collider
-                // We duplicate the sensor/physics settings from your Cube logic to keep behavior consistent.
                 ColliderBuilder::trimesh(vertices, indices)
                     .expect("Could not build mesh collider from raw vertecies")
                     .sensor(true) 
@@ -195,19 +256,17 @@ impl RapierWorld{
             _ => todo!()
         };
 
-
+        // CHANGE HERE: Added .user_data()
         let rigid_body = RigidBodyBuilder::kinematic_position_based()
             .translation(vector![t.pos.x,t.pos.y,t.pos.z])
             .rotation(rapier3d::na::Vector3::new(t.rot.x, t.rot.y, t.rot.z))
+            .user_data(key_to_u128(key)) // <--- ADDED THIS
             .build();
         
-
+        // Link User Data to Collider (You already had this)
         collider.user_data = key_to_u128(key);
         
-
-
         let rigid_body_handle = self.rigidBS.insert(rigid_body);
-        
         
         let collider_handle = self.coll.insert_with_parent(
             collider,
@@ -258,7 +317,7 @@ impl RapierWorld{
                 let other_handle = if collider.collider1 == handle { collider.collider2 } else { collider.collider1 };
                 
                 let h = self.coll.get(other_handle).expect("Collider handle was found, but no matching collider.");
-                Some (u128_to_key(h.user_data))
+                Some ( u128_to_key(h.user_data) )
             }
             else{ None }
         });
@@ -283,18 +342,18 @@ impl RapierWorld{
 
 
 
-fn u128_to_key(val: u128) -> ObjectKey {
+pub fn u128_to_key(val: u128) -> ObjectKey {
     let as_u64 = val as u64;
     KeyData::from_ffi(as_u64).into()
 }
 
-fn key_to_u128(key: ObjectKey) -> u128 {
+pub fn key_to_u128(key: ObjectKey) -> u128 {
     let data = key.data();
     let as_u64 = data.as_ffi();
     as_u64 as u128
 }
 
-fn extract_object_transforms(obj: &obj::Object)-> Transforms<'_>{
+pub fn extract_object_transforms(obj: &obj::Object)-> Transforms<'_>{
     
     match obj{
         obj::Object::Cube(cube) => Transforms { pos: &cube.position, rot: &cube.rotation, scale: &cube.scale },

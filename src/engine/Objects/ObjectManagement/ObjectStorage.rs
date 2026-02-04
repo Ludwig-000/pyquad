@@ -165,6 +165,7 @@ impl ObjectStorage {
 
     pub fn step_physics(&mut self, distance: f32){
         self.physics_world.step(distance);
+        self.sync_transforms();
     }
 
     /// returns false if collision is disabled.
@@ -233,4 +234,87 @@ impl ObjectStorage {
     }
 
 
+    pub fn sync_transforms(&mut self) {
+        use crate::engine::Objects::PhysicsWorld::Rapier::*;
+        let objects_ptr = self as *mut Self;
+    
+
+        for (_, rb) in self.physics_world.rigidBS.iter() {
+            if !rb.is_dynamic() || rb.is_sleeping() { continue; }
+            
+            let key = u128_to_key(rb.user_data);
+
+            let r_pos = rb.translation();
+            let pos = mq::Vec3::new(r_pos.x, r_pos.y, r_pos.z);
+            let (rx, ry, rz) = rb.rotation().euler_angles();
+            let rot = mq::Vec3::new(rx, ry, rz);
+    
+            unsafe {
+                let item  = (*objects_ptr).get_mut(key);
+                match item{
+                    Object::Cube(cube)=> {
+                        if cube.rotation != rot {
+                            cube.mesh.recalculate_rot(cube.position, cube.rotation, rot);
+                            cube.rotation = rot;
+                        }
+                        if cube.position != pos {
+                            cube.mesh.recalculate_pos(cube.position, pos);
+                            cube.position = pos;
+                        }
+
+                    }
+                    _ => todo!()
+                }
+                
+            }
+        }
+    }
+
+
 }
+
+
+
+
+
+//REFERENCE CODE FOR LATER:
+// 
+// use rayon::prelude::*;
+// use std::sync::atomic::{AtomicUsize, Ordering};
+
+// struct Mesh {
+//     x: f32,
+//     y: f32,
+// }
+
+// // Wrapper to allow passing the raw pointer to threads
+// struct UnsafeSlice<'a, T> {
+//     slice: &'a mut [T],
+// }
+
+// unsafe impl<'a, T> Sync for UnsafeSlice<'a, T> {}
+// unsafe impl<'a, T> Send for UnsafeSlice<'a, T> {}
+
+// impl<'a, T> UnsafeSlice<'a, T> {
+//     fn new(slice: &'a mut [T]) -> Self {
+//         Self { slice }
+//     }
+
+//     /// SAFETY: Caller must ensure no two threads access the same index
+//     unsafe fn get_mut(&self, index: usize) -> &mut T {
+//         &mut self.slice[index]
+//     }
+// }
+
+// fn update_meshes_unsafe(meshes: &mut Vec<Mesh>, indices: &[usize]) {
+//     let unsafe_slice = UnsafeSlice::new(meshes);
+
+//     // Parallel iterate over the INDICES, not the meshes
+//     indices.par_iter().for_each(|&idx| {
+//         unsafe {
+//             let mesh = unsafe_slice.get_mut(idx);
+//             // heavy calculation
+//             mesh.x += 1.0;
+//         }
+//     });
+// }

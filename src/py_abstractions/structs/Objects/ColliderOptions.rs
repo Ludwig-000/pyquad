@@ -36,10 +36,11 @@ impl ColliderOptions{
     pub fn STATIC() -> ColliderOptions {
         ColliderOptions(InnerColliderOptions::Static)
     }
-    
+
+    #[pyo3(signature=(gravity_scale =1.0, friction=0.5, restitution=0.7,density= 1.0))]
     #[staticmethod]
-    pub fn DYNAMIC(gravity: Vec3) -> ColliderOptions {
-        ColliderOptions(InnerColliderOptions::Dynamic { gravity })
+    pub fn DYNAMIC(gravity_scale: f32, friction: f32,restitution: f32, density:f32 ) -> ColliderOptions {
+        ColliderOptions(InnerColliderOptions::Dynamic { gravity_scale,friction,restitution,density })
     }
 }
 
@@ -48,6 +49,9 @@ pub enum InnerColliderOptions{
     None,
     Static,
     Dynamic{
-        gravity: Vec3,
+        gravity_scale: f32,
+        friction: f32,
+        restitution: f32,
+        density: f32
     }
 }
