@@ -21,7 +21,6 @@ pub static FPS: AtomicI32 =  AtomicI32::new(0);
 pub static LASK_KEY_PRESSED: Mutex<Option<KeyCode>> = Mutex::new(None);
 pub static CHAR_PRESSED: Mutex<Option<char>> = Mutex::new(None);
 
-/// TODO: make functions for these
 pub static MOUSE_POSITION: Mutex<(f32,f32)> = Mutex::new((0.,0.));
 pub static MOUSE_DELTA_POSITION: Mutex<Vec2> = Mutex::new( Vec2::new(0.,0.) );
 pub static MOUSE_POSITION_LOCAL: Mutex<Vec2> = Mutex::new( Vec2::new(0.,0.) );

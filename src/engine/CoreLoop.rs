@@ -153,8 +153,6 @@ pub enum Command {
     ClearBackground { color: mq::Color },
 
 
-    GetMousePosition(PChannel::PSyncSender<(f32,f32)>),
-
     NextFrame{physics_step: Option<f32>, sender: PChannel::PSyncSender<()>},
 
     ImgToTexture {
@@ -165,6 +163,9 @@ pub enum Command {
     LoadImage {
         path: String,
         sender: PChannel::PSyncSender<Result<mq::Image, PError>>,
+    },
+    GetScreenData {
+        sender: PChannel::PSyncSender<mq::Image>,
     },
 
     SetCamera{camera_2d: Option<mq::Camera2D>, camera_3d: Option<mq::Camera3D>},
@@ -395,6 +396,10 @@ pub async fn proccess_commands_loop() {
         
                     let _ = sender.send(result);
                 }
+                Command::GetScreenData { sender }=>{
+                    let res = mq::get_screen_data();
+                    let _ = sender.send(res);
+                }
                 Command::DrawPoly { x, y, sides, radius, rotation, color }=>
                 {
                     sm::switch_to_desired_shader(sm::ShaderKind::None);
@@ -433,10 +438,6 @@ pub async fn proccess_commands_loop() {
                 mq::draw_text(text.as_str(), x,y,font_size,color);
                 }
                 
-                Command::GetMousePosition(sender) => {
-                let pos = mq::mouse_position();
-                let _ = sender.send(pos);
-                }
                 Command::ImgToTexture { image, sender }=>{
                     let tex: PArc<mq::Texture2D> = PArc::new(  mq::Texture2D::from_image(&image));
                     let _ = sender.send(tex);

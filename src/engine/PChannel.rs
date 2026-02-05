@@ -1,17 +1,19 @@
-// a custom sender type that returns an error on panic.
-//
-
 use std::sync::atomic::Ordering;
 use std::sync::mpsc::{self, Sender};
-use std::thread;
 use std::marker::PhantomData;
 use std::sync::mpsc::SendError;
 use std::time::Duration;
+use pyo3::exceptions::PyBaseException;
+
 pub enum PChannelError{
     DeadlockError,
     PanicError,
     SendError,
 }
+
+
+/// Pythonic Channel that returns a python error if something goes wrong.
+/// will send an error if the sender gets dropped without sending anything.
 pub struct PChannel<T> {
     _marker: PhantomData<T>,
 }
@@ -52,17 +54,14 @@ impl<T> PReceiver<T> {
                 Ok(val)=> break val,
                 Err(e)=> {
                     if !crate::py_abstractions::py_functions::ENGINE_CURRENTLY_ACTIVE.load(Ordering::Relaxed){ 
-                        return Err(PChannelError::DeadlockError)  
+                        break Err(PChannelError::DeadlockError)  
                     }
                 }
             }
 
         };
         
-        match res {
-            Ok(val) => Ok(val),
-            Err(e) => Err(e),
-        }
+        res
     }
 
     
@@ -81,12 +80,13 @@ impl From<PChannelError> for pyo3::PyErr {
                 )
             }
             PChannelError::PanicError=> {
-                PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(
-                    format!("Fatal error. the engine crashed and could not recover.")
+                PyErr::new::<pyo3::exceptions::PyBaseException, _>(
+                    format!("Fatal error. The engine crashed and could not recover.")
                 )
             }
+            // I do not know when this would ever happen.
             PChannelError::SendError=> {
-                PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(
+                PyErr::new::<pyo3::exceptions::PyBaseException, _>(
                     format!("Sender failed to resolve.")
                 )
             }

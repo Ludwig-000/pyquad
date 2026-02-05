@@ -16,6 +16,7 @@ use pyo3::prelude::*;
 use pyo3_stub_gen::{derive::gen_stub_pyfunction};
 
 use crate::engine::PChannel;
+
 use std::collections::HashSet;
 
 use crate::engine::CoreLoop::COMMAND_QUEUE;
@@ -368,8 +369,14 @@ pub fn get_delta_time() -> f32 {
 
 #[gen_stub_pyfunction]
 #[pyfunction]
-pub fn get_screen_data() -> Image {
-    todo!()
+pub fn get_screen_data() -> PyResult<Image> {
+    let (tx, rx) = PChannel::PChannel::sync_channel(1);
+    COMMAND_QUEUE.push( Command::GetScreenData { sender: tx } );
+
+    let res = rx.recv()?;
+    Ok(
+        Image { bytes: res.bytes, width: res.width, height: res.height }
+    )
 }
 
 
@@ -431,38 +438,6 @@ pub fn get_keys_down() -> HashSet<KeyCode> {
 }
 
 
-#[gen_stub_pyfunction]
-#[pyfunction]
-pub fn get_mouse_buttons_down() -> HashSet<MouseButton> {
-
-    use crate::engine::FrameInfo as fi;
-    fi::MOUSE_BUTTON_DOWN.lock().unwrap()
-        .iter()
-        .map(|key| (*key).into())
-        .collect()
-}
-#[gen_stub_pyfunction]
-#[pyfunction]
-pub fn get_mouse_buttons_pressed() -> HashSet<MouseButton> {
-
-    use crate::engine::FrameInfo as fi;
-    fi::MOUSE_BUTTON_PRESSED.lock().unwrap()
-        .iter()
-        .map(|key| (*key).into())
-        .collect()
-}
-
-#[gen_stub_pyfunction]
-#[pyfunction]
-pub fn get_mouse_buttons_released() -> HashSet<MouseButton> {
-
-    use crate::engine::FrameInfo as fi;
-    fi::MOUSE_BUTTON_RELEASED.lock().unwrap()
-        .iter()
-        .map(|key| (*key).into())
-        .collect()
-}
-
 
 
 /// Return the last pressed key.
@@ -485,6 +460,7 @@ pub fn get_char_pressed() -> Option<char> {
     let keyset = *fi::CHAR_PRESSED.lock().unwrap();
     keyset
 }
+
 
 
 

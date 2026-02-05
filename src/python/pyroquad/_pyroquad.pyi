@@ -5063,7 +5063,7 @@ class Mesh:
         ```
         >>>object.rot.x += 1
         ```
-        since object.rot is immutable and returns a copy of its rotation, one has to write:
+        since object.rot returns a copy of its rotation, one has to write:
         ```
         >>>object.rot += Vec3(1, 0, 0)
         ```
@@ -5271,15 +5271,48 @@ class Sound:
 
 class Sphere:
     @property
-    def scale(self) -> Vec3: ...
+    def scale(self) -> Vec3:
+        r"""
+        Accesses the scale of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>object.scale.x += 1
+        ```
+        since object.scale returns a copy of its scale, one has to write:
+        ```
+        >>>object.scale += Vec3(1, 0, 0)
+        ```
+        """
     @scale.setter
     def scale(self, value: Vec3) -> None: ...
     @property
-    def pos(self) -> Vec3: ...
+    def pos(self) -> Vec3:
+        r"""
+        Accesses the position of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>object.pos.x += 1
+        ```
+        since object.pos returns a copy of its position, one has to write:
+        ```
+        >>>object.pos += Vec3(1, 0, 0)
+        ```
+        """
     @pos.setter
     def pos(self, value: Vec3) -> None: ...
     @property
-    def rot(self) -> Vec3: ...
+    def rot(self) -> Vec3:
+        r"""
+        Accesses the rotation of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>object.rot.x += 1
+        ```
+        since object.rot returns a copy of its rotation, one has to write:
+        ```
+        >>>object.rot += Vec3(1, 0, 0)
+        ```
+        """
     @rot.setter
     def rot(self, value: Vec3) -> None: ...
     def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., collider_type:ColliderOptions=...) -> Sphere: ...
@@ -6536,7 +6569,11 @@ def draw_cube(position:Vec3, size:Vec3, color:Color) -> None:
 
 def draw_cube_wires(position:Vec3, size:Vec3, color:Color) -> None: ...
 
-def draw_cubemap(texture:Texture2D) -> None: ...
+def draw_cubemap(texture:Texture2D) -> None:
+    r"""
+    TODO!
+    convert the 3d cam to a 2d cam, apply a shader on the matrix, then re-apply the 3d cam
+    """
 
 def draw_cylinder(position:Vec3, radius_top:builtins.float, radius_bottom:builtins.float, height:builtins.float, texture:typing.Optional[Texture2D], color:Color) -> None: ...
 
@@ -6646,7 +6683,16 @@ def get_mouse_buttons_pressed() -> builtins.set[MouseButton]: ...
 
 def get_mouse_buttons_released() -> builtins.set[MouseButton]: ...
 
-def get_mouse_position() -> tuple[builtins.float, builtins.float]: ...
+def get_mouse_delta_position() -> Vec2: ...
+
+def get_mouse_position() -> Vec2: ...
+
+def get_mouse_position_local() -> Vec2:
+    r"""
+    Return mouse position in range [-1; 1].
+    """
+
+def get_mouse_wheel() -> Vec2: ...
 
 def get_screen_data() -> Image: ...
 

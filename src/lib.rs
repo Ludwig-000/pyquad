@@ -48,9 +48,17 @@ pub fn _pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::get_keys_released, m)?)?;
     m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::get_char_pressed, m)?)?;
 
-    m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::get_mouse_buttons_down, m)?)?;
-    m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::get_mouse_buttons_pressed, m)?)?;
-    m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::get_mouse_buttons_released, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::Mouse::get_mouse_buttons_down, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::Mouse::get_mouse_buttons_pressed, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::Mouse::get_mouse_buttons_released, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::Mouse::get_mouse_delta_position, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::Mouse::get_mouse_position_local, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::Mouse::get_mouse_wheel, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::Mouse::get_mouse_position, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::Mouse::set_cursor_grab, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::Mouse::show_mouse, m)?)?;
+
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::get_screen_data, m)?)?;
 
     m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::get_last_key_pressed, m)?)?;
     m.add_function(wrap_pyfunction!(crate::py_abstractions::py_functions::draw_grid, m)?)?;
@@ -60,9 +68,7 @@ pub fn _pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
 
     m.add_function(wrap_pyfunction!(crate::engine::Cubemap::draw_cubemap, m)?)?;
 
-    m.add_function(wrap_pyfunction!(crate::py_abstractions::Mouse::get_mouse_position, m)?)?;
-    m.add_function(wrap_pyfunction!(crate::py_abstractions::Mouse::set_cursor_grab, m)?)?;
-    m.add_function(wrap_pyfunction!(crate::py_abstractions::Mouse::show_mouse, m)?)?;
+
 
     m.add_function(wrap_pyfunction!(crate::py_abstractions::structs::Camera::set_default_camera, m)?)?;
 
