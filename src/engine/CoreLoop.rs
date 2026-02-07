@@ -1,17 +1,14 @@
 use std::panic;
-use std::collections::HashSet;
+
 use std::sync::Arc;
 use std::any::Any;
 use macroquad::color::BLACK;
-use pyo3::prelude::PyResult;
-use crossbeam::channel::SendTimeoutError;
 use lazy_static::*;
 
 use crossbeam::queue::SegQueue;
 
 use macroquad::prelude as mq;
 use macroquad::audio as au;
-use slotmap::DefaultKey;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 use crate::engine::Objects::Mesh::Mesh;
 use crate::engine::Objects::Sphere::Sphere;
@@ -423,6 +420,7 @@ pub async fn proccess_commands_loop() {
                     mq::next_frame().await;
                     crate::engine::SHADERS::shader_manager::new_frame_shader_update();
                     crate::engine::FrameInfo::update_frame_info();
+
                     let _ = sender.send(());
                     
                     if physics_step.is_some(){

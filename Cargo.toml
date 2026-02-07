@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 
-# uncomment the following 2 lines if building library
 [lib]
 name = "_pyroquad"
 crate-type = ["cdylib", "rlib"]
@@ -17,12 +16,12 @@ doc = false
 
 [profile.release]
 overflow-checks = true #disable for release. The engine should NEVER panic.
+panic = "unwind"
 
-# Max Optimization for final release.
+# #Max Optimization for final release.
 #  opt-level = 3
 #  lto = "fat"
 #  codegen-units = 1
-#  panic = "abort" #might have to rethink this one since it screws with PChannel
 #  incremental = false
 
 [dependencies]
@@ -31,7 +30,7 @@ overflow-checks = true #disable for release. The engine should NEVER panic.
 macroquad = { version = "0.4.14", features = ["audio"] }
 
 #used to build the python library
-pyo3 = { version = "0.26", features = ["extension-module"] }
+pyo3 = { version = "0.26", features = ["extension-module", "multiple-pymethods"] }
 
 # a VERY slightly modified version of pyo3 stub gen, which allows it to compile to python 3.9
 # modification was only one line, so feel free to drop support for python 3.9 if any cool new features release

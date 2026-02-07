@@ -7,6 +7,7 @@ use pyo3_stub_gen::inventory::submit;
 use slotmap::DefaultKey;
 use slotmap::Key;
 use std::hash::{Hash, Hasher};
+use crate::basic_3D_magic_methods;
 use crate::engine::Objects::ObjectDataCache::ThreeDObjCache;
 use crate::engine::PError::PError;
 use crate::py_abstractions::structs::Objects::ColliderOptions::ColliderOptions;
@@ -35,7 +36,7 @@ use crate::engine::Objects::ObjectDataCache;
 use crate::py_abstractions::structs::Objects::ObjectFunctionStorage;
 use crate::py_abstractions::Color::Color;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
-
+use crate::py_abstractions::structs::Objects::ObjectMacros::*;
 
 
 
@@ -85,15 +86,6 @@ impl Mesh{
     }
 
 
-    /// Accesses the scale of the given object.
-    /// Note that individual values of an object can NOT be changed via:
-    /// ```
-    /// >>>object.scale.x += 1
-    /// ```
-    /// since object.scale returns a copy of its scale, one has to write:
-    /// ```
-    /// >>>object.scale += Vec3(1, 0, 0)
-    /// ```
     #[getter]
     fn scale(&self) -> PyResult<Vec3> {
         if let Some(cache) = self.cache {
@@ -116,15 +108,6 @@ impl Mesh{
         COMMAND_QUEUE.push(command);
     }
 
-    /// Accesses the position of the given object.
-    /// Note that individual values of an object can NOT be changed via:
-    /// ```
-    /// >>>object.pos.x += 1
-    /// ```
-    /// since object.pos returns a copy of its position, one has to write:
-    /// ```
-    /// >>>object.pos += Vec3(1, 0, 0)
-    /// ```
     #[getter]
     fn pos(&self) -> PyResult<Vec3> {
         if let Some(cache) = self.cache {
@@ -146,15 +129,6 @@ impl Mesh{
         COMMAND_QUEUE.push(command);
     }
 
-    /// Accesses the rotation of the given object.
-    /// Note that individual values of an object can NOT be changed via:
-    /// ```
-    /// >>>object.rot.x += 1
-    /// ```
-    /// since object.rot returns a copy of its rotation, one has to write:
-    /// ```
-    /// >>>object.rot += Vec3(1, 0, 0)
-    /// ```
     #[getter]
     fn rot(&self) -> PyResult<Vec3> {
         if let Some(cache) = self.cache {
@@ -292,33 +266,8 @@ impl Mesh{
         todo!()
     }
 
-
-    fn __eq__(&self, other: &Self) -> bool {
-        self.key == other.key
-    }
-
-
-    fn __hash__(&self) -> u64 {
-        let mut s = std::collections::hash_map::DefaultHasher::new();
-        self.key.hash(&mut s);
-        s.finish()
-    }
-
-
-    fn __repr__(&self) -> String {
-        let pos = self.pos();
-        let rot = self.rot();
-        let scale  = self.scale();
-        let has_tick_function = if self.function_key == None {false} else {true};
-        format!("Mesh(position={:?}, rotation={:?}, scale={:?}, has_tick_function={has_tick_function})", pos, rot,scale)
-    }
-
-    fn __str__(&self)-> PyResult<String>{
-        let pos = self.pos()?;
-        Ok(format!("Mesh at ({:.2}, {:.2}, {:.2})", pos.x, pos.y, pos.z))
-    }
 }
-
+basic_3D_magic_methods!(Mesh);
 
 impl Drop for Mesh{
     fn drop(&mut self) {

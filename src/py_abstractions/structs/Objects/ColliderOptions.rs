@@ -26,7 +26,6 @@ pub struct ColliderOptions(pub InnerColliderOptions);
 #[pymethods]
 impl ColliderOptions{
 
-
     #[classattr]
     pub fn NONE() -> ColliderOptions {
         ColliderOptions(InnerColliderOptions::None)

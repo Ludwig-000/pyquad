@@ -49,21 +49,16 @@ impl FunctionStorage {
         let ptr = target.as_ptr() as usize;
         let index = self.values.len();
         
-        // 1. Create a stable key pointing to the end of the vector
         let key = self.map.insert(index);
         
-        // 2. Store the data and the key (needed for swap_remove updates)
         self.values.push((ptr, func, key));
         key
     }
 
     pub fn remove(&mut self, key: FunctionKey) {
         if let Some(index) = self.map.remove(key) {
-            // Standard O(1) swap_remove
             self.values.swap_remove(index);
 
-            // If we didn't remove the very last element, the element that was 
-            // at the end moved to 'index'. we must update its location in the map.
             if index < self.values.len() {
                 let (_, _, moved_key) = &self.values[index];
                 if let Some(idx_ref) = self.map.get_mut(*moved_key) {

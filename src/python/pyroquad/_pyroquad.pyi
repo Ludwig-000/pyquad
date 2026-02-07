@@ -4904,6 +4904,7 @@ class Cube:
     def __hash__(self) -> builtins.int: ...
     def __repr__(self) -> builtins.str: ...
     def __str__(self) -> builtins.str: ...
+    def test_funn(self) -> None: ...
 
 class FileData:
     r"""
@@ -5026,48 +5027,15 @@ class Loading:
 
 class Mesh:
     @property
-    def scale(self) -> Vec3:
-        r"""
-        Accesses the scale of the given object.
-        Note that individual values of an object can NOT be changed via:
-        ```
-        >>>object.scale.x += 1
-        ```
-        since object.scale returns a copy of its scale, one has to write:
-        ```
-        >>>object.scale += Vec3(1, 0, 0)
-        ```
-        """
+    def scale(self) -> Vec3: ...
     @scale.setter
     def scale(self, value: Vec3) -> None: ...
     @property
-    def pos(self) -> Vec3:
-        r"""
-        Accesses the position of the given object.
-        Note that individual values of an object can NOT be changed via:
-        ```
-        >>>object.pos.x += 1
-        ```
-        since object.pos returns a copy of its position, one has to write:
-        ```
-        >>>object.pos += Vec3(1, 0, 0)
-        ```
-        """
+    def pos(self) -> Vec3: ...
     @pos.setter
     def pos(self, value: Vec3) -> None: ...
     @property
-    def rot(self) -> Vec3:
-        r"""
-        Accesses the rotation of the given object.
-        Note that individual values of an object can NOT be changed via:
-        ```
-        >>>object.rot.x += 1
-        ```
-        since object.rot returns a copy of its rotation, one has to write:
-        ```
-        >>>object.rot += Vec3(1, 0, 0)
-        ```
-        """
+    def rot(self) -> Vec3: ...
     @rot.setter
     def rot(self, value: Vec3) -> None: ...
     @staticmethod
@@ -5125,6 +5093,13 @@ class Mesh:
     def __hash__(self) -> builtins.int: ...
     def __repr__(self) -> builtins.str: ...
     def __str__(self) -> builtins.str: ...
+
+class Physics:
+    r"""
+    Physics that are bound to a Dynamic 3D object.
+    This class can only be used by making a Dynamic 3D object, and accessing it's 'physics' field.
+    """
+    ...
 
 class PlaySoundParams:
     @property
@@ -5315,6 +5290,11 @@ class Sphere:
         """
     @rot.setter
     def rot(self, value: Vec3) -> None: ...
+    def __eq__(self, other:Sphere) -> builtins.bool: ...
+    def __hash__(self) -> builtins.int: ...
+    def __repr__(self) -> builtins.str: ...
+    def __str__(self) -> builtins.str: ...
+    def test_funn(self) -> None: ...
     def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., collider_type:ColliderOptions=...) -> Sphere: ...
     def disable_collision(self) -> None: ...
     def enable_collision(self) -> None: ...
@@ -5359,10 +5339,6 @@ class Sphere:
         ...    next_frame()
         ```
         """
-    def __eq__(self, other:Sphere) -> builtins.bool: ...
-    def __hash__(self) -> builtins.int: ...
-    def __repr__(self) -> builtins.str: ...
-    def __str__(self) -> builtins.str: ...
 
 class Texture2D:
     r"""

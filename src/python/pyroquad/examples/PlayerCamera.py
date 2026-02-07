@@ -12,7 +12,7 @@ class PlayerCamera:
     speed: float = 0.1
     rot_speed: float = 2.0
     pitch_speed: float= 2.0
-    middleMousePos: tuple[float, float]
+    middleMousePos: Vec2
 
     def __init__(self):
         r"""run once at the start of the program after engine initialization."""
@@ -34,8 +34,8 @@ class PlayerCamera:
         keys = get_keys_down()
         currentMousePos = get_mouse_position()
         
-        mouseDiffX = currentMousePos[0] - self.middleMousePos[0]
-        mouseDiffY = currentMousePos[1] - self.middleMousePos[1]
+        mouseDiffX = currentMousePos.x - self.middleMousePos.x
+        mouseDiffY = currentMousePos.y - self.middleMousePos.y
         self.yaw -= mouseDiffX * 0.03
         self.pitch -= mouseDiffY * 0.03
         self.middleMousePos = currentMousePos

@@ -108,6 +108,7 @@ pub fn _pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<crate::py_abstractions::structs::Objects::Cube::Cube>()?;
     m.add_class::<crate::py_abstractions::structs::Objects::Circle::Circle>()?;
     m.add_class::<crate::py_abstractions::structs::Objects::Mesh::Mesh>()?;
+    m.add_class::<crate::py_abstractions::structs::Objects::PhysicsHandle::Physics>()?;
     m.add_class::<crate::py_abstractions::structs::Objects::ColliderOptions::ColliderOptions>()?;
 
     m.add_class::<crate::py_abstractions::structs::Shader::Shader>()?;
