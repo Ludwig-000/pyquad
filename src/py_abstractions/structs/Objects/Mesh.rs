@@ -7,10 +7,11 @@ use pyo3_stub_gen::inventory::submit;
 use slotmap::DefaultKey;
 use slotmap::Key;
 use std::hash::{Hash, Hasher};
-use crate::basic_3D_magic_methods;
+
 use crate::engine::Objects::ObjectDataCache::ThreeDObjCache;
 use crate::engine::PError::PError;
-use crate::py_abstractions::structs::Objects::ColliderOptions::ColliderOptions;
+use crate::py_abstractions::structs::Objects::ColliderOptions::{ColliderOptions, InnerColliderOptions};
+use crate::py_abstractions::structs::Objects::PhysicsHandle::Physics;
 use crate::py_abstractions::{Loading::FileData::FileData, structs::Textures_and_Images::Texture2D};
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::engine::Objects::Mesh as internal_mesh;
@@ -38,8 +39,6 @@ use crate::py_abstractions::Color::Color;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 use crate::py_abstractions::structs::Objects::ObjectMacros::*;
 
-
-
 #[gen_stub_pyclass]
 #[pyclass(subclass, weakref)]
 pub struct Mesh{
@@ -49,6 +48,11 @@ pub struct Mesh{
     // an object's data can only be cached, if it can NOT be influenced by anything external.
     // F.E.: gravity.
     pub cache: Option<ObjectDataCache::ThreeDObjCache>,
+
+    /// a collection of physics-related methods, that can be applied to the object.
+    /// 'physics' will be set to Some() if the object is innitialized as a dynamic object.
+    #[pyo3(get)]
+    pub physics: Option<Py<Physics>>,
 }
 
 #[gen_stub_pymethods]
@@ -60,11 +64,13 @@ impl Mesh{
         
         let (sender, receiver) = PChannel::sync_channel(1);
 
-        let placeholder_struct: Mesh = Mesh { key: ObjectKey::null(), 
+        let placeholder_struct: Self = Self { key: ObjectKey::null(), 
             function_key: None, 
             cache: None,
+            physics: None,
         };
-        let mesh_handle: Py<Mesh> = Py::new(py, placeholder_struct)?; 
+
+        let mesh_handle: Py<Self> = Py::new(py, placeholder_struct)?; 
         
         let weak_ref_handle: Py<PyWeakref> = {
             let bound_mesh = mesh_handle.bind(py); 
@@ -76,11 +82,26 @@ impl Mesh{
             PError::GLTFError(e)
         })?;
 
-        COMMAND_QUEUE.push(Command::CreateMesh { mesh, collider: collider_type, weak_ref: weak_ref_handle, sender });
+        COMMAND_QUEUE.push(Command::CreateMesh { mesh, collider: collider_type, weak_ref: weak_ref_handle.clone_ref(py), sender });
         
         let key = receiver.recv()?;
         
-        mesh_handle.borrow_mut(py).key = key;
+        let mut mesh_ref = mesh_handle.borrow_mut(py);
+        mesh_ref.key = key;
+
+
+        match collider_type.0{
+            InnerColliderOptions::Dynamic { gravity_scale, friction, restitution, density }=>{
+                let phys_struct = Physics {
+                    identity: weak_ref_handle,
+                    handle: key,
+                };
+                mesh_ref.physics = Some(Py::new(py, phys_struct)?);
+            },
+            _ => {}
+        }
+
+        drop(mesh_ref);
 
         Ok(mesh_handle) 
     }
@@ -247,27 +268,45 @@ impl Mesh{
         Ok(())
     }
 
-    pub fn bind_location(&mut self, obj: Bound<'_, PyAny>){
-        todo!()
-    }
-    pub fn unbind_location(&mut self){
-        todo!()
-    }
-    pub fn bind_rotation(&mut self){
-        todo!()
-    }
-    pub fn unbind_rotation(&mut self){
-        todo!()
-    }
-    pub fn bind_scale(&mut self){
-        todo!()
-    }
-    pub fn unbind_scale(&mut self){
+    pub fn bind_location(&mut self, obj: Option<Bound<'_, PyAny>>){
         todo!()
     }
 
+    pub fn bind_rotation(&mut self, obj: Option<Bound<'_, PyAny>>){
+        todo!()
+    }
+
+    pub fn bind_scale(&mut self, obj: Option<Bound<'_, PyAny>>){
+        todo!()
+    }
+
+    
+    fn __eq__(&self, other: &Self) -> bool {
+        self.key == other.key
+    }
+
+
+    fn __hash__(&self) -> u64 {
+        let mut s = std::collections::hash_map::DefaultHasher::new();
+        self.key.hash(&mut s);
+        s.finish()
+    }
+
+
+    fn __repr__(&self) -> String {
+        let pos = self.pos();
+        let rot = self.rot();
+        let scale  = self.scale();
+        let has_tick_function = if self.function_key == None {false} else {true};
+        format!("Mesh(position={:?}, rotation={:?}, scale={:?}, has_tick_function={has_tick_function})", pos, rot,scale)
+    }
+
+    fn __str__(&self)-> PyResult<String>{
+        let pos = self.pos()?;
+        Ok(format!("Mesh at ({:.2}, {:.2}, {:.2})", pos.x, pos.y, pos.z))
+    }
 }
-basic_3D_magic_methods!(Mesh);
+
 
 impl Drop for Mesh{
     fn drop(&mut self) {

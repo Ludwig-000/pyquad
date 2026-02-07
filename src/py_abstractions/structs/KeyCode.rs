@@ -3,10 +3,8 @@ use pyo3::prelude::*;
 //use pyo3::type_gen::generate_type;
 //use pyo3::type_gen::generate_type_as_function;
 
-use pyo3_stub_gen::derive::* ;
 use pyo3_stub_gen::derive::gen_stub_pyclass_enum;
 
-use std::collections::HashSet;
 
 #[gen_stub_pyclass_enum]
 #[cfg_attr(feature = "abi_314", pyclass(eq, hash, frozen, immutable_type))]

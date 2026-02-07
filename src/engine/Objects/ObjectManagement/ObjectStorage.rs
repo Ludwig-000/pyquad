@@ -1,4 +1,4 @@
-use crate::{engine::{Objects::{Cube::Cube, Mesh::Mesh, Sphere::Sphere}, structures::Rectangle}, py_abstractions::structs::Objects::ColliderOptions::ColliderOptions};
+use crate::{engine::{Objects::{Cube::Cube, Mesh::Mesh, PhysicsWorld::ApplyPhysics::apply_physics_enum, Sphere::Sphere}, structures::Rectangle}, py_abstractions::structs::Objects::{ColliderOptions::ColliderOptions, PhysicsHandle::PhysicsEnum}};
 use pyo3::prelude::*;
 use pyo3::types::PyWeakref;
 use slotmap::*;
@@ -269,6 +269,12 @@ impl ObjectStorage {
                 
             }
         }
+    }
+
+
+    pub fn apply_physics_enum(&mut self, settings: PhysicsEnum, handle: &ObjectHandle) {
+        let world = &mut self.physics_world;
+        apply_physics_enum(settings, world, handle);
     }
 
 

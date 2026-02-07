@@ -13,8 +13,8 @@ use pyo3_stub_gen::derive::*;
 // This file implements all functionality from Glam, replacing uses of BVec2 and Vec2 with the pyabstracted versions.
 //
 #[gen_stub_pyclass]
-#[cfg_attr(feature = "abi_314", pyclass(frozen, immutable_type))]
-#[cfg_attr(not(feature = "abi_314"), pyclass(frozen))]
+#[cfg_attr(feature = "abi_314", pyclass(eq,str,frozen, immutable_type))]
+#[cfg_attr(not(feature = "abi_314"), pyclass(eq,str,frozen))]
 #[derive(Clone, Copy, PartialEq,Debug)]
 pub struct Vec2 {
     #[pyo3(get)]
@@ -972,10 +972,13 @@ impl Vec2 {
         let a: gl = (*self).into();
         (lhs % a).into()
     }
-
-
 }
 
+impl std::fmt::Display for Vec2 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Vec2({}, {})", self.x, self.y)
+    }
+}
 
 
 

@@ -1,6 +1,9 @@
 // for now, we cannot use macros to create pyfunctions, since pyo3-stub-gen does NOT play with multiple impl blocks.
 // :((((  i tried
-// will keep this code here as a reminder.
+
+
+
+
 #[macro_export]
 macro_rules! basic_3D_magic_methods {
     ($name:ident) => {

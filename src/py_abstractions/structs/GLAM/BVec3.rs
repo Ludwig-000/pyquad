@@ -6,8 +6,8 @@ use pyo3_stub_gen::derive::*;
 
 /// An immutable Boolean Vector with 3 elements: x,y,z.
 #[gen_stub_pyclass]
-#[cfg_attr(feature = "abi_314", pyclass(frozen, immutable_type))]
-#[cfg_attr(not(feature = "abi_314"), pyclass(frozen))]
+#[cfg_attr(feature = "abi_314", pyclass(eq,str,hash,frozen, immutable_type))]
+#[cfg_attr(not(feature = "abi_314"), pyclass(eq,str,hash,frozen))]
 #[derive(Clone, Copy, PartialEq,Debug,Eq, Hash)]
 pub struct BVec3 {
     #[pyo3(get)]
@@ -148,12 +148,17 @@ impl BVec3 {
             z: !self.z,
         }
     }
-    fn __str__(&self) -> String {
-        format!("{}, {}, {}", self.x, self.y, self.z)
-    }
+
+
 }
 
 
+
+impl std::fmt::Display for BVec3 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "BVec3({}, {}, {})", self.x, self.y, self.z)
+    }
+}
 
 
 

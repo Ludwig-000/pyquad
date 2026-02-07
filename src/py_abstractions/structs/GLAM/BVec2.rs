@@ -6,8 +6,8 @@ use pyo3_stub_gen::derive::*;
 
 /// An immutable Boolean Vector with 2 elements: x,y.
 #[gen_stub_pyclass]
-#[cfg_attr(feature = "abi_314", pyclass(frozen, immutable_type))]
-#[cfg_attr(not(feature = "abi_314"), pyclass(frozen))]
+#[cfg_attr(feature = "abi_314", pyclass(eq,str,hash,frozen, immutable_type))]
+#[cfg_attr(not(feature = "abi_314"), pyclass(eq,str,hash,frozen))]
 #[derive(Clone, Copy, PartialEq,Debug,Eq, Hash)]
 pub struct BVec2 {
     #[pyo3(get)]
@@ -140,13 +140,17 @@ impl BVec2 {
         }
     }
 
-    fn __str__(&self) -> String {
-        format!("{}, {}", self.x, self.y)
-    }
+
 }
 
 
 
+
+impl std::fmt::Display for BVec2 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "BVec2({}, {})", self.x, self.y)
+    }
+}
 
 
 

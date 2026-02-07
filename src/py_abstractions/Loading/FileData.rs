@@ -1,7 +1,7 @@
 
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::* ;
-use crate::py_abstractions::structs::{Audio::Sound, Objects::{ColliderOptions::ColliderOptions, Mesh::Mesh}, Textures_and_Images::{self, Image, Texture2D}};
+use crate::py_abstractions::{Loading::Loading::load_file, structs::{Audio::Sound, Objects::{ColliderOptions::ColliderOptions, Mesh::Mesh}, Textures_and_Images::{self, Image, Texture2D}}};
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 
 
@@ -30,6 +30,12 @@ pub struct FileData{
 #[pymethods]
 impl FileData{
 
+    /// Loads FileData from file.
+    #[new]
+    pub fn new(file_path: &str)-> PyResult<Self>{
+        load_file(file_path)
+    }
+    
     /// Loads file data from raw bytes.
     /// This is mostly useful to be compatible with other libraries,
     /// which may return F.E. an audio file as Bytes.

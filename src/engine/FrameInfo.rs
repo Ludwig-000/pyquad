@@ -25,6 +25,7 @@ pub static MOUSE_POSITION: Mutex<(f32,f32)> = Mutex::new((0.,0.));
 pub static MOUSE_DELTA_POSITION: Mutex<Vec2> = Mutex::new( Vec2::new(0.,0.) );
 pub static MOUSE_POSITION_LOCAL: Mutex<Vec2> = Mutex::new( Vec2::new(0.,0.) );
 pub static MOUSE_WHEEL: Mutex<(f32,f32)> = Mutex::new((0.,0.));
+
 lazy_static! {
     pub static ref KEYS_PRESSED: Mutex<HashSet<KeyCode>> = Mutex::new(HashSet::new());
     pub static ref KEYS_DOWN: Mutex<HashSet<KeyCode>> = Mutex::new(HashSet::new());

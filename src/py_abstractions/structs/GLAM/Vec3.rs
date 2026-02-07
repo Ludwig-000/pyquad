@@ -3,9 +3,8 @@ use crate::py_abstractions::structs::GLAM::BVec3::BVec3;
 use glam::Vec3 as gl;
 use glam::Vec2 as glVec2;
 use pyo3::prelude::*;
-
+use std::fmt;
 use pyo3_stub_gen::derive::*;
-//define_stub_info_gatherer!(stub_info);
 
 
 //
@@ -13,8 +12,8 @@ use pyo3_stub_gen::derive::*;
 // This file implements all functionality from Glam, replacing uses of BVec3 and Vec2 with the pyabstracted versions.
 //
 #[gen_stub_pyclass]
-#[cfg_attr(feature = "abi_314", pyclass(frozen, immutable_type))]
-#[cfg_attr(not(feature = "abi_314"), pyclass(frozen))]
+#[cfg_attr(feature = "abi_314", pyclass(eq,str,frozen, immutable_type))]
+#[cfg_attr(not(feature = "abi_314"), pyclass(eq,str,frozen))]
 #[derive(Clone, Copy, PartialEq,Debug)]
 pub struct Vec3 {
     #[pyo3(get)]
@@ -1044,11 +1043,15 @@ impl Vec3 {
         (lhs % a).into()
     }
 
-
 }
 
 
 
+impl std::fmt::Display for Vec3 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Vec3({}, {}, {})", self.x, self.y, self.z)
+    }
+}
 
 
 

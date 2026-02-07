@@ -4,10 +4,11 @@ use pyo3::types::{PyWeakref, PyWeakrefReference};
 use pyo3::exceptions::*;
 
 use crate::engine::PChannel::PChannel;
+use crate::py_abstractions::structs::Objects::PhysicsHandle::Physics;
 use std::hash::{Hash, Hasher};
 
 use slotmap::Key;
-
+use crate::py_abstractions::structs::Objects::ColliderOptions::InnerColliderOptions;
 use crate::engine::Objects::ObjectDataCache;
 use crate::engine::CoreLoop::COMMAND_QUEUE;
 use crate::engine::CoreLoop::Command;
@@ -18,6 +19,9 @@ use crate::py_abstractions::structs::Objects::ObjectFunctionStorage;
 use crate::py_abstractions::Color::Color;
 use crate::py_abstractions::structs::Objects::ObjectFunctionStorage::FunctionKey;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
+
+
+
 #[gen_stub_pyclass]
 #[pyclass(subclass, weakref)]
 pub struct Cube{
@@ -29,6 +33,11 @@ pub struct Cube{
     /// we add a cache for trivial data, which can be used if the object is not
     /// influenced by outside forces F.E. Gravity.
     cache: Option<ObjectDataCache::ThreeDObjCache>,
+
+    /// a collection of physics-related methods, that can be applied to the object.
+    /// 'physics' will be set to Some() if the object is innitialized as a dynamic object.
+    #[pyo3(get)]
+    pub physics: Option<Py<Physics>>,
 }
 
 #[gen_stub_pymethods]
@@ -48,8 +57,13 @@ impl Cube {
 
         let (sender, receiver) = PChannel::sync_channel(1);
 
-        let cache = ObjectDataCache::ThreeDObjCache::new(true, position.into(), rotation.into(), scale.into(), color.into());
-        let placeholder_struct: Cube = Cube { key: ObjectKey::null(),function_key: None,  cache};
+        let cache  =match collider_type.0{
+            InnerColliderOptions::Dynamic { gravity_scale, friction, restitution, density }=>{
+                None
+            },
+            _=> {ObjectDataCache::ThreeDObjCache::new(true, position.into(), rotation.into(), scale.into(), color.into())}
+        };
+        let placeholder_struct: Cube = Cube { key: ObjectKey::null(),function_key: None,  cache, physics: None};
         let cube_handle: Py<Cube> = Py::new(py, placeholder_struct)?; 
         
         let weak_ref_handle: Py<PyWeakref> = {
@@ -64,13 +78,30 @@ impl Cube {
             rotation: rotation.into(), 
             color: color.into(),
             collider: collider_type,
-            weak_ref: weak_ref_handle,
+            weak_ref: weak_ref_handle.clone_ref(py),
             sender 
         });
         
         let key = receiver.recv()?;
         
-        cube_handle.borrow_mut(py).key = key;
+        let mut cube_ref = cube_handle.borrow_mut(py);
+        cube_ref.key = key;
+
+
+        match collider_type.0{
+            InnerColliderOptions::Dynamic { gravity_scale, friction, restitution, density }=>{
+                let phys_struct = Physics {
+                    identity: weak_ref_handle,
+                    handle: key,
+                };
+                cube_ref.physics = Some(Py::new(py, phys_struct)?);
+            },
+            _ => {}
+        }
+
+        drop(cube_ref);
+
+
         Ok(cube_handle) 
     }
         
