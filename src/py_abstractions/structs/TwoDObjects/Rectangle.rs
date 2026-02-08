@@ -5,6 +5,7 @@ use pyo3::exceptions::*;
 
 use crate::engine::PChannel::PChannel;
 use crate::py_abstractions::structs::ThreeDObjects::PhysicsHandle::Physics;
+
 use std::hash::{Hash, Hasher};
 
 use slotmap::Key;
@@ -30,11 +31,16 @@ pub struct Rectangle{
     pub scale: Vec2,
 }
 
+
 #[gen_stub_pymethods]
 #[pymethods]
 impl Rectangle{
     #[new]
     pub fn new(pos: Vec2, rot: Vec2, scale: Vec2)-> Self{
         Rectangle { pos,rot,scale}
+    }
+
+    pub fn test2(&self){
+        println!("Test2");
     }
 }

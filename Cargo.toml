@@ -54,6 +54,7 @@ symphonia = { version = "0.5", features = ["mp3"] } #for converting audio format
 gltf = "1.4.1" # for parsing 3DAssets
 
 rayon = "1.11.0" # TODO: replace with custom threading solution
+paste = "1.0" # for better macro control, allowing the writing of generic comments.
 
 [dependencies.image] # for image decoding
 version = "0.25.8"

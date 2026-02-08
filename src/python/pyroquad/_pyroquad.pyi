@@ -306,8 +306,8 @@ class Camera3D:
         Set active 3D camera.
         """
 
-class Circle(TwoDObject):
-    ...
+class Circle:
+    def __new__(cls, pos:Vec2, rot:Vec2, scale:Vec2) -> Circle: ...
 
 class ColliderOptions:
     r"""
@@ -4818,11 +4818,11 @@ class Cube:
         Accesses the scale of the given object.
         Note that individual values of an object can NOT be changed via:
         ```
-        >>>object.scale.x += 1
+        >>>Cube.scale.x += 1
         ```
-        since object.scale returns a copy of its scale, one has to write:
+        since Cube.scale returns a copy of its scale, one has to write:
         ```
-        >>>object.scale += Vec3(1, 0, 0)
+        >>>Cube.scale += Vec3(1, 0, 0)
         ```
         """
     @scale.setter
@@ -4833,11 +4833,11 @@ class Cube:
         Accesses the position of the given object.
         Note that individual values of an object can NOT be changed via:
         ```
-        >>>object.pos.x += 1
+        >>>Cube.pos.x += 1
         ```
         since object.pos returns a copy of its position, one has to write:
         ```
-        >>>object.pos += Vec3(1, 0, 0)
+        >>>Cube.pos += Vec3(1, 0, 0)
         ```
         """
     @pos.setter
@@ -4848,49 +4848,60 @@ class Cube:
         Accesses the rotation of the given object.
         Note that individual values of an object can NOT be changed via:
         ```
-        >>>object.rot.x += 1
+        >>>Cube.rot.x += 1
         ```
-        since object.rot returns a copy of its rotation, one has to write:
+        since Cube.rot returns a copy of its rotation, one has to write:
         ```
-        >>>object.rot += Vec3(1, 0, 0)
+        >>>Cube.rot += Vec3(1, 0, 0)
         ```
         """
     @rot.setter
     def rot(self, value: Vec3) -> None: ...
-    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., collider_type:ColliderOptions=...) -> Cube: ...
-    def set_collider(self, collider_type:ColliderOptions) -> None:
-        r"""
-        overwrites the current collider with the input option.
-        """
     def check_collision(self) -> builtins.list[typing.Any]:
         r"""
         Returns any object, with active collision, that is either
         intersected or inserted in the current object.
-        
+         
         Example:
-        
+         
         ```
         >>>bigCube: Cube = Cube(pos=Vec3.splat(50))
         >>>intersected: list[Cube] = bigCube.check_collision()
         ...
         ...# since the returned objects are references, we can edit them directly
         ...# without creating duplicates.
-        >>>for cube in intersected:
-        ...   cube.pos = Vec3.ZERO()
+        >>>for i in intersected:
+        ...   i.pos = Vec3.ZERO()
         ```
         """
+    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., collider_type:ColliderOptions=...) -> Cube: ...
+    def set_collider(self, collider_type:ColliderOptions) -> None:
+        r"""
+        overwrites the current collider with the input option.
+        """
+    def remove_tick(self) -> None: ...
+    def __eq__(self, other:Cube) -> builtins.bool:
+        r"""
+        Equality for Cube is based on unique ID.
+        """
+    def __hash__(self) -> builtins.int:
+        r"""
+        Hash for Cube is based on unique ID, not it's fields.
+        """
+    def __repr__(self) -> builtins.str: ...
+    def __str__(self) -> builtins.str: ...
     def tick(self, slf:Cube, function:typing.Any) -> None:
         r"""
         Add a function to this object, which will automatically be executed each frame.
         The function must take the object it is attatched to as an argument.
-        
+         
         Example:
-        
+         
         ```
         ...# arguments from outside the scope may be included.
         >>>delta_time = 0
-        >>>def updateCube(cube: Cube):
-        ...    cube.rot += Vec3.splat(0.2*delta_time)
+        >>>def updateCube(obj: Cube):
+        ...    obj.rot += Vec3.splat(0.2*delta_time)
         ...
         >>>myCube = Cube()
         >>>myCube.tick(updateCube)
@@ -4901,19 +4912,8 @@ class Cube:
         ...
         ...    #'next_frame' runs the update function for every object.
         ...    next_frame()
-        ```
+         ```
         """
-    def remove_tick(self) -> None: ...
-    def bind_location(self, obj:typing.Any) -> None: ...
-    def unbind_location(self) -> None: ...
-    def bind_rotation(self) -> None: ...
-    def unbind_rotation(self) -> None: ...
-    def bind_scale(self) -> None: ...
-    def unbind_scale(self) -> None: ...
-    def __eq__(self, other:Cube) -> builtins.bool: ...
-    def __hash__(self) -> builtins.int: ...
-    def __repr__(self) -> builtins.str: ...
-    def __str__(self) -> builtins.str: ...
 
 class FileData:
     r"""
@@ -5102,11 +5102,14 @@ class Mesh:
         ```
         """
     def remove_tick(self) -> None: ...
-    def bind_location(self, obj:typing.Optional[typing.Any]) -> None: ...
-    def bind_rotation(self, obj:typing.Optional[typing.Any]) -> None: ...
-    def bind_scale(self, obj:typing.Optional[typing.Any]) -> None: ...
-    def __eq__(self, other:Mesh) -> builtins.bool: ...
-    def __hash__(self) -> builtins.int: ...
+    def __eq__(self, other:Mesh) -> builtins.bool:
+        r"""
+        Equality for Mesh is based on unique ID.
+        """
+    def __hash__(self) -> builtins.int:
+        r"""
+        Hash for Mesh is based on unique ID, not it's fields.
+        """
     def __repr__(self) -> builtins.str: ...
     def __str__(self) -> builtins.str: ...
 
@@ -5150,7 +5153,8 @@ class PlaySoundParams:
     def __new__(cls, looped:builtins.bool=False, volume:builtins.float=1.0) -> PlaySoundParams: ...
 
 class Rectangle:
-    def __new__(cls) -> Rectangle: ...
+    def __new__(cls, pos:Vec2, rot:Vec2, scale:Vec2) -> Rectangle: ...
+    def test2(self) -> None: ...
 
 class RenderTarget:
     ...
@@ -5328,8 +5332,6 @@ class Sphere:
     @rot.setter
     def rot(self, value: Vec3) -> None: ...
     def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., collider_type:ColliderOptions=...) -> Sphere: ...
-    def disable_collision(self) -> None: ...
-    def enable_collision(self) -> None: ...
     def check_collision(self) -> builtins.list[typing.Any]:
         r"""
         Returns any object, with active collision, that is either
@@ -5382,12 +5384,6 @@ class Texture2D:
     """
     @staticmethod
     def from_image(image:Image) -> Texture2D: ...
-
-class ThreeDObject:
-    ...
-
-class TwoDObject:
-    ...
 
 class Vec2:
     ZERO: Vec2
@@ -6585,11 +6581,7 @@ def draw_cube(position:Vec3, size:Vec3, color:Color) -> None:
 
 def draw_cube_wires(position:Vec3, size:Vec3, color:Color) -> None: ...
 
-def draw_cubemap(texture:Texture2D) -> None:
-    r"""
-    TODO!
-    convert the 3d cam to a 2d cam, apply a shader on the matrix, then re-apply the 3d cam
-    """
+def draw_cubemap(texture:Texture2D) -> None: ...
 
 def draw_cylinder(position:Vec3, radius_top:builtins.float, radius_bottom:builtins.float, height:builtins.float, texture:typing.Optional[Texture2D], color:Color) -> None: ...
 
