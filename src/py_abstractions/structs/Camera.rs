@@ -8,7 +8,7 @@ use pyo3_stub_gen::{derive::gen_stub_pyfunction,derive::*};
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::py_abstractions::structs::GLAM::Vec2::Vec2;
 use crate::py_abstractions::structs::RenderTarget::*;
-use crate::py_abstractions::structs::Objects::Rectangle::Rectangle;
+use crate::py_abstractions::structs::TwoDObjects::Rectangle::Rectangle;
 #[gen_stub_pyclass]
 #[pyclass]
 #[derive(Debug, Clone)]
@@ -79,7 +79,7 @@ impl Camera2D {
     /// This will ignore the Rectangle's rotation.
     #[staticmethod]
     pub fn from_display_rect(rect: &Rectangle) -> Camera2D {
-        let rec =  mq::Rect::new(rect.x, rect.y, rect.width, rect.height);
+        let rec =  mq::Rect::new(rect.pos.x, rect.pos.y,rect.scale.x, rect.scale.y);
         
         mq::Camera2D::from_display_rect(rec).into()
     }

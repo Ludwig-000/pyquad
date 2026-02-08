@@ -7,7 +7,7 @@
 // ( example:  Color -> mq::Color )
 
 use crate::py_abstractions::structs::MouseButton::MouseButton;
-use crate::py_abstractions::structs::Objects::ObjectFunctionStorage;
+use crate::py_abstractions::structs::ThreeDObjects::ObjectFunctionStorage;
 use crate::py_abstractions::structs::Textures_and_Images::*;
 use macroquad::prelude as mq;
 

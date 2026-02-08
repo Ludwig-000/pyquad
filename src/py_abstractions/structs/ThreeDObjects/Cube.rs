@@ -1,53 +1,38 @@
-use macroquad::prelude::Vertex as mq_vert;
-use pyo3::ffi::PyCallable_Check;
-use pyo3::{pyclass, pymethods};
-use pyo3_stub_gen::derive::{gen_stub_pyclass, gen_stub_pymethods};
-
-use pyo3_stub_gen::inventory::submit;
-use slotmap::DefaultKey;
-use slotmap::Key;
-use std::hash::{Hash, Hasher};
-
-use crate::engine::Objects::ObjectDataCache::ThreeDObjCache;
-use crate::engine::PError::PError;
-use crate::py_abstractions::structs::Objects::ColliderOptions::{ColliderOptions, InnerColliderOptions};
-use crate::py_abstractions::structs::Objects::PhysicsHandle::Physics;
-use crate::py_abstractions::{Loading::FileData::FileData, structs::Textures_and_Images::Texture2D};
-use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
-use crate::engine::Objects::Mesh as internal_mesh;
-use pyo3::prelude::PyResult;
-use crate::engine::CoreLoop::{Command,COMMAND_QUEUE};
-use pyo3::prelude::*;
-
-use crate::engine::PChannel::PChannel;
-
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::* ;
 use pyo3::types::{PyWeakref, PyWeakrefReference};
-use crate::py_abstractions::structs::Objects::ObjectFunctionStorage::FunctionKey;
-use pyo3::prelude::*;
-use pyo3_stub_gen::derive::* ;
-
 use pyo3::exceptions::*;
 
+use crate::engine::PChannel::PChannel;
+use crate::py_abstractions::structs::ThreeDObjects::PhysicsHandle::Physics;
+use std::hash::{Hash, Hasher};
 
-
+use slotmap::Key;
+use crate::py_abstractions::structs::ThreeDObjects::ColliderOptions::InnerColliderOptions;
 use crate::engine::Objects::ObjectDataCache;
+use crate::engine::CoreLoop::COMMAND_QUEUE;
+use crate::engine::CoreLoop::Command;
 
-use crate::py_abstractions::structs::Objects::ObjectFunctionStorage;
+use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
+use crate::py_abstractions::structs::ThreeDObjects::ColliderOptions::ColliderOptions;
+use crate::py_abstractions::structs::ThreeDObjects::ObjectFunctionStorage;
 use crate::py_abstractions::Color::Color;
+use crate::py_abstractions::structs::ThreeDObjects::ObjectFunctionStorage::FunctionKey;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
-use crate::py_abstractions::structs::Objects::ObjectMacros::*;
+
+
 
 #[gen_stub_pyclass]
 #[pyclass(subclass, weakref)]
-pub struct Mesh{
-	pub key: ObjectKey,
-    pub function_key: Option<FunctionKey>,
+pub struct Cube{
+    key: ObjectKey, // The key to the actual underlying cube, stored inside "ObjectStorage".
 
-    // an object's data can only be cached, if it can NOT be influenced by anything external.
-    // F.E.: gravity.
-    pub cache: Option<ObjectDataCache::ThreeDObjCache>,
+    // Key to a function inside 'function storage', which will be run each frame by the engine.
+    function_key: Option<FunctionKey>,
+
+    /// we add a cache for trivial data, which can be used if the object is not
+    /// influenced by outside forces F.E. Gravity.
+    cache: Option<ObjectDataCache::ThreeDObjCache>,
 
     /// a collection of physics-related methods, that can be applied to the object.
     /// 'physics' will be set to Some() if the object is innitialized as a dynamic object.
@@ -57,37 +42,50 @@ pub struct Mesh{
 
 #[gen_stub_pymethods]
 #[pymethods]
-impl Mesh{
+impl Cube {
 
-    #[staticmethod]
-    pub fn from_file_data(py: Python<'_>,data: FileData, collider_type: ColliderOptions)-> PyResult<Py<Mesh>>{
-        
+    #[pyo3(signature = (position= Vec3::ZERO(), rotation = Vec3::ZERO(),scale= Vec3::ONE(), color = Color::WHITE(), collider_type = ColliderOptions::NONE()))]
+    #[new]
+    pub fn new(
+        py: Python<'_>,
+        position: Vec3,
+        rotation: Vec3,
+        scale: Vec3,
+        color: Color,
+        collider_type: ColliderOptions,
+    ) -> PyResult<Py<Cube>> {
+
         let (sender, receiver) = PChannel::sync_channel(1);
 
-        let placeholder_struct: Self = Self { key: ObjectKey::null(), 
-            function_key: None, 
-            cache: None,
-            physics: None,
+        let cache  =match collider_type.0{
+            InnerColliderOptions::Dynamic { gravity_scale, friction, restitution, density }=>{
+                None
+            },
+            _=> {ObjectDataCache::ThreeDObjCache::new(true, position.into(), rotation.into(), scale.into(), color.into())}
         };
-
-        let mesh_handle: Py<Self> = Py::new(py, placeholder_struct)?; 
+        let placeholder_struct: Cube = Cube { key: ObjectKey::null(),function_key: None,  cache, physics: None};
+        let cube_handle: Py<Cube> = Py::new(py, placeholder_struct)?; 
         
         let weak_ref_handle: Py<PyWeakref> = {
-            let bound_mesh = mesh_handle.bind(py); 
-            let weak_ref_ref = PyWeakrefReference::new(&bound_mesh)?;
+            let bound_cube = cube_handle.bind(py); 
+            let weak_ref_ref = PyWeakrefReference::new(&bound_cube)?;
             weak_ref_ref.cast_into::<PyWeakref>()?.unbind() 
         };
 
-        let mesh =  internal_mesh::Mesh::load_from_gltf(&data.bytes, None).map_err(|e|{
-            PError::GLTFError(e)
-        })?;
-
-        COMMAND_QUEUE.push(Command::CreateMesh { mesh, collider: collider_type, weak_ref: weak_ref_handle.clone_ref(py), sender });
+        COMMAND_QUEUE.push(Command::CreateCube { 
+            size: scale.into(), 
+            position: position.into(), 
+            rotation: rotation.into(), 
+            color: color.into(),
+            collider: collider_type,
+            weak_ref: weak_ref_handle.clone_ref(py),
+            sender 
+        });
         
         let key = receiver.recv()?;
         
-        let mut mesh_ref = mesh_handle.borrow_mut(py);
-        mesh_ref.key = key;
+        let mut cube_ref = cube_handle.borrow_mut(py);
+        cube_ref.key = key;
 
 
         match collider_type.0{
@@ -96,17 +94,26 @@ impl Mesh{
                     identity: weak_ref_handle,
                     handle: key,
                 };
-                mesh_ref.physics = Some(Py::new(py, phys_struct)?);
+                cube_ref.physics = Some(Py::new(py, phys_struct)?);
             },
             _ => {}
         }
 
-        drop(mesh_ref);
+        drop(cube_ref);
 
-        Ok(mesh_handle) 
+
+        Ok(cube_handle) 
     }
-
-
+        
+    /// Accesses the scale of the given object.
+    /// Note that individual values of an object can NOT be changed via:
+    /// ```
+    /// >>>object.scale.x += 1
+    /// ```
+    /// since object.scale returns a copy of its scale, one has to write:
+    /// ```
+    /// >>>object.scale += Vec3(1, 0, 0)
+    /// ```
     #[getter]
     fn scale(&self) -> PyResult<Vec3> {
         if let Some(cache) = self.cache {
@@ -129,6 +136,15 @@ impl Mesh{
         COMMAND_QUEUE.push(command);
     }
 
+    /// Accesses the position of the given object.
+    /// Note that individual values of an object can NOT be changed via:
+    /// ```
+    /// >>>object.pos.x += 1
+    /// ```
+    /// since object.pos returns a copy of its position, one has to write:
+    /// ```
+    /// >>>object.pos += Vec3(1, 0, 0)
+    /// ```
     #[getter]
     fn pos(&self) -> PyResult<Vec3> {
         if let Some(cache) = self.cache {
@@ -150,6 +166,15 @@ impl Mesh{
         COMMAND_QUEUE.push(command);
     }
 
+    /// Accesses the rotation of the given object.
+    /// Note that individual values of an object can NOT be changed via:
+    /// ```
+    /// >>>object.rot.x += 1
+    /// ```
+    /// since object.rot returns a copy of its rotation, one has to write:
+    /// ```
+    /// >>>object.rot += Vec3(1, 0, 0)
+    /// ```
     #[getter]
     fn rot(&self) -> PyResult<Vec3> {
         if let Some(cache) = self.cache {
@@ -172,9 +197,9 @@ impl Mesh{
         COMMAND_QUEUE.push(command);
     }
 
-    pub fn set_collision(&self, collision_type: ColliderOptions){
-        let command = Command::SetCollisionForObject{key: self.key, collider: collision_type};
-        COMMAND_QUEUE.push(command);
+    /// overwrites the current collider with the input option.
+    pub fn set_collider(&self, collider_type: ColliderOptions){
+        todo!()
     }
 
     /// Returns any object, with active collision, that is either
@@ -236,8 +261,8 @@ impl Mesh{
     ///...    #'next_frame' runs the update function for every object.
     ///...    next_frame()
     /// ```
-    /// 
     pub fn tick(slf: Bound<'_, Self>, function: Bound<'_,PyAny>)-> PyResult<()>{
+
         if !function.is_callable(){
             return Err(PyRuntimeError::new_err(format!("Attatched object {:?} is not callable.",function)));
         }
@@ -268,19 +293,6 @@ impl Mesh{
         Ok(())
     }
 
-    pub fn bind_location(&mut self, obj: Option<Bound<'_, PyAny>>){
-        todo!()
-    }
-
-    pub fn bind_rotation(&mut self, obj: Option<Bound<'_, PyAny>>){
-        todo!()
-    }
-
-    pub fn bind_scale(&mut self, obj: Option<Bound<'_, PyAny>>){
-        todo!()
-    }
-
-    
     fn __eq__(&self, other: &Self) -> bool {
         self.key == other.key
     }
@@ -298,17 +310,19 @@ impl Mesh{
         let rot = self.rot();
         let scale  = self.scale();
         let has_tick_function = if self.function_key == None {false} else {true};
-        format!("Mesh(position={:?}, rotation={:?}, scale={:?}, has_tick_function={has_tick_function})", pos, rot,scale)
+        format!("Cube(position={:?}, rotation={:?}, scale={:?}, has_tick_function={has_tick_function})", pos, rot,scale)
     }
 
     fn __str__(&self)-> PyResult<String>{
         let pos = self.pos()?;
-        Ok(format!("Mesh at ({:.2}, {:.2}, {:.2})", pos.x, pos.y, pos.z))
+        Ok(format!("Cube at ({:.2}, {:.2}, {:.2})", pos.x, pos.y, pos.z))
     }
+
+
+
 }
 
-
-impl Drop for Mesh{
+impl Drop for Cube{
     fn drop(&mut self) {
 
         // function storage MUST be cleaned first, since a function inside fun-storage may rely on the object still living.

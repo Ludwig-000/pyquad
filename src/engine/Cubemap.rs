@@ -13,8 +13,8 @@ use crate::engine::CoreLoop::COMMAND_QUEUE;
 use crate::engine::CoreLoop::Command;
 
 
-/// TODO!
-/// convert the 3d cam to a 2d cam, apply a shader on the matrix, then re-apply the 3d cam
+// TODO!
+// convert the 3d cam to a 2d cam, apply a shader on the matrix, then re-apply the 3d cam
 #[gen_stub_pyfunction]
 #[pyfunction]
 pub fn draw_cubemap(texture: Texture2D) {

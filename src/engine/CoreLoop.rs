@@ -17,8 +17,8 @@ use crate::engine::SHADERS::shader_manager as sm;
 use crate::engine::PError::PError;
 use crate::engine::PArc::PArc;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::*;
-use crate::py_abstractions::structs::Objects::ColliderOptions::ColliderOptions;
-use crate::py_abstractions::structs::Objects::PhysicsHandle::PhysicsEnum;
+use crate::py_abstractions::structs::ThreeDObjects::ColliderOptions::ColliderOptions;
+use crate::py_abstractions::structs::ThreeDObjects::PhysicsHandle::PhysicsEnum;
 use pyo3::{Py};
 use pyo3::types::{PyWeakref};
 use crate::engine::PChannel;
@@ -227,7 +227,7 @@ pub async fn proccess_commands_loop() {
                     let pos = match  object_storage.get(key){
                         Object::Cube(cube) => cube.position,
                         Object::Mesh(mesh) => mesh.position,
-                        _ => todo!(),
+                        Object::Sphere(sphere)=> sphere.position,
                     };
                     let _ = sender.send(pos);
                 }
@@ -235,7 +235,7 @@ pub async fn proccess_commands_loop() {
                     let pos = match  object_storage.get(key){
                         Object::Cube(cube) => cube.scale,
                         Object::Mesh(mesh)=> mesh.scale,
-                        _ => todo!(),
+                        Object::Sphere(sphere)=> sphere.scale,
                     };
                     let _ = sender.send(pos);
                 }
@@ -243,7 +243,7 @@ pub async fn proccess_commands_loop() {
                     let pos = match  object_storage.get(key){
                         Object::Cube(cube) => cube.rotation,
                         Object::Mesh(mesh)=> mesh.rotation,
-                        _ => todo!(),
+                        Object::Sphere(sphere)=> sphere.rotation,
                     };
                     let _ = sender.send(pos);
                 }
@@ -259,7 +259,10 @@ pub async fn proccess_commands_loop() {
                                 mesh.recalculate_pos(mesh.position, position);
                                 mesh.position =  position;
                             }
-                            _ => todo!()
+                            Object::Sphere(sphere)=>{
+                                sphere.mesh.recalculate_pos(sphere.position, position);
+                                sphere.position = position;
+                            }
                         }
                     });
                 }
@@ -276,7 +279,10 @@ pub async fn proccess_commands_loop() {
                                     mesh.recalculate_scale(mesh.position,mesh.scale, scale);
                                     mesh.scale =  scale;
                                 }
-                                _ => todo!()
+                                Object::Sphere(sphere)=>{
+                                    sphere.mesh.recalculate_scale(sphere.position, sphere.scale, scale);
+                                    sphere.scale = scale;
+                                }
                             }
                         });
                 }
@@ -291,10 +297,11 @@ pub async fn proccess_commands_loop() {
                                 Object::Mesh(mesh) => {
                                     mesh.recalculate_rot(mesh.position, mesh.rotation, rotation);
                                     mesh.rotation =  rotation;
-                                    
-
                                 }
-                                _ => todo!()
+                                Object::Sphere(sphere)=>{
+                                    sphere.mesh.recalculate_rot(sphere.position, sphere.rotation, rotation);
+                                    sphere.rotation = rotation;
+                                }
                             }
                         });
                     

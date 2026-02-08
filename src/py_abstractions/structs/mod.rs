@@ -5,6 +5,7 @@ pub mod RenderTarget;
 pub mod KeyCode;
 pub mod Config;
 pub mod Audio;
-pub mod Objects;
+pub mod ThreeDObjects;
 pub mod Shader;
 pub mod MouseButton;
+pub mod TwoDObjects;

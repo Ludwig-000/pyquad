@@ -13,10 +13,10 @@ use crate::engine::CoreLoop::COMMAND_QUEUE;
 use crate::engine::CoreLoop::Command;
 
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
-use crate::py_abstractions::structs::Objects::ColliderOptions::ColliderOptions;
-use crate::py_abstractions::structs::Objects::ObjectFunctionStorage;
+use crate::py_abstractions::structs::ThreeDObjects::ColliderOptions::ColliderOptions;
+use crate::py_abstractions::structs::ThreeDObjects::ObjectFunctionStorage;
 use crate::py_abstractions::Color::Color;
-use crate::py_abstractions::structs::Objects::ObjectFunctionStorage::FunctionKey;
+use crate::py_abstractions::structs::ThreeDObjects::ObjectFunctionStorage::FunctionKey;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 
 #[gen_stub_pyclass]
@@ -171,12 +171,6 @@ impl Sphere {
         COMMAND_QUEUE.push(command);
     }
 
-    pub fn disable_collision(&self){
-        todo!()
-    }
-    pub fn enable_collision(&self){
-        todo!()
-    }
 
     /// Returns any object, with active collision, that is either
     /// intersected or inserted in the current object.

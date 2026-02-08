@@ -4,7 +4,7 @@ use rapier3d::{pipeline, prelude::*};
 use glam::Vec3;
 use std::sync::Mutex;
 use slotmap::{DefaultKey, Key, KeyData};
-use crate::{engine::Objects::ObjectManagement::ObjectStorage::{self as obj, ObjectStorage}, py_abstractions::structs::Objects::ColliderOptions::{ColliderOptions, InnerColliderOptions}};
+use crate::{engine::Objects::ObjectManagement::ObjectStorage::{self as obj, ObjectStorage}, py_abstractions::structs::ThreeDObjects::ColliderOptions::{ColliderOptions, InnerColliderOptions}};
 use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::Object;
 pub fn physics_thread(){
@@ -358,6 +358,6 @@ pub fn extract_object_transforms(obj: &obj::Object)-> Transforms<'_>{
     match obj{
         obj::Object::Cube(cube) => Transforms { pos: &cube.position, rot: &cube.rotation, scale: &cube.scale },
         obj::Object::Mesh(mesh) => Transforms { pos: &mesh.position, rot: &mesh.rotation, scale: &mesh.scale},
-        _ => todo!()
+        obj::Object::Sphere(sphere)=> Transforms { pos: &sphere.position, rot: &sphere.rotation, scale: &sphere.rotation }
     }
 }

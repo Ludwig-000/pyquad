@@ -1,5 +1,5 @@
 use crate::{engine::Objects::PhysicsWorld::{self, Rapier::{ObjectHandle, RapierWorld}}, 
-    py_abstractions::structs::Objects::PhysicsHandle::PhysicsEnum};
+    py_abstractions::structs::ThreeDObjects::PhysicsHandle::PhysicsEnum};
 
 
 use rapier3d::prelude::*;

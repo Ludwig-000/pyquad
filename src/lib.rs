@@ -102,14 +102,17 @@ pub fn _pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<crate::py_abstractions::structs::GLAM::Vec3::Vec3>()?;
     m.add_class::<crate::py_abstractions::structs::GLAM::Vec2::Vec2>()?;
 
-    m.add_class::<crate::py_abstractions::structs::Objects::Three_D_Object::ThreeDObject>()?;
-    m.add_class::<crate::py_abstractions::structs::Objects::Two_D_Object::TwoDObject>()?;
-    m.add_class::<crate::py_abstractions::structs::Objects::Rectangle::Rectangle>()?;
-    m.add_class::<crate::py_abstractions::structs::Objects::Cube::Cube>()?;
-    m.add_class::<crate::py_abstractions::structs::Objects::Circle::Circle>()?;
-    m.add_class::<crate::py_abstractions::structs::Objects::Mesh::Mesh>()?;
-    m.add_class::<crate::py_abstractions::structs::Objects::PhysicsHandle::Physics>()?;
-    m.add_class::<crate::py_abstractions::structs::Objects::ColliderOptions::ColliderOptions>()?;
+    m.add_class::<crate::py_abstractions::structs::ThreeDObjects::Three_D_Object::ThreeDObject>()?;
+    m.add_class::<crate::py_abstractions::structs::ThreeDObjects::Two_D_Object::TwoDObject>()?;
+
+    m.add_class::<crate::py_abstractions::structs::ThreeDObjects::Cube::Cube>()?;
+    m.add_class::<crate::py_abstractions::structs::ThreeDObjects::Sphere::Sphere>()?;
+    m.add_class::<crate::py_abstractions::structs::ThreeDObjects::Mesh::Mesh>()?;
+
+    m.add_class::<crate::py_abstractions::structs::TwoDObjects::Circle::Circle>()?;
+    m.add_class::<crate::py_abstractions::structs::TwoDObjects::Rectangle::Rectangle>()?;
+    m.add_class::<crate::py_abstractions::structs::ThreeDObjects::PhysicsHandle::Physics>()?;
+    m.add_class::<crate::py_abstractions::structs::ThreeDObjects::ColliderOptions::ColliderOptions>()?;
 
     m.add_class::<crate::py_abstractions::structs::Shader::Shader>()?;
     m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCode>()?;

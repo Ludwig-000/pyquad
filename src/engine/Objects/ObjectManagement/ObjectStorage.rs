@@ -1,4 +1,4 @@
-use crate::{engine::{Objects::{Cube::Cube, Mesh::Mesh, PhysicsWorld::ApplyPhysics::apply_physics_enum, Sphere::Sphere}, structures::Rectangle}, py_abstractions::structs::Objects::{ColliderOptions::ColliderOptions, PhysicsHandle::PhysicsEnum}};
+use crate::{engine::{Objects::{Cube::Cube, Mesh::Mesh, PhysicsWorld::ApplyPhysics::apply_physics_enum, Sphere::Sphere}, structures::Rectangle}, py_abstractions::structs::ThreeDObjects::{ColliderOptions::ColliderOptions, PhysicsHandle::PhysicsEnum}};
 use pyo3::prelude::*;
 use pyo3::types::PyWeakref;
 use slotmap::*;
@@ -264,7 +264,26 @@ impl ObjectStorage {
                         }
 
                     }
-                    _ => todo!()
+                    Object::Sphere(sphere)=>{
+                        if sphere.rotation != rot {
+                            sphere.mesh.recalculate_rot(sphere.position, sphere.rotation, rot);
+                            sphere.rotation = rot;
+                        }
+                        if sphere.position != pos {
+                            sphere.mesh.recalculate_pos(sphere.position, pos);
+                            sphere.position = pos;
+                        }
+                    }
+                    Object::Mesh(mesh)=> {
+                        if mesh.rotation != rot {
+                            mesh.recalculate_rot(mesh.position, mesh.rotation, rot);
+                            mesh.rotation = rot;
+                        }
+                        if mesh.position != pos {
+                            mesh.recalculate_pos(mesh.position, pos);
+                            mesh.position = pos;
+                        }
+                    }
                 }
                 
             }
