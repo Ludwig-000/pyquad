@@ -66,14 +66,14 @@ pub struct Pill{
     pub physics: Option<Py<Physics>>,
 }
 
-crate::implement_basic_3D_magic_methods!(Pill);
-crate::implement_basic_3D_getter_methods!(Pill);
-crate::implement_basic_3D_setter_methods!(Pill);
-crate::implement_check_collision!(Pill);
-crate::implement_set_collider!(Pill);
-crate::implement_tick!(Pill,  r#"Pill()"#);
-crate::implement_remove_tick!(Pill);
-crate::implement_Drop!(Pill);
+crate::implement_basic_magic_methods3D!(Pill);
+crate::implement_basic_getter_methods3D!(Pill);
+crate::implement_basic_setter_methods3D!(Pill);
+crate::implement_check_collision3D!(Pill);
+crate::implement_set_collider3D!(Pill);
+crate::implement_tick3D!(Pill,  r#"Pill()"#);
+crate::implement_remove_tick3D!(Pill);
+crate::implement_Drop3D!(Pill);
 
 #[gen_stub_pymethods]
 #[pymethods]

@@ -29,18 +29,40 @@ pub struct Rectangle{
     pub pos: Vec2,
     pub rot: Vec2,
     pub scale: Vec2,
-}
 
+    function_key: Option<FunctionKey>
+}
+crate::implement_Drop2D!(Rectangle);
 
 #[gen_stub_pymethods]
 #[pymethods]
 impl Rectangle{
     #[new]
     pub fn new(pos: Vec2, rot: Vec2, scale: Vec2)-> Self{
-        Rectangle { pos,rot,scale}
+        todo!()
     }
 
     pub fn test2(&self){
         println!("Test2");
+    }
+
+    pub fn tick(slf: Bound<'_, Self>, function: Bound<'_,PyAny>)-> PyResult<()>{
+
+        if !function.is_callable(){
+            return Err(PyRuntimeError::new_err(format!("Attatched object {:?} is not callable.",function)));
+        }
+
+        let mut storage = ObjectFunctionStorage::get_fun_storage();
+        let mut self_ = slf.borrow_mut();
+        if let Some(key) = self_.function_key{
+            storage.remove(key);
+        }
+
+        let func_persistent = function.unbind();
+        let obj  = slf.into_any();
+
+        self_.function_key = Some(storage.add(obj, func_persistent));
+
+        Ok(())
     }
 }

@@ -38,14 +38,14 @@ pub struct Sphere{
     pub physics: Option<Py<Physics>>,
 }
 
-crate::implement_basic_3D_magic_methods!(Sphere);
-crate::implement_basic_3D_getter_methods!(Sphere);
-crate::implement_basic_3D_setter_methods!(Sphere);
-crate::implement_check_collision!(Sphere);
-crate::implement_set_collider!(Sphere);
-crate::implement_tick!(Sphere,  r#"Sphere()"#);
-crate::implement_remove_tick!(Sphere);
-crate::implement_Drop!(Sphere);
+crate::implement_basic_magic_methods3D!(Sphere);
+crate::implement_basic_getter_methods3D!(Sphere);
+crate::implement_basic_setter_methods3D!(Sphere);
+crate::implement_check_collision3D!(Sphere);
+crate::implement_set_collider3D!(Sphere);
+crate::implement_tick3D!(Sphere,  r#"Sphere()"#);
+crate::implement_remove_tick3D!(Sphere);
+crate::implement_Drop3D!(Sphere);
 
 #[gen_stub_pymethods]
 #[pymethods]

@@ -3,7 +3,7 @@
 
 
 #[macro_export]
-macro_rules! implement_basic_3D_magic_methods {
+macro_rules! implement_basic_magic_methods3D {
     ($name:ident) => {
         paste::paste! {
 
@@ -50,7 +50,7 @@ macro_rules! implement_basic_3D_magic_methods {
 
 
 #[macro_export]
-macro_rules! implement_basic_3D_getter_methods {
+macro_rules! implement_basic_getter_methods3D {
     ($name:ident) => {
         paste::paste! {
 
@@ -149,7 +149,7 @@ since " $name ".scale returns a copy of its scale, one has to write:
 
 
 #[macro_export]
-macro_rules! implement_basic_3D_setter_methods {
+macro_rules! implement_basic_setter_methods3D {
     ($name:ident) => {paste::paste! {
 
             #[gen_stub_pymethods]
@@ -193,7 +193,7 @@ macro_rules! implement_basic_3D_setter_methods {
 
 
 #[macro_export]
-macro_rules! implement_check_collision {
+macro_rules! implement_check_collision3D {
     ($name:ident) => {
         paste::paste! {
 
@@ -251,7 +251,7 @@ Example:
 
 
 #[macro_export]
-macro_rules! implement_tick {
+macro_rules! implement_tick3D {
     ($name:ident,  $py_constructor:expr) => {
         paste::paste! {
 
@@ -291,11 +291,15 @@ Example:
                     }
 
                     let mut storage = ObjectFunctionStorage::get_fun_storage();
-                    
+                    let mut self_ = slf.borrow_mut();
+                    if let Some(key) = self_.function_key{
+                        storage.remove(key);
+                    }
+
                     let func_persistent = function.unbind();
                     let obj  = slf.into_any();
 
-                    let key = storage.add(obj, func_persistent);
+                    self_.function_key = Some(storage.add(obj, func_persistent));
 
                     Ok(())
                 }
@@ -309,7 +313,7 @@ Example:
 
 
 #[macro_export]
-macro_rules! implement_remove_tick {
+macro_rules! implement_remove_tick3D {
     ($name:ident) => {
         paste::paste! {
 
@@ -342,7 +346,7 @@ macro_rules! implement_remove_tick {
 
 
 #[macro_export]
-macro_rules! implement_set_collider {
+macro_rules! implement_set_collider3D {
     ($name:ident) => {
         paste::paste! {
 
@@ -361,7 +365,7 @@ macro_rules! implement_set_collider {
 }
 
 #[macro_export]
-macro_rules! implement_Drop {
+macro_rules! implement_Drop3D {
     ($name:ident) => {
         paste::paste! {
             impl Drop for $name {

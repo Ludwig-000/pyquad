@@ -3,7 +3,7 @@ use pyo3_stub_gen::derive::* ;
 use pyo3::types::{PyWeakref, PyWeakrefReference};
 use pyo3::exceptions::*;
 
-use crate::{implement_Drop, implement_basic_3D_getter_methods, implement_basic_3D_magic_methods, implement_basic_3D_setter_methods, implement_check_collision, implement_remove_tick, implement_set_collider, implement_tick};
+use crate::{implement_Drop3D, implement_basic_getter_methods3D, implement_basic_magic_methods3D, implement_basic_setter_methods3D, implement_check_collision3D, implement_remove_tick3D, implement_set_collider3D, implement_tick3D};
 use crate::engine::PChannel::PChannel;
 use crate::py_abstractions::structs::ThreeDObjects::PhysicsHandle::Physics;
 use std::hash::{Hash, Hasher};
@@ -42,14 +42,14 @@ pub struct Cube{
 }
 
 
-crate::implement_basic_3D_magic_methods!(Cube);
-crate::implement_basic_3D_getter_methods!(Cube);
-crate::implement_basic_3D_setter_methods!(Cube);
-crate::implement_check_collision!(Cube);
-crate::implement_set_collider!(Cube);
-crate::implement_tick!(Cube,  r#"Cube()"#);
-crate::implement_remove_tick!(Cube);
-crate::implement_Drop!(Cube);
+crate::implement_basic_magic_methods3D!(Cube);
+crate::implement_basic_getter_methods3D!(Cube);
+crate::implement_basic_setter_methods3D!(Cube);
+crate::implement_check_collision3D!(Cube);
+crate::implement_set_collider3D!(Cube);
+crate::implement_tick3D!(Cube,  r#"Cube()"#);
+crate::implement_remove_tick3D!(Cube);
+crate::implement_Drop3D!(Cube);
 
 #[gen_stub_pymethods]
 #[pymethods]

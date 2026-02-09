@@ -40,14 +40,14 @@ pub struct Cylinder{
     pub physics: Option<Py<Physics>>,
 }
 
-crate::implement_basic_3D_magic_methods!(Cylinder);
-crate::implement_basic_3D_getter_methods!(Cylinder);
-crate::implement_basic_3D_setter_methods!(Cylinder);
-crate::implement_check_collision!(Cylinder);
-crate::implement_set_collider!(Cylinder);
-crate::implement_tick!(Cylinder,  r#"Cylinder()"#);
-crate::implement_remove_tick!(Cylinder);
-crate::implement_Drop!(Cylinder);
+crate::implement_basic_magic_methods3D!(Cylinder);
+crate::implement_basic_getter_methods3D!(Cylinder);
+crate::implement_basic_setter_methods3D!(Cylinder);
+crate::implement_check_collision3D!(Cylinder);
+crate::implement_set_collider3D!(Cylinder);
+crate::implement_tick3D!(Cylinder,  r#"Cylinder()"#);
+crate::implement_remove_tick3D!(Cylinder);
+crate::implement_Drop3D!(Cylinder);
 
 #[gen_stub_pymethods]
 #[pymethods]

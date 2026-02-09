@@ -55,14 +55,14 @@ pub struct Mesh{
     pub physics: Option<Py<Physics>>,
 }
 
-crate::implement_basic_3D_magic_methods!(Mesh);
-crate::implement_basic_3D_getter_methods!(Mesh);
-crate::implement_basic_3D_setter_methods!(Mesh);
-crate::implement_check_collision!(Mesh);
-crate::implement_set_collider!(Mesh);
-crate::implement_tick!(Mesh, r#"Mesh.from_file_data(...)"#);
-crate::implement_remove_tick!(Mesh);
-crate::implement_Drop!(Mesh);
+crate::implement_basic_magic_methods3D!(Mesh);
+crate::implement_basic_getter_methods3D!(Mesh);
+crate::implement_basic_setter_methods3D!(Mesh);
+crate::implement_check_collision3D!(Mesh);
+crate::implement_set_collider3D!(Mesh);
+crate::implement_tick3D!(Mesh, r#"Mesh.from_file_data(...)"#);
+crate::implement_remove_tick3D!(Mesh);
+crate::implement_Drop3D!(Mesh);
 
 #[gen_stub_pymethods]
 #[pymethods]
