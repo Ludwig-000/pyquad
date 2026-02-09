@@ -4874,22 +4874,6 @@ class Cube:
         ...   i.pos = Vec3.ZERO()
         ```
         """
-    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., collider_type:ColliderOptions=...) -> Cube: ...
-    def set_collider(self, collider_type:ColliderOptions) -> None:
-        r"""
-        overwrites the current collider with the input option.
-        """
-    def remove_tick(self) -> None: ...
-    def __eq__(self, other:Cube) -> builtins.bool:
-        r"""
-        Equality for Cube is based on unique ID.
-        """
-    def __hash__(self) -> builtins.int:
-        r"""
-        Hash for Cube is based on unique ID, not it's fields.
-        """
-    def __repr__(self) -> builtins.str: ...
-    def __str__(self) -> builtins.str: ...
     def tick(self, slf:Cube, function:typing.Any) -> None:
         r"""
         Add a function to this object, which will automatically be executed each frame.
@@ -4912,8 +4896,157 @@ class Cube:
         ...
         ...    #'next_frame' runs the update function for every object.
         ...    next_frame()
-         ```
+        ```
         """
+    def __eq__(self, other:Cube) -> builtins.bool:
+        r"""
+        Equality for Cube is based on unique ID.
+        """
+    def __hash__(self) -> builtins.int:
+        r"""
+        Hash for Cube is based on unique ID, not it's fields.
+        """
+    def __repr__(self) -> builtins.str: ...
+    def __str__(self) -> builtins.str: ...
+    def set_collider(self, collider_type:ColliderOptions) -> None:
+        r"""
+        overwrites the current collider with the input option.
+        """
+    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., collider_type:ColliderOptions=...) -> Cube: ...
+    def remove_tick(self) -> None: ...
+
+class Cylinder:
+    r"""
+    XXXXXXXXXXXXXXX      
+    XXXX               XXXX  
+    X                       X
+    XXXXX               XXXXX
+    X    XXXXXXXXXXXXXXX    X
+    X                       X
+    X                       X
+    X                       X
+    X                       X
+    X                       X
+    X                       X
+    X                       X
+    X                       X
+    X                       X
+    X                       X
+    X                       X
+    X    XXXXXXXXXXXXXXX    X
+    XXXXX               XXXXX
+    X                       X
+    XXXX               XXXX  
+       XXXXXXXXXXXXXXX
+    """
+    @property
+    def physics(self) -> typing.Optional[Physics]:
+        r"""
+        a collection of physics-related methods, that can be applied to the object.
+        'physics' will be set to Some() if the object is innitialized as a dynamic object.
+        """
+    @property
+    def scale(self) -> Vec3:
+        r"""
+        Accesses the scale of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>Cylinder.scale.x += 1
+        ```
+        since Cylinder.scale returns a copy of its scale, one has to write:
+        ```
+        >>>Cylinder.scale += Vec3(1, 0, 0)
+        ```
+        """
+    @scale.setter
+    def scale(self, value: Vec3) -> None: ...
+    @property
+    def pos(self) -> Vec3:
+        r"""
+        Accesses the position of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>Cylinder.pos.x += 1
+        ```
+        since object.pos returns a copy of its position, one has to write:
+        ```
+        >>>Cylinder.pos += Vec3(1, 0, 0)
+        ```
+        """
+    @pos.setter
+    def pos(self, value: Vec3) -> None: ...
+    @property
+    def rot(self) -> Vec3:
+        r"""
+        Accesses the rotation of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>Cylinder.rot.x += 1
+        ```
+        since Cylinder.rot returns a copy of its rotation, one has to write:
+        ```
+        >>>Cylinder.rot += Vec3(1, 0, 0)
+        ```
+        """
+    @rot.setter
+    def rot(self, value: Vec3) -> None: ...
+    def remove_tick(self) -> None: ...
+    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., collider_type:ColliderOptions=...) -> Cylinder: ...
+    def tick(self, slf:Cylinder, function:typing.Any) -> None:
+        r"""
+        Add a function to this object, which will automatically be executed each frame.
+        The function must take the object it is attatched to as an argument.
+         
+        Example:
+         
+        ```
+        ...# arguments from outside the scope may be included.
+        >>>delta_time = 0
+        >>>def updateCylinder(obj: Cylinder):
+        ...    obj.rot += Vec3.splat(0.2*delta_time)
+        ...
+        >>>myCylinder = Cylinder()
+        >>>myCylinder.tick(updateCylinder)
+        ...
+        >>>while True:
+        ...    # dt would have to get updated each frame.
+        ...    delta_time = get_delta_time()
+        ...
+        ...    #'next_frame' runs the update function for every object.
+        ...    next_frame()
+        ```
+        """
+    def check_collision(self) -> builtins.list[typing.Any]:
+        r"""
+        Returns any object, with active collision, that is either
+        intersected or inserted in the current object.
+         
+        Example:
+         
+        ```
+        >>>bigCylinder: Cylinder = Cylinder(pos=Vec3.splat(50))
+        >>>intersected: list[Cylinder] = bigCylinder.check_collision()
+        ...
+        ...# since the returned objects are references, we can edit them directly
+        ...# without creating duplicates.
+        >>>for i in intersected:
+        ...   i.pos = Vec3.ZERO()
+        ```
+        """
+    def set_collider(self, collider_type:ColliderOptions) -> None:
+        r"""
+        overwrites the current collider with the input option.
+        """
+    def __eq__(self, other:Cylinder) -> builtins.bool:
+        r"""
+        Equality for Cylinder is based on unique ID.
+        """
+    def __hash__(self) -> builtins.int:
+        r"""
+        Hash for Cylinder is based on unique ID, not it's fields.
+        """
+    def __repr__(self) -> builtins.str: ...
+    def __str__(self) -> builtins.str: ...
 
 class FileData:
     r"""
@@ -5046,62 +5179,50 @@ class Mesh:
         'physics' will be set to Some() if the object is innitialized as a dynamic object.
         """
     @property
-    def scale(self) -> Vec3: ...
-    @scale.setter
-    def scale(self, value: Vec3) -> None: ...
-    @property
-    def pos(self) -> Vec3: ...
+    def pos(self) -> Vec3:
+        r"""
+        Accesses the position of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>Mesh.pos.x += 1
+        ```
+        since object.pos returns a copy of its position, one has to write:
+        ```
+        >>>Mesh.pos += Vec3(1, 0, 0)
+        ```
+        """
     @pos.setter
     def pos(self, value: Vec3) -> None: ...
     @property
-    def rot(self) -> Vec3: ...
+    def rot(self) -> Vec3:
+        r"""
+        Accesses the rotation of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>Mesh.rot.x += 1
+        ```
+        since Mesh.rot returns a copy of its rotation, one has to write:
+        ```
+        >>>Mesh.rot += Vec3(1, 0, 0)
+        ```
+        """
     @rot.setter
     def rot(self, value: Vec3) -> None: ...
-    @staticmethod
-    def from_file_data(data:FileData, collider_type:ColliderOptions) -> Mesh: ...
-    def set_collision(self, collision_type:ColliderOptions) -> None: ...
-    def check_collision(self) -> builtins.list[typing.Any]:
+    @property
+    def scale(self) -> Vec3:
         r"""
-        Returns any object, with active collision, that is either
-        intersected or inserted in the current object.
-        
-        Example:
-        
+        Accesses the scale of the given object.
+        Note that individual values of an object can NOT be changed via:
         ```
-        >>>bigCube: Cube = Cube(pos=Vec3.splat(50))
-        >>>intersected: list[Cube] = bigCube.check_collision()
-        ...
-        ...# since the returned objects are references, we can edit them directly
-        ...# without creating duplicates.
-        >>>for cube in intersected:
-        ...   cube.pos = Vec3.ZERO()
+        >>>Mesh.scale.x += 1
+        ```
+        since Mesh.scale returns a copy of its scale, one has to write:
+        ```
+        >>>Mesh.scale += Vec3(1, 0, 0)
         ```
         """
-    def tick(self, slf:Mesh, function:typing.Any) -> None:
-        r"""
-        Add a function to this object, which will automatically be executed each frame.
-        The function must take the object it is attatched to as an argument.
-        
-        Example:
-        
-        ```
-        ...# arguments from outside the scope may be included.
-        >>>delta_time = 0
-        >>>def updateCube(cube: Cube):
-        ...    cube.rot += Vec3.splat(0.2*delta_time)
-        ...
-        >>>myCube = Cube()
-        >>>myCube.tick(updateCube)
-        ...
-        >>>while True:
-        ...    # dt would have to get updated each frame.
-        ...    delta_time = get_delta_time()
-        ...
-        ...    #'next_frame' runs the update function for every object.
-        ...    next_frame()
-        ```
-        """
-    def remove_tick(self) -> None: ...
+    @scale.setter
+    def scale(self, value: Vec3) -> None: ...
     def __eq__(self, other:Mesh) -> builtins.bool:
         r"""
         Equality for Mesh is based on unique ID.
@@ -5112,6 +5233,54 @@ class Mesh:
         """
     def __repr__(self) -> builtins.str: ...
     def __str__(self) -> builtins.str: ...
+    def set_collider(self, collider_type:ColliderOptions) -> None:
+        r"""
+        overwrites the current collider with the input option.
+        """
+    @staticmethod
+    def from_file_data(data:FileData, collider_type:ColliderOptions) -> Mesh: ...
+    def check_collision(self) -> builtins.list[typing.Any]:
+        r"""
+        Returns any object, with active collision, that is either
+        intersected or inserted in the current object.
+         
+        Example:
+         
+        ```
+        >>>bigMesh: Mesh = Mesh(pos=Vec3.splat(50))
+        >>>intersected: list[Mesh] = bigMesh.check_collision()
+        ...
+        ...# since the returned objects are references, we can edit them directly
+        ...# without creating duplicates.
+        >>>for i in intersected:
+        ...   i.pos = Vec3.ZERO()
+        ```
+        """
+    def tick(self, slf:Mesh, function:typing.Any) -> None:
+        r"""
+        Add a function to this object, which will automatically be executed each frame.
+        The function must take the object it is attatched to as an argument.
+         
+        Example:
+         
+        ```
+        ...# arguments from outside the scope may be included.
+        >>>delta_time = 0
+        >>>def updateMesh(obj: Mesh):
+        ...    obj.rot += Vec3.splat(0.2*delta_time)
+        ...
+        >>>myMesh = Mesh.from_file_data(...)
+        >>>myMesh.tick(updateMesh)
+        ...
+        >>>while True:
+        ...    # dt would have to get updated each frame.
+        ...    delta_time = get_delta_time()
+        ...
+        ...    #'next_frame' runs the update function for every object.
+        ...    next_frame()
+        ```
+        """
+    def remove_tick(self) -> None: ...
 
 class Physics:
     r"""
@@ -5140,6 +5309,142 @@ class Physics:
         continuous collision detection.
         """
     def is_ccd_enabled(self) -> builtins.bool: ...
+
+class Pill:
+    r"""
+    \e[48;5;235m  \e[38;5;235;48;5;235m▄▄▄\e[48;5;235m  \e[38;5;235;48;5;235m▄\e[48;5;235m  \e[38;5;235;48;5;235m▄▄\e[48;5;235m   \e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄▄▄▄\e[48;5;235m   \e[38;5;235;48;5;235m▄▄\e[48;5;235m \e[38;5;235;48;5;235m▄▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄▄▄\e[48;5;235m  \e[38;5;235;48;5;235m▄▄▄\e[38;5;234;48;5;235m▄▄\e[38;5;235;48;5;235m▄▄▄\e[48;5;235m \e[38;5;235;48;5;235m▄▄▄▄▄\e[48;5;235m  \e[38;5;233;48;5;233m▄\e[m
+    \e[48;5;235m \e[38;5;234;48;5;235m▄\e[38;5;235;48;5;235m▄▄▄▄▄\e[48;5;235m \e[38;5;235;48;5;235m▄▄▄▄▄\e[38;5;234;48;5;235m▄\e[48;5;235m \e[38;5;234;48;5;235m▄\e[38;5;235;48;5;235m▄\e[38;5;240;48;5;235m▄\e[38;5;60;48;5;236m▄\e[38;5;238;48;5;235m▄\e[38;5;235;48;5;235m▄▄\e[48;5;235m \e[38;5;235;48;5;235m▄▄\e[38;5;236;48;5;235m▄\e[38;5;237;48;5;235m▄\e[38;5;235;48;5;235m▄▄▄▄▄\e[38;5;236;48;5;235m▄\e[38;5;94;48;5;236m▄\e[38;5;235;48;5;235m▄▄▄▄▄▄\e[38;5;237;48;5;236m▄\e[38;5;236;48;5;235m▄\e[38;5;235;48;5;235m▄▄▄▄\e[38;5;236;48;5;235m▄\e[38;5;238;48;5;236m▄\e[38;5;239;48;5;237m▄\e[38;5;236;48;5;235m▄\e[38;5;235;48;5;235m▄\e[48;5;235m  \e[38;5;234;48;5;234m▄\e[m
+    \e[48;5;235m \e[38;5;235;48;5;235m▄\e[38;5;238;48;5;236m▄\e[38;5;246;48;5;238m▄\e[38;5;243;48;5;238m▄\e[38;5;235;48;5;235m▄\e[38;5;234;48;5;234m▄\e[48;5;235m  \e[38;5;237;48;5;236m▄\e[38;5;242;48;5;237m▄\e[38;5;242;48;5;238m▄\e[38;5;236;48;5;235m▄\e[38;5;234;48;5;234m▄\e[38;5;235;48;5;235m▄▄\e[38;5;237;48;5;237m▄\e[38;5;239;48;5;60m▄\e[38;5;8;48;5;8m▄\e[38;5;239;48;5;239m▄\e[38;5;237;48;5;236m▄\e[38;5;235;48;5;235m▄▄▄\e[38;5;238;48;5;237m▄\e[38;5;242;48;5;238m▄▄\e[38;5;238;48;5;236m▄\e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[38;5;58;48;5;58m▄\e[38;5;234;48;5;234m▄\e[38;5;243;48;5;239m▄\e[38;5;235;48;5;235m▄\e[38;5;58;48;5;237m▄\e[38;5;235;48;5;235m▄\e[38;5;235;48;5;234m▄\e[38;5;236;48;5;236m▄\e[38;5;236;48;5;235m▄\e[38;5;8;48;5;237m▄\e[38;5;238;48;5;235m▄\e[38;5;237;48;5;237m▄\e[38;5;235;48;5;235m▄▄\e[38;5;238;48;5;236m▄\e[38;5;59;48;5;239m▄\e[38;5;238;48;5;236m▄\e[38;5;239;48;5;236m▄\e[38;5;238;48;5;237m▄\e[38;5;238;48;5;236m▄\e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;234;48;5;234m▄\e[m
+    \e[48;5;235m \e[38;5;235;48;5;235m▄\e[38;5;236;48;5;238m▄\e[38;5;237;48;5;245m▄\e[38;5;237;48;5;242m▄\e[38;5;235;48;5;235m▄\e[48;5;234m \e[48;5;235m \e[38;5;235;48;5;235m▄\e[38;5;236;48;5;237m▄\e[38;5;238;48;5;246m▄▄\e[38;5;235;48;5;237m▄\e[38;5;234;48;5;234m▄\e[48;5;235m \e[38;5;236;48;5;235m▄\e[38;5;238;48;5;238m▄\e[38;5;238;48;5;60m▄\e[38;5;238;48;5;246m▄\e[38;5;237;48;5;240m▄\e[38;5;239;48;5;238m▄\e[38;5;235;48;5;235m▄▄\e[38;5;236;48;5;236m▄\e[38;5;237;48;5;239m▄\e[38;5;237;48;5;243m▄\e[38;5;236;48;5;59m▄\e[38;5;237;48;5;238m▄\e[38;5;236;48;5;236m▄\e[38;5;235;48;5;235m▄\e[38;5;236;48;5;235m▄\e[38;5;94;48;5;94m▄\e[38;5;234;48;5;234m▄\e[38;5;236;48;5;242m▄\e[38;5;235;48;5;235m▄\e[38;5;94;48;5;94m▄\e[38;5;235;48;5;235m▄▄\e[38;5;235;48;5;236m▄\e[38;5;236;48;5;95m▄\e[38;5;236;48;5;8m▄\e[38;5;236;48;5;95m▄\e[38;5;95;48;5;95m▄\e[38;5;235;48;5;235m▄▄\e[38;5;240;48;5;240m▄\e[38;5;241;48;5;242m▄\e[38;5;237;48;5;242m▄\e[38;5;238;48;5;245m▄\e[38;5;238;48;5;241m▄\e[38;5;238;48;5;239m▄\e[38;5;236;48;5;236m▄\e[38;5;235;48;5;235m▄\e[38;5;234;48;5;234m▄\e[m
+    \e[48;5;235m \e[38;5;235;48;5;235m▄\e[38;5;235;48;5;237m▄▄▄\e[38;5;235;48;5;236m▄\e[38;5;235;48;5;234m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[38;5;235;48;5;236m▄\e[38;5;235;48;5;235m▄▄\e[38;5;235;48;5;236m▄\e[38;5;235;48;5;234m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[38;5;235;48;5;238m▄▄\e[38;5;235;48;5;237m▄▄\e[38;5;235;48;5;239m▄\e[38;5;235;48;5;235m▄▄\e[38;5;235;48;5;236m▄\e[38;5;235;48;5;237m▄\e[38;5;235;48;5;236m▄\e[38;5;235;48;5;237m▄\e[38;5;235;48;5;238m▄\e[38;5;235;48;5;236m▄\e[38;5;235;48;5;235m▄▄\e[38;5;235;48;5;94m▄\e[38;5;235;48;5;237m▄▄\e[38;5;235;48;5;58m▄\e[38;5;235;48;5;94m▄\e[38;5;235;48;5;234m▄▄\e[38;5;235;48;5;235m▄\e[38;5;235;48;5;236m▄▄▄▄\e[38;5;235;48;5;234m▄\e[38;5;235;48;5;235m▄\e[38;5;235;48;5;237m▄\e[38;5;235;48;5;60m▄\e[38;5;235;48;5;239m▄\e[38;5;235;48;5;238m▄\e[38;5;235;48;5;239m▄\e[38;5;235;48;5;237m▄\e[38;5;235;48;5;235m▄▄\e[38;5;234;48;5;234m▄\e[m
+    \e[48;5;235m \e[38;5;235;48;5;235m▄\e[38;5;236;48;5;237m▄▄▄\e[38;5;235;48;5;236m▄\e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[38;5;236;48;5;236m▄\e[38;5;236;48;5;237m▄▄\e[38;5;235;48;5;237m▄\e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[38;5;235;48;5;236m▄\e[38;5;236;48;5;237m▄▄▄\e[38;5;235;48;5;237m▄\e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[38;5;236;48;5;237m▄▄▄▄\e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[38;5;236;48;5;237m▄▄\e[38;5;236;48;5;236m▄\e[38;5;236;48;5;237m▄\e[38;5;235;48;5;236m▄\e[38;5;235;48;5;235m▄▄\e[38;5;235;48;5;236m▄\e[38;5;236;48;5;237m▄▄▄\e[38;5;235;48;5;236m▄\e[38;5;235;48;5;235m▄\e[38;5;235;48;5;234m▄\e[38;5;235;48;5;235m▄\e[38;5;235;48;5;236m▄\e[38;5;236;48;5;237m▄▄\e[38;5;236;48;5;236m▄\e[38;5;235;48;5;235m▄\e[48;5;235m  \e[38;5;234;48;5;234m▄\e[m
+    \e[48;5;235m \e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[38;5;234;48;5;235m▄\e[38;5;235;48;5;235m▄\e[38;5;236;48;5;235m▄\e[38;5;235;48;5;235m▄\e[38;5;234;48;5;235m▄\e[38;5;235;48;5;235m▄\e[48;5;235m   \e[38;5;235;48;5;235m▄▄\e[48;5;235m  \e[38;5;235;48;5;235m▄▄\e[48;5;235m \e[38;5;235;48;5;235m▄▄▄\e[38;5;236;48;5;235m▄\e[38;5;237;48;5;235m▄\e[38;5;235;48;5;235m▄▄▄\e[48;5;235m     \e[38;5;235;48;5;235m▄\e[48;5;235m   \e[38;5;235;48;5;235m▄▄\e[38;5;234;48;5;235m▄\e[38;5;236;48;5;235m▄\e[38;5;238;48;5;234m▄\e[38;5;235;48;5;235m▄▄▄\e[48;5;235m   \e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[38;5;233;48;5;234m▄\e[m
+    \e[48;5;235m   \e[38;5;235;48;5;235m▄▄▄\e[38;5;239;48;5;235m▄\e[38;5;137;48;5;237m▄\e[38;5;239;48;5;94m▄\e[38;5;138;48;5;237m▄\e[38;5;95;48;5;236m▄\e[38;5;235;48;5;234m▄\e[38;5;235;48;5;235m▄▄\e[48;5;235m     \e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄▄\e[38;5;238;48;5;235m▄\e[38;5;240;48;5;238m▄\e[38;5;102;48;5;59m▄\e[38;5;245;48;5;241m▄\e[38;5;241;48;5;238m▄\e[38;5;238;48;5;236m▄\e[38;5;236;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[48;5;235m  \e[38;5;235;48;5;235m▄▄\e[38;5;238;48;5;235m▄\e[38;5;95;48;5;238m▄\e[38;5;137;48;5;240m▄\e[38;5;144;48;5;101m▄\e[38;5;138;48;5;240m▄\e[38;5;95;48;5;237m▄\e[38;5;236;48;5;235m▄\e[38;5;235;48;5;235m▄▄\e[48;5;235m  \e[38;5;235;48;5;235m▄▄\e[38;5;234;48;5;234m▄\e[m
+    \e[48;5;235m   \e[38;5;235;48;5;235m▄▄\e[38;5;238;48;5;239m▄\e[38;5;137;48;5;101m▄\e[38;5;248;48;5;181m▄\e[38;5;254;48;5;248m▄\e[38;5;181;48;5;251m▄\e[38;5;138;48;5;138m▄\e[38;5;95;48;5;95m▄\e[38;5;236;48;5;234m▄\e[38;5;234;48;5;234m▄\e[48;5;235m      \e[38;5;235;48;5;235m▄\e[38;5;239;48;5;236m▄\e[38;5;59;48;5;237m▄\e[38;5;243;48;5;59m▄\e[38;5;242;48;5;59m▄\e[38;5;245;48;5;246m▄\e[38;5;246;48;5;248m▄\e[38;5;243;48;5;242m▄\e[38;5;245;48;5;241m▄\e[38;5;243;48;5;238m▄\e[38;5;240;48;5;236m▄\e[38;5;235;48;5;235m▄\e[48;5;235m      \e[38;5;237;48;5;236m▄\e[38;5;94;48;5;237m▄\e[38;5;137;48;5;95m▄\e[38;5;254;48;5;181m▄\e[38;5;187;48;5;188m▄\e[38;5;181;48;5;255m▄\e[38;5;223;48;5;254m▄\e[38;5;254;48;5;180m▄\e[38;5;143;48;5;94m▄\e[38;5;240;48;5;236m▄\e[38;5;235;48;5;235m▄▄\e[48;5;235m   \e[38;5;234;48;5;234m▄\e[m
+    \e[48;5;235m   \e[38;5;235;48;5;235m▄\e[38;5;235;48;5;236m▄\e[38;5;95;48;5;95m▄\e[38;5;95;48;5;137m▄\e[38;5;138;48;5;138m▄\e[38;5;181;48;5;254m▄\e[38;5;247;48;5;248m▄\e[38;5;237;48;5;8m▄\e[38;5;137;48;5;137m▄\e[38;5;235;48;5;239m▄\e[38;5;235;48;5;234m▄\e[48;5;235m \e[38;5;235;48;5;235m▄▄\e[48;5;235m   \e[38;5;234;48;5;234m▄\e[38;5;240;48;5;235m▄\e[38;5;238;48;5;240m▄\e[38;5;243;48;5;246m▄\e[38;5;145;48;5;102m▄\e[38;5;59;48;5;239m▄\e[38;5;239;48;5;241m▄\e[38;5;246;48;5;242m▄\e[38;5;102;48;5;245m▄\e[38;5;239;48;5;243m▄\e[38;5;240;48;5;237m▄\e[38;5;235;48;5;235m▄▄\e[48;5;235m  \e[38;5;235;48;5;235m▄▄▄\e[38;5;239;48;5;236m▄\e[38;5;94;48;5;58m▄\e[38;5;137;48;5;137m▄\e[38;5;180;48;5;224m▄\e[38;5;255;48;5;253m▄\e[38;5;15;48;5;187m▄\e[38;5;255;48;5;186m▄\e[38;5;143;48;5;187m▄\e[38;5;94;48;5;137m▄\e[38;5;238;48;5;237m▄\e[38;5;238;48;5;235m▄\e[38;5;235;48;5;235m▄▄\e[48;5;235m  \e[38;5;234;48;5;234m▄\e[m
+    \e[48;5;235m    \e[38;5;234;48;5;235m▄\e[38;5;235;48;5;236m▄\e[38;5;236;48;5;58m▄\e[38;5;237;48;5;236m▄\e[38;5;238;48;5;101m▄\e[38;5;237;48;5;236m▄\e[38;5;238;48;5;237m▄\e[38;5;235;48;5;236m▄\e[38;5;234;48;5;234m▄\e[48;5;235m  \e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[48;5;235m  \e[38;5;235;48;5;234m▄\e[38;5;234;48;5;237m▄\e[38;5;235;48;5;243m▄\e[38;5;239;48;5;241m▄\e[38;5;241;48;5;247m▄\e[38;5;102;48;5;252m▄▄\e[38;5;242;48;5;249m▄\e[38;5;240;48;5;242m▄\e[38;5;236;48;5;242m▄\e[38;5;234;48;5;238m▄\e[38;5;235;48;5;235m▄\e[48;5;235m    \e[38;5;235;48;5;236m▄\e[38;5;238;48;5;58m▄\e[38;5;95;48;5;95m▄\e[38;5;58;48;5;95m▄▄\e[38;5;95;48;5;240m▄\e[38;5;95;48;5;95m▄\e[38;5;95;48;5;249m▄\e[38;5;95;48;5;241m▄\e[38;5;95;48;5;101m▄\e[38;5;58;48;5;137m▄\e[38;5;58;48;5;95m▄\e[38;5;95;48;5;95m▄\e[38;5;237;48;5;238m▄\e[38;5;235;48;5;235m▄▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[m
+    \e[48;5;235m    \e[38;5;235;48;5;235m▄\e[38;5;234;48;5;235m▄▄\e[38;5;234;48;5;236m▄▄▄\e[38;5;234;48;5;235m▄▄\e[38;5;235;48;5;234m▄\e[38;5;235;48;5;235m▄▄\e[48;5;235m  \e[38;5;235;48;5;235m▄\e[48;5;235m    \e[38;5;235;48;5;235m▄\e[38;5;235;48;5;238m▄\e[38;5;235;48;5;239m▄\e[38;5;235;48;5;240m▄▄\e[38;5;235;48;5;239m▄\e[38;5;235;48;5;238m▄\e[38;5;235;48;5;236m▄\e[38;5;235;48;5;235m▄\e[48;5;235m     \e[38;5;235;48;5;235m▄▄\e[38;5;235;48;5;238m▄\e[38;5;234;48;5;237m▄\e[38;5;235;48;5;237m▄\e[38;5;235;48;5;239m▄▄▄▄\e[38;5;235;48;5;238m▄\e[38;5;234;48;5;237m▄\e[38;5;234;48;5;238m▄\e[38;5;235;48;5;237m▄\e[38;5;235;48;5;235m▄▄\e[48;5;235m  \e[38;5;234;48;5;235m▄\e[m
+    \e[48;5;235m \e[38;5;235;48;5;235m▄\e[48;5;235m   \e[38;5;235;48;5;235m▄\e[38;5;236;48;5;236m▄\e[38;5;238;48;5;238m▄\e[38;5;238;48;5;237m▄\e[38;5;237;48;5;237m▄▄\e[48;5;235m    \e[38;5;235;48;5;235m▄▄\e[48;5;235m  \e[38;5;235;48;5;235m▄▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[38;5;236;48;5;236m▄\e[38;5;237;48;5;238m▄\e[38;5;237;48;5;237m▄▄\e[38;5;238;48;5;238m▄\e[38;5;236;48;5;236m▄\e[38;5;235;48;5;235m▄▄\e[48;5;235m   \e[38;5;235;48;5;235m▄\e[48;5;235m  \e[38;5;235;48;5;235m▄\e[48;5;235m  \e[38;5;237;48;5;237m▄▄\e[38;5;238;48;5;238m▄▄\e[38;5;237;48;5;237m▄▄\e[38;5;236;48;5;236m▄\e[48;5;235m   \e[38;5;235;48;5;235m▄▄\e[48;5;235m \e[38;5;234;48;5;234m▄\e[m
+    \e[48;5;235m      \e[38;5;235;48;5;235m▄▄▄▄▄\e[48;5;235m             \e[38;5;235;48;5;235m▄▄▄▄▄▄\e[48;5;235m      \e[38;5;235;48;5;235m▄\e[48;5;235m   \e[38;5;235;48;5;235m▄▄▄▄▄▄▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[48;5;235m    \e[38;5;234;48;5;234m▄\e[m
+    \e[48;5;235m   \e[38;5;235;48;5;235m▄▄▄\e[48;5;235m  \e[38;5;235;48;5;235m▄▄▄▄\e[38;5;23;48;5;235m▄\e[38;5;235;48;5;235m▄▄▄\e[48;5;235m  \e[38;5;235;48;5;235m▄▄▄▄\e[48;5;235m  \e[38;5;234;48;5;235m▄\e[38;5;234;48;5;234m▄\e[38;5;233;48;5;234m▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄\e[38;5;234;48;5;234m▄\e[38;5;235;48;5;235m▄\e[48;5;235m   \e[38;5;234;48;5;234m▄\e[m
+    \e[48;5;235m   \e[38;5;235;48;5;235m▄\e[38;5;239;48;5;235m▄▄\e[38;5;235;48;5;235m▄▄\e[38;5;235;48;5;234m▄\e[38;5;242;48;5;235m▄\e[38;5;79;48;5;237m▄\e[38;5;116;48;5;66m▄\e[38;5;116;48;5;79m▄\e[38;5;116;48;5;241m▄\e[38;5;72;48;5;236m▄\e[38;5;237;48;5;235m▄\e[38;5;235;48;5;235m▄▄\e[38;5;236;48;5;235m▄\e[38;5;241;48;5;235m▄\e[38;5;236;48;5;235m▄\e[38;5;235;48;5;235m▄\e[48;5;235m  \e[38;5;234;48;5;234m▄▄\e[38;5;234;48;5;233m▄\e[38;5;234;48;5;234m▄\e[38;5;235;48;5;234m▄\e[38;5;234;48;5;234m▄\e[38;5;234;48;5;233m▄\e[48;5;233m \e[38;5;233;48;5;233m▄\e[38;5;234;48;5;234m▄\e[38;5;237;48;5;234m▄\e[38;5;236;48;5;234m▄\e[38;5;234;48;5;233m▄\e[48;5;233m  \e[38;5;234;48;5;234m▄\e[38;5;237;48;5;234m▄\e[38;5;236;48;5;234m▄\e[38;5;234;48;5;233m▄\e[38;5;233;48;5;233m▄▄▄\e[48;5;233m  \e[48;5;234m \e[48;5;235m    \e[38;5;234;48;5;234m▄\e[m
+    \e[48;5;235m  \e[38;5;235;48;5;235m▄\e[38;5;236;48;5;236m▄\e[38;5;23;48;5;6m▄\e[38;5;72;48;5;66m▄\e[38;5;66;48;5;238m▄\e[38;5;66;48;5;237m▄\e[38;5;72;48;5;23m▄\e[38;5;80;48;5;73m▄\e[38;5;79;48;5;80m▄\e[38;5;116;48;5;73m▄\e[38;5;116;48;5;79m▄\e[38;5;116;48;5;116m▄\e[38;5;116;48;5;73m▄\e[38;5;73;48;5;66m▄\e[38;5;66;48;5;236m▄\e[38;5;242;48;5;236m▄\e[38;5;66;48;5;241m▄\e[38;5;72;48;5;30m▄\e[38;5;238;48;5;238m▄\e[38;5;235;48;5;235m▄\e[48;5;235m  \e[48;5;234m  \e[38;5;234;48;5;234m▄\e[38;5;235;48;5;234m▄\e[38;5;236;48;5;236m▄\e[38;5;235;48;5;235m▄\e[38;5;234;48;5;234m▄\e[38;5;235;48;5;233m▄\e[38;5;234;48;5;233m▄\e[38;5;236;48;5;236m▄\e[38;5;241;48;5;242m▄\e[38;5;239;48;5;240m▄\e[38;5;235;48;5;235m▄\e[38;5;235;48;5;234m▄\e[38;5;234;48;5;234m▄\e[38;5;236;48;5;235m▄\e[38;5;239;48;5;239m▄\e[38;5;236;48;5;238m▄\e[38;5;235;48;5;235m▄\e[38;5;235;48;5;234m▄\e[38;5;236;48;5;235m▄\e[38;5;234;48;5;234m▄\e[38;5;234;48;5;233m▄\e[48;5;233m \e[48;5;234m \e[38;5;235;48;5;235m▄\e[48;5;235m   \e[38;5;235;48;5;234m▄\e[m
+    \e[48;5;235m  \e[38;5;235;48;5;235m▄\e[38;5;235;48;5;236m▄\e[38;5;238;48;5;23m▄\e[38;5;66;48;5;72m▄\e[38;5;73;48;5;73m▄\e[38;5;79;48;5;73m▄\e[38;5;79;48;5;79m▄\e[38;5;79;48;5;80m▄\e[38;5;73;48;5;73m▄\e[38;5;115;48;5;116m▄\e[38;5;116;48;5;152m▄\e[38;5;73;48;5;80m▄▄\e[38;5;79;48;5;116m▄\e[38;5;116;48;5;73m▄\e[38;5;73;48;5;72m▄\e[38;5;73;48;5;73m▄\e[38;5;29;48;5;66m▄\e[38;5;235;48;5;237m▄\e[48;5;235m   \e[48;5;234m  \e[38;5;233;48;5;234m▄▄▄\e[38;5;234;48;5;234m▄\e[38;5;236;48;5;235m▄\e[38;5;243;48;5;240m▄\e[38;5;235;48;5;235m▄\e[38;5;234;48;5;235m▄\e[38;5;233;48;5;234m▄\e[38;5;234;48;5;234m▄\e[38;5;238;48;5;237m▄\e[38;5;243;48;5;239m▄\e[38;5;239;48;5;237m▄\e[38;5;234;48;5;236m▄\e[38;5;233;48;5;235m▄\e[38;5;233;48;5;234m▄\e[38;5;235;48;5;235m▄\e[38;5;8;48;5;238m▄\e[38;5;145;48;5;241m▄\e[38;5;236;48;5;235m▄\e[38;5;235;48;5;234m▄\e[48;5;233m \e[48;5;234m \e[48;5;235m    \e[38;5;235;48;5;235m▄\e[m
+    \e[48;5;235m \e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[38;5;235;48;5;236m▄\e[38;5;237;48;5;6m▄\e[38;5;242;48;5;72m▄\e[38;5;72;48;5;73m▄\e[38;5;73;48;5;79m▄\e[38;5;72;48;5;73m▄\e[38;5;79;48;5;116m▄\e[38;5;116;48;5;80m▄\e[38;5;116;48;5;116m▄\e[38;5;116;48;5;80m▄\e[38;5;73;48;5;79m▄\e[38;5;72;48;5;73m▄\e[38;5;73;48;5;79m▄\e[38;5;66;48;5;73m▄\e[38;5;239;48;5;72m▄\e[38;5;235;48;5;238m▄\e[38;5;235;48;5;235m▄▄\e[48;5;235m  \e[38;5;234;48;5;234m▄\e[48;5;234m \e[48;5;233m   \e[38;5;233;48;5;234m▄\e[38;5;234;48;5;236m▄\e[38;5;234;48;5;239m▄\e[38;5;234;48;5;237m▄\e[38;5;233;48;5;234m▄\e[38;5;233;48;5;233m▄\e[38;5;233;48;5;234m▄\e[38;5;234;48;5;236m▄\e[38;5;234;48;5;239m▄\e[38;5;234;48;5;238m▄\e[38;5;234;48;5;235m▄\e[38;5;233;48;5;233m▄\e[48;5;233m \e[38;5;237;48;5;236m▄\e[38;5;237;48;5;237m▄\e[38;5;237;48;5;239m▄\e[38;5;236;48;5;235m▄\e[38;5;234;48;5;234m▄\e[48;5;233m \e[48;5;234m \e[48;5;235m  \e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;234;48;5;234m▄\e[m
+    \e[48;5;235m     \e[38;5;235;48;5;235m▄\e[38;5;235;48;5;237m▄\e[38;5;235;48;5;66m▄\e[38;5;235;48;5;73m▄\e[38;5;235;48;5;66m▄\e[38;5;235;48;5;6m▄▄▄\e[38;5;235;48;5;66m▄\e[38;5;235;48;5;6m▄\e[38;5;234;48;5;66m▄\e[38;5;235;48;5;72m▄\e[38;5;235;48;5;240m▄\e[38;5;235;48;5;235m▄▄\e[48;5;235m   \e[38;5;235;48;5;235m▄\e[48;5;234m  \e[48;5;233m  \e[38;5;233;48;5;233m▄▄\e[48;5;233m \e[38;5;234;48;5;233m▄\e[38;5;235;48;5;233m▄▄▄▄▄\e[38;5;237;48;5;233m▄\e[38;5;235;48;5;233m▄▄\e[38;5;237;48;5;233m▄\e[38;5;234;48;5;233m▄\e[38;5;233;48;5;233m▄▄▄▄▄\e[48;5;233m \e[48;5;234m \e[48;5;235m    \e[38;5;234;48;5;234m▄\e[m
+    \e[48;5;235m    \e[38;5;235;48;5;235m▄\e[48;5;235m    \e[38;5;235;48;5;235m▄\e[38;5;239;48;5;236m▄\e[38;5;59;48;5;236m▄\e[38;5;240;48;5;236m▄▄\e[38;5;238;48;5;236m▄\e[48;5;235m         \e[48;5;234m \e[38;5;234;48;5;234m▄\e[38;5;234;48;5;233m▄▄▄▄▄\e[38;5;234;48;5;234m▄\e[38;5;234;48;5;236m▄\e[38;5;234;48;5;235m▄▄▄▄▄▄▄▄\e[38;5;234;48;5;234m▄\e[38;5;234;48;5;233m▄▄▄▄▄▄\e[38;5;234;48;5;234m▄\e[48;5;235m    \e[38;5;234;48;5;234m▄\e[m
+    \e[48;5;235m    \e[38;5;235;48;5;235m▄\e[48;5;235m   \e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄▄▄▄▄\e[48;5;235m     \e[38;5;235;48;5;235m▄\e[48;5;235m   \e[38;5;235;48;5;235m▄\e[38;5;235;48;5;234m▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[48;5;235m  \e[38;5;234;48;5;234m▄\e[m
+    \e[48;5;235m  \e[38;5;235;48;5;235m▄\e[48;5;235m          \e[38;5;235;48;5;235m▄\e[48;5;235m   \e[38;5;235;48;5;235m▄\e[48;5;235m   \e[38;5;235;48;5;235m▄\e[48;5;235m    \e[38;5;235;48;5;235m▄\e[48;5;235m  \e[38;5;235;48;5;235m▄\e[48;5;235m   \e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[48;5;235m   \e[38;5;235;48;5;235m▄▄\e[48;5;235m            \e[38;5;233;48;5;234m▄\e[m
+    \e[38;5;235;48;5;235m▄▄\e[48;5;235m          \e[38;5;235;48;5;235m▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[48;5;235m      \e[38;5;235;48;5;235m▄\e[48;5;235m      \e[38;5;235;48;5;235m▄\e[48;5;235m     \e[38;5;235;48;5;235m▄▄\e[48;5;235m \e[38;5;235;48;5;235m▄\e[48;5;235m  \e[38;5;235;48;5;235m▄▄\e[48;5;235m           \e[38;5;233;48;5;233m▄\e[m
+    """
+    @property
+    def physics(self) -> typing.Optional[Physics]:
+        r"""
+        a collection of physics-related methods, that can be applied to the object.
+        'physics' will be set to Some() if the object is innitialized as a dynamic object.
+        """
+    @property
+    def scale(self) -> Vec3:
+        r"""
+        Accesses the scale of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>Pill.scale.x += 1
+        ```
+        since Pill.scale returns a copy of its scale, one has to write:
+        ```
+        >>>Pill.scale += Vec3(1, 0, 0)
+        ```
+        """
+    @scale.setter
+    def scale(self, value: Vec3) -> None: ...
+    @property
+    def pos(self) -> Vec3:
+        r"""
+        Accesses the position of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>Pill.pos.x += 1
+        ```
+        since object.pos returns a copy of its position, one has to write:
+        ```
+        >>>Pill.pos += Vec3(1, 0, 0)
+        ```
+        """
+    @pos.setter
+    def pos(self, value: Vec3) -> None: ...
+    @property
+    def rot(self) -> Vec3:
+        r"""
+        Accesses the rotation of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>Pill.rot.x += 1
+        ```
+        since Pill.rot returns a copy of its rotation, one has to write:
+        ```
+        >>>Pill.rot += Vec3(1, 0, 0)
+        ```
+        """
+    @rot.setter
+    def rot(self, value: Vec3) -> None: ...
+    def set_collider(self, collider_type:ColliderOptions) -> None:
+        r"""
+        overwrites the current collider with the input option.
+        """
+    def tick(self, slf:Pill, function:typing.Any) -> None:
+        r"""
+        Add a function to this object, which will automatically be executed each frame.
+        The function must take the object it is attatched to as an argument.
+         
+        Example:
+         
+        ```
+        ...# arguments from outside the scope may be included.
+        >>>delta_time = 0
+        >>>def updatePill(obj: Pill):
+        ...    obj.rot += Vec3.splat(0.2*delta_time)
+        ...
+        >>>myPill = Pill()
+        >>>myPill.tick(updatePill)
+        ...
+        >>>while True:
+        ...    # dt would have to get updated each frame.
+        ...    delta_time = get_delta_time()
+        ...
+        ...    #'next_frame' runs the update function for every object.
+        ...    next_frame()
+        ```
+        """
+    def check_collision(self) -> builtins.list[typing.Any]:
+        r"""
+        Returns any object, with active collision, that is either
+        intersected or inserted in the current object.
+         
+        Example:
+         
+        ```
+        >>>bigPill: Pill = Pill(pos=Vec3.splat(50))
+        >>>intersected: list[Pill] = bigPill.check_collision()
+        ...
+        ...# since the returned objects are references, we can edit them directly
+        ...# without creating duplicates.
+        >>>for i in intersected:
+        ...   i.pos = Vec3.ZERO()
+        ```
+        """
+    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., collider_type:ColliderOptions=...) -> Pill: ...
+    def __eq__(self, other:Pill) -> builtins.bool:
+        r"""
+        Equality for Pill is based on unique ID.
+        """
+    def __hash__(self) -> builtins.int:
+        r"""
+        Hash for Pill is based on unique ID, not it's fields.
+        """
+    def __repr__(self) -> builtins.str: ...
+    def __str__(self) -> builtins.str: ...
+    def remove_tick(self) -> None: ...
 
 class PlaySoundParams:
     @property
@@ -5287,31 +5592,22 @@ class Sound:
 
 class Sphere:
     @property
-    def scale(self) -> Vec3:
+    def physics(self) -> typing.Optional[Physics]:
         r"""
-        Accesses the scale of the given object.
-        Note that individual values of an object can NOT be changed via:
-        ```
-        >>>object.scale.x += 1
-        ```
-        since object.scale returns a copy of its scale, one has to write:
-        ```
-        >>>object.scale += Vec3(1, 0, 0)
-        ```
+        a collection of physics-related methods, that can be applied to the object.
+        'physics' will be set to Some() if the object is innitialized as a dynamic object.
         """
-    @scale.setter
-    def scale(self, value: Vec3) -> None: ...
     @property
     def pos(self) -> Vec3:
         r"""
         Accesses the position of the given object.
         Note that individual values of an object can NOT be changed via:
         ```
-        >>>object.pos.x += 1
+        >>>Sphere.pos.x += 1
         ```
         since object.pos returns a copy of its position, one has to write:
         ```
-        >>>object.pos += Vec3(1, 0, 0)
+        >>>Sphere.pos += Vec3(1, 0, 0)
         ```
         """
     @pos.setter
@@ -5322,48 +5618,78 @@ class Sphere:
         Accesses the rotation of the given object.
         Note that individual values of an object can NOT be changed via:
         ```
-        >>>object.rot.x += 1
+        >>>Sphere.rot.x += 1
         ```
-        since object.rot returns a copy of its rotation, one has to write:
+        since Sphere.rot returns a copy of its rotation, one has to write:
         ```
-        >>>object.rot += Vec3(1, 0, 0)
+        >>>Sphere.rot += Vec3(1, 0, 0)
         ```
         """
     @rot.setter
     def rot(self, value: Vec3) -> None: ...
+    @property
+    def scale(self) -> Vec3:
+        r"""
+        Accesses the scale of the given object.
+        Note that individual values of an object can NOT be changed via:
+        ```
+        >>>Sphere.scale.x += 1
+        ```
+        since Sphere.scale returns a copy of its scale, one has to write:
+        ```
+        >>>Sphere.scale += Vec3(1, 0, 0)
+        ```
+        """
+    @scale.setter
+    def scale(self, value: Vec3) -> None: ...
     def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., collider_type:ColliderOptions=...) -> Sphere: ...
     def check_collision(self) -> builtins.list[typing.Any]:
         r"""
         Returns any object, with active collision, that is either
         intersected or inserted in the current object.
-        
+         
         Example:
-        
+         
         ```
-        >>>bigCube: Cube = Cube(pos=Vec3.splat(50))
-        >>>intersected: list[Cube] = bigCube.check_collision()
+        >>>bigSphere: Sphere = Sphere(pos=Vec3.splat(50))
+        >>>intersected: list[Sphere] = bigSphere.check_collision()
         ...
         ...# since the returned objects are references, we can edit them directly
         ...# without creating duplicates.
-        >>>for cube in intersected:
-        ...   cube.pos = Vec3.ZERO()
+        >>>for i in intersected:
+        ...   i.pos = Vec3.ZERO()
         ```
         """
+    def remove_tick(self) -> None: ...
+    def set_collider(self, collider_type:ColliderOptions) -> None:
+        r"""
+        overwrites the current collider with the input option.
+        """
+    def __eq__(self, other:Sphere) -> builtins.bool:
+        r"""
+        Equality for Sphere is based on unique ID.
+        """
+    def __hash__(self) -> builtins.int:
+        r"""
+        Hash for Sphere is based on unique ID, not it's fields.
+        """
+    def __repr__(self) -> builtins.str: ...
+    def __str__(self) -> builtins.str: ...
     def tick(self, slf:Sphere, function:typing.Any) -> None:
         r"""
         Add a function to this object, which will automatically be executed each frame.
         The function must take the object it is attatched to as an argument.
-        
+         
         Example:
-        
+         
         ```
         ...# arguments from outside the scope may be included.
         >>>delta_time = 0
-        >>>def updateCube(cube: Cube):
-        ...    cube.rot += Vec3.splat(0.2*delta_time)
+        >>>def updateSphere(obj: Sphere):
+        ...    obj.rot += Vec3.splat(0.2*delta_time)
         ...
-        >>>myCube = Cube()
-        >>>myCube.tick(updateCube)
+        >>>mySphere = Sphere()
+        >>>mySphere.tick(updateSphere)
         ...
         >>>while True:
         ...    # dt would have to get updated each frame.
@@ -5373,10 +5699,6 @@ class Sphere:
         ...    next_frame()
         ```
         """
-    def __eq__(self, other:Sphere) -> builtins.bool: ...
-    def __hash__(self) -> builtins.int: ...
-    def __repr__(self) -> builtins.str: ...
-    def __str__(self) -> builtins.str: ...
 
 class Texture2D:
     r"""

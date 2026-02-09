@@ -20,9 +20,11 @@ use crate::py_abstractions::Color::Color;
 use crate::py_abstractions::structs::ThreeDObjects::ObjectFunctionStorage::FunctionKey;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 
+
+
 #[gen_stub_pyclass]
 #[pyclass(subclass, weakref)]
-pub struct Sphere{
+pub struct Cylinder{
     key: ObjectKey, // The key to the actual underlying cube, stored inside "ObjectStorage".
 
     // Key to a function inside 'function storage', which will be run each frame by the engine.
@@ -38,18 +40,18 @@ pub struct Sphere{
     pub physics: Option<Py<Physics>>,
 }
 
-crate::implement_basic_3D_magic_methods!(Sphere);
-crate::implement_basic_3D_getter_methods!(Sphere);
-crate::implement_basic_3D_setter_methods!(Sphere);
-crate::implement_check_collision!(Sphere);
-crate::implement_set_collider!(Sphere);
-crate::implement_tick!(Sphere,  r#"Sphere()"#);
-crate::implement_remove_tick!(Sphere);
-crate::implement_Drop!(Sphere);
+crate::implement_basic_3D_magic_methods!(Cylinder);
+crate::implement_basic_3D_getter_methods!(Cylinder);
+crate::implement_basic_3D_setter_methods!(Cylinder);
+crate::implement_check_collision!(Cylinder);
+crate::implement_set_collider!(Cylinder);
+crate::implement_tick!(Cylinder,  r#"Cylinder()"#);
+crate::implement_remove_tick!(Cylinder);
+crate::implement_Drop!(Cylinder);
 
 #[gen_stub_pymethods]
 #[pymethods]
-impl Sphere {
+impl Cylinder {
 
     #[pyo3(signature = (position= Vec3::ZERO(), rotation = Vec3::ZERO(),scale= Vec3::ONE(), color = Color::WHITE(), collider_type = ColliderOptions::NONE()))]
     #[new]
@@ -60,7 +62,7 @@ impl Sphere {
         scale: Vec3,
         color: Color,
         collider_type: ColliderOptions,
-    ) -> PyResult<Py<Sphere>> {
+    ) -> PyResult<Py<Cylinder>> {
 
         let (sender, receiver) = PChannel::sync_channel(1);
 
@@ -79,7 +81,7 @@ impl Sphere {
             weak_ref_ref.cast_into::<PyWeakref>()?.unbind() 
         };
 
-        COMMAND_QUEUE.push(Command::CreateSphere { 
+        COMMAND_QUEUE.push(Command::CreateCylinder { 
             size: scale.into(), 
             position: position.into(), 
             rotation: rotation.into(), 

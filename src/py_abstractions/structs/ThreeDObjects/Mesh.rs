@@ -54,12 +54,13 @@ pub struct Mesh{
     #[pyo3(get)]
     pub physics: Option<Py<Physics>>,
 }
+
 crate::implement_basic_3D_magic_methods!(Mesh);
 crate::implement_basic_3D_getter_methods!(Mesh);
 crate::implement_basic_3D_setter_methods!(Mesh);
 crate::implement_check_collision!(Mesh);
 crate::implement_set_collider!(Mesh);
-crate::implement_tick!(Mesh);
+crate::implement_tick!(Mesh, r#"Mesh.from_file_data(...)"#);
 crate::implement_remove_tick!(Mesh);
 crate::implement_Drop!(Mesh);
 
@@ -110,7 +111,6 @@ impl Mesh{
         }
 
         drop(mesh_ref);
-
         Ok(mesh_handle) 
     }
 

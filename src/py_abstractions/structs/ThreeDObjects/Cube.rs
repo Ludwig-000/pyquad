@@ -47,7 +47,7 @@ crate::implement_basic_3D_getter_methods!(Cube);
 crate::implement_basic_3D_setter_methods!(Cube);
 crate::implement_check_collision!(Cube);
 crate::implement_set_collider!(Cube);
-crate::implement_tick!(Cube);
+crate::implement_tick!(Cube,  r#"Cube()"#);
 crate::implement_remove_tick!(Cube);
 crate::implement_Drop!(Cube);
 

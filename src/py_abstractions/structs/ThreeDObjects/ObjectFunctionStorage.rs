@@ -1,5 +1,7 @@
 use std::sync::Mutex;
 use std::sync::MutexGuard;
+use std::time::Duration;
+use std::time::Instant;
 
 use slotmap::SlotMap;
 /// stores functions to be executed by Python each frame.
@@ -72,10 +74,17 @@ impl FunctionStorage {
     pub fn execute_all(&self, py: Python<'_>) -> PyResult<()> {
         for (ptr_address, callback, _) in self.values.iter() {
             
+            // possible Optimization:
+            // call the function directly. no checks. ( did not result in a significant performance boost in measuring. )
+            // let result_ptr = ffi::PyObject_CallFunctionObjArgs(
+            //     func_ptr, 
+            //     arg_ptr, 
+            //     std::ptr::null_mut::<ffi::PyObject>() // Sentinel
+            // );
             unsafe {
-                let raw_ptr = *ptr_address as *mut ffi::PyObject;
+                let arg_ptr = *ptr_address as *mut ffi::PyObject;
                 
-                let target_bound = Bound::from_borrowed_ptr(py, raw_ptr);
+                let target_bound = Bound::from_borrowed_ptr(py, arg_ptr);
                 let func_bound = callback.bind(py);
                 
                 if let Err(e) = func_bound.call1((target_bound,)) {

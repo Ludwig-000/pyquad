@@ -252,7 +252,7 @@ Example:
 
 #[macro_export]
 macro_rules! implement_tick {
-    ($name:ident) => {
+    ($name:ident,  $py_constructor:expr) => {
         paste::paste! {
 
             #[gen_stub_pymethods]
@@ -272,7 +272,7 @@ Example:
 >>>def update" $name "(obj: " $name "):
 ...    obj.rot += Vec3.splat(0.2*delta_time)
 ...
->>>my" $name " = " $name "()
+>>>my" $name " = " $py_constructor "
 >>>my" $name ".tick(update" $name ")
 ...
 >>>while True:
@@ -281,7 +281,7 @@ Example:
 ...
 ...    #'next_frame' runs the update function for every object.
 ...    next_frame()
- ```
+```
 "
 ]
                 pub fn tick(slf: Bound<'_, Self>, function: Bound<'_,PyAny>)-> PyResult<()>{
@@ -360,8 +360,6 @@ macro_rules! implement_set_collider {
     };
 }
 
-
-
 #[macro_export]
 macro_rules! implement_Drop {
     ($name:ident) => {
@@ -369,12 +367,9 @@ macro_rules! implement_Drop {
             impl Drop for $name {
                 fn drop(&mut self) {
                     // function storage MUST be cleaned first, since a function inside fun-storage may rely on the object still living.
-                    match self.function_key{
-                        None => {},
-                        Some(key)=> {
-                            let mut storage = ObjectFunctionStorage::get_fun_storage();
-                            storage.remove(key);
-                        }
+                    if let Some(key) = self.function_key{
+                        let mut storage = ObjectFunctionStorage::get_fun_storage();
+                        storage.remove(key);
                     }
                     COMMAND_QUEUE.push( Command::DeleteObject { key: self.key });
                 }

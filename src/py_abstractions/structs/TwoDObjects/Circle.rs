@@ -37,4 +37,7 @@ impl Circle{
     pub fn new(pos: Vec2, rot: Vec2, scale: Vec2)-> Self{
         Circle { pos,rot,scale}
     }
+    pub fn draw(&self){
+        todo!()
+    }
 }

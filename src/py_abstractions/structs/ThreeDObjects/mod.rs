@@ -5,3 +5,5 @@ pub mod Sphere;
 pub mod ColliderOptions;
 pub mod PhysicsHandle;
 pub mod ObjectMacros;
+pub mod Cylinder;
+pub mod Pill;

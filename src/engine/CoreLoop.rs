@@ -9,9 +9,11 @@ use crossbeam::queue::SegQueue;
 
 use macroquad::prelude as mq;
 use macroquad::audio as au;
+use crate::engine::Objects::Cylinder::Cylinder;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 use crate::engine::Objects::Mesh::Mesh;
 use crate::engine::Objects::PhysicsWorld::ApplyPhysics;
+use crate::engine::Objects::Pill::Pill;
 use crate::engine::Objects::Sphere::Sphere;
 use crate::engine::SHADERS::shader_manager as sm;
 use crate::engine::PError::PError;
@@ -56,19 +58,36 @@ pub enum Command {
         weak_ref: Py<PyWeakref>,
         sender: PChannel::PSyncSender<ObjectKey>,
     },
-
-    CreateMesh{
-        mesh: Mesh,
-        collider: ColliderOptions,
-        weak_ref: Py<PyWeakref>,
-        sender: PChannel::PSyncSender<ObjectKey>,
-    },
-
     CreateSphere{
         size: mq::Vec3,
         position: mq::Vec3,
         rotation: mq::Vec3,
         color: mq::Color,
+        collider: ColliderOptions,
+        weak_ref: Py<PyWeakref>,
+        sender: PChannel::PSyncSender<ObjectKey>,
+    },
+    CreatePill{
+        size: mq::Vec3,
+        position: mq::Vec3,
+        rotation: mq::Vec3,
+        color: mq::Color,
+        collider: ColliderOptions,
+        weak_ref: Py<PyWeakref>,
+        sender: PChannel::PSyncSender<ObjectKey>,
+    },
+    CreateCylinder{
+        size: mq::Vec3,
+        position: mq::Vec3,
+        rotation: mq::Vec3,
+        color: mq::Color,
+        collider: ColliderOptions,
+        weak_ref: Py<PyWeakref>,
+        sender: PChannel::PSyncSender<ObjectKey>,
+    },
+
+    CreateMesh{
+        mesh: Mesh,
         collider: ColliderOptions,
         weak_ref: Py<PyWeakref>,
         sender: PChannel::PSyncSender<ObjectKey>,
@@ -181,10 +200,6 @@ lazy_static! {
     
 }
 
-lazy_static! {
-    pub static ref ComputationTime: Arc<Vec<u128>> = Arc::new(Vec::new());
-
-}
 
 /// processes commands that rely on the macroquad engine
 /// commands that do not rely on it's core (openGL) components ( or just the internal Core-Thread ) are found in pyabstractions.
@@ -228,6 +243,8 @@ pub async fn proccess_commands_loop() {
                         Object::Cube(cube) => cube.position,
                         Object::Mesh(mesh) => mesh.position,
                         Object::Sphere(sphere)=> sphere.position,
+                        Object::Cylinder(cyl)=> cyl.position,
+                        Object::Pill(pill)=> pill.position,
                     };
                     let _ = sender.send(pos);
                 }
@@ -236,6 +253,8 @@ pub async fn proccess_commands_loop() {
                         Object::Cube(cube) => cube.scale,
                         Object::Mesh(mesh)=> mesh.scale,
                         Object::Sphere(sphere)=> sphere.scale,
+                        Object::Cylinder(cyl)=> cyl.scale,
+                        Object::Pill(pill)=> pill.scale,
                     };
                     let _ = sender.send(pos);
                 }
@@ -244,6 +263,8 @@ pub async fn proccess_commands_loop() {
                         Object::Cube(cube) => cube.rotation,
                         Object::Mesh(mesh)=> mesh.rotation,
                         Object::Sphere(sphere)=> sphere.rotation,
+                        Object::Cylinder(cyl)=> cyl.rotation,
+                        Object::Pill(pill)=> pill.rotation,
                     };
                     let _ = sender.send(pos);
                 }
@@ -262,6 +283,14 @@ pub async fn proccess_commands_loop() {
                             Object::Sphere(sphere)=>{
                                 sphere.mesh.recalculate_pos(sphere.position, position);
                                 sphere.position = position;
+                            }
+                            Object::Pill(pill)=> {
+                                pill.mesh.recalculate_pos(pill.position, position);
+                                pill.position = position;
+                            }
+                            Object::Cylinder(cyl)=> {
+                                cyl.mesh.recalculate_pos(cyl.position, position);
+                                cyl.position = position;
                             }
                         }
                     });
@@ -283,6 +312,14 @@ pub async fn proccess_commands_loop() {
                                     sphere.mesh.recalculate_scale(sphere.position, sphere.scale, scale);
                                     sphere.scale = scale;
                                 }
+                                Object::Pill(pill)=> {
+                                    pill.mesh.recalculate_scale(pill.position, pill.scale, scale);
+                                    pill.scale = scale;
+                                }
+                                Object::Cylinder(cyl)=> {
+                                    cyl.mesh.recalculate_scale(cyl.position, cyl.scale, scale);
+                                    cyl.scale = scale;
+                                }
                             }
                         });
                 }
@@ -302,9 +339,31 @@ pub async fn proccess_commands_loop() {
                                     sphere.mesh.recalculate_rot(sphere.position, sphere.rotation, rotation);
                                     sphere.rotation = rotation;
                                 }
+                                Object::Pill(pill)=>{
+                                    pill.mesh.recalculate_rot(pill.position, pill.rotation, rotation);
+                                    pill.rotation =rotation;
+                                }
+                                Object::Cylinder(cyl)=>{
+                                    cyl.mesh.recalculate_rot(cyl.position, cyl.rotation, rotation);
+                                    cyl.rotation =rotation;
+                                }
                             }
                         });
                     
+                }
+                Command::CreatePill { size, position, rotation, color, collider, weak_ref, sender }=>{
+                    object_storage.quick_push(collider,sender, weak_ref, 
+                        move || {
+                            let internal_pill = Pill::new(size, position, rotation, color);
+                            Object::Pill(internal_pill)
+                        });
+                }
+                Command::CreateCylinder { size, position, rotation, color, collider, weak_ref, sender }=>{
+                    object_storage.quick_push(collider,sender, weak_ref, 
+                        move || {
+                            let internal_cyl = Cylinder::new(size, position, rotation, color);
+                            Object::Cylinder(internal_cyl)
+                        });
                 }
                 Command::CreateCube { size, position, rotation,color,collider, weak_ref: pyAny, sender }=>{
 

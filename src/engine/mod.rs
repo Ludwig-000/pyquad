@@ -1,4 +1,3 @@
-pub mod structures;
 pub mod SHADERS;
 pub mod Cubemap;
 

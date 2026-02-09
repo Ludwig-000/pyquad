@@ -1,4 +1,4 @@
-use crate::{engine::{Objects::{Cube::Cube, Mesh::Mesh, PhysicsWorld::ApplyPhysics::apply_physics_enum, Sphere::Sphere}, structures::Rectangle}, py_abstractions::structs::ThreeDObjects::{ColliderOptions::ColliderOptions, PhysicsHandle::PhysicsEnum}};
+use crate::{engine::{Objects::{Cube::Cube, Cylinder::Cylinder, Mesh::Mesh, PhysicsWorld::ApplyPhysics::apply_physics_enum, Pill::Pill, Sphere::Sphere}}, py_abstractions::structs::ThreeDObjects::{ColliderOptions::ColliderOptions, PhysicsHandle::PhysicsEnum}};
 use pyo3::prelude::*;
 use pyo3::types::PyWeakref;
 use slotmap::*;
@@ -11,7 +11,9 @@ use macroquad::prelude as mq;
 pub enum Object {
     Cube(Cube),
     Sphere(Sphere),
-    Mesh(Mesh)
+    Mesh(Mesh),
+    Pill(Pill),
+    Cylinder(Cylinder),
 }
 
 #[derive(Clone, Copy)]
@@ -282,6 +284,26 @@ impl ObjectStorage {
                         if mesh.position != pos {
                             mesh.recalculate_pos(mesh.position, pos);
                             mesh.position = pos;
+                        }
+                    }
+                    Object::Pill(pill)=> {
+                        if pill.rotation != rot {
+                            pill.mesh.recalculate_rot(pill.position, pill.rotation, rot);
+                            pill.rotation = rot;
+                        }
+                        if pill.position != pos {
+                            pill.mesh.recalculate_pos(pill.position, pos);
+                            pill.position = pos;
+                        }
+                    }
+                    Object::Cylinder(cylinder)=> {
+                        if cylinder.rotation != rot {
+                            cylinder.mesh.recalculate_rot(cylinder.position, cylinder.rotation, rot);
+                            cylinder.rotation = rot;
+                        }
+                        if cylinder.position != pos {
+                            cylinder.mesh.recalculate_pos(cylinder.position, pos);
+                            cylinder.position = pos;
                         }
                     }
                 }

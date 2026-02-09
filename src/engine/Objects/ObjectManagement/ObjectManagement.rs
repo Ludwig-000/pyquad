@@ -17,6 +17,8 @@ pub fn draw_all_Objects(obj: &ObjectStorage, viewMat: macroquad::prelude::Mat4){
                 Object::Cube(cube)=> cube.draw(gl),
                 Object::Mesh(mesh)=> mesh.draw(gl),
                 Object::Sphere(sphere)=> sphere.draw(gl),
+                Object::Pill(pill)=> pill.draw(gl),
+                Object::Cylinder(cyl)=> cyl.draw(gl),
             }
         }).collect();
 

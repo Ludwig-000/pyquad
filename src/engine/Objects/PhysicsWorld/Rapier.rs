@@ -1,4 +1,4 @@
-﻿use lazy_static::lazy_static;
+﻿
 use pyo3_stub_gen::derive;
 use rapier3d::{pipeline, prelude::*};
 use glam::Vec3;
@@ -92,15 +92,6 @@ impl RapierWorld{
     pub fn step(&mut self, distance: f32) {
         let gravity = vector![0.0, -9.81, 0.0];
 
-        // self.pipeline.step(
-        //     distance,
-        //     &mut self.bvh,
-        //     &mut self.narrowP,
-        //     &mut self.rigidBS,
-        //     &mut self.coll,
-        //     &(),
-        //     &(),
-        // );
         self.pipeline.step(
             &gravity,
             &self.integration_parameters,
@@ -358,6 +349,8 @@ pub fn extract_object_transforms(obj: &obj::Object)-> Transforms<'_>{
     match obj{
         obj::Object::Cube(cube) => Transforms { pos: &cube.position, rot: &cube.rotation, scale: &cube.scale },
         obj::Object::Mesh(mesh) => Transforms { pos: &mesh.position, rot: &mesh.rotation, scale: &mesh.scale},
-        obj::Object::Sphere(sphere)=> Transforms { pos: &sphere.position, rot: &sphere.rotation, scale: &sphere.rotation }
+        obj::Object::Sphere(sphere)=> Transforms { pos: &sphere.position, rot: &sphere.rotation, scale: &sphere.rotation },
+        obj::Object::Pill(o)=> Transforms { pos: &o.position, rot: &o.rotation, scale: &o.rotation },
+        obj::Object::Cylinder(o)=> Transforms { pos: &o.position, rot: &o.rotation, scale: &o.rotation }
     }
 }
