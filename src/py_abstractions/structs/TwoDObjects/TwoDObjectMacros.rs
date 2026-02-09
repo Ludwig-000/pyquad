@@ -38,7 +38,7 @@ Example:
 ...# arguments from outside the scope may be included.
 >>>delta_time = 0
 >>>def update" $name "(obj: " $name "):
-...    obj.rot += Vec3.splat(0.2*delta_time)
+...    obj.rot += Vec2.splat(0.2*delta_time)
 ...
 >>>my" $name " = " $py_constructor "
 >>>my" $name ".tick(update" $name ")
@@ -59,11 +59,15 @@ Example:
                     }
 
                     let mut storage = ObjectFunctionStorage::get_fun_storage();
-                    
+                    let mut self_ = slf.borrow_mut();
+                    if let Some(key) = self_.function_key{
+                        storage.remove(key);
+                    }
+
                     let func_persistent = function.unbind();
                     let obj  = slf.into_any();
 
-                    let key = storage.add(obj, func_persistent);
+                    self_.function_key = Some(storage.add(obj, func_persistent));
 
                     Ok(())
                 }

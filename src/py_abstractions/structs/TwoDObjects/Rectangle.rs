@@ -4,6 +4,7 @@ use pyo3::types::{PyWeakref, PyWeakrefReference};
 use pyo3::exceptions::*;
 
 use crate::engine::PChannel::PChannel;
+use crate::py_abstractions::structs::Textures_and_Images::Texture2D;
 use crate::py_abstractions::structs::ThreeDObjects::PhysicsHandle::Physics;
 
 use std::hash::{Hash, Hasher};
@@ -24,45 +25,39 @@ use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 
 
 #[gen_stub_pyclass]
-#[pyclass]
+#[pyclass(eq)]
+#[derive(Clone, PartialEq)]
 pub struct Rectangle{
-    pub pos: Vec2,
-    pub rot: Vec2,
+
+    #[pyo3(get,set)]
+    pub position: Vec2,
+    #[pyo3(get,set)]
+    pub rotation: f32,
+    #[pyo3(get,set)]
     pub scale: Vec2,
+    #[pyo3(get,set)]
+    pub color: Color,
+
+    #[pyo3(get,set)]
+    pub texture: Option<Texture2D>,
 
     function_key: Option<FunctionKey>
 }
+
 crate::implement_Drop2D!(Rectangle);
+crate::implement_tick2D!(Rectangle,  r#"Rectangle()"#);
+
 
 #[gen_stub_pymethods]
 #[pymethods]
 impl Rectangle{
     #[new]
-    pub fn new(pos: Vec2, rot: Vec2, scale: Vec2)-> Self{
-        todo!()
+    pub fn new(position: Vec2, rotation: f32, scale: Vec2, color: Color)-> Self{
+        Rectangle { position, rotation, scale, color, texture: None, function_key: None }
     }
 
-    pub fn test2(&self){
-        println!("Test2");
+    pub fn draw(&self){
+        COMMAND_QUEUE.push(  Command::DrawRectangleFromPyClass(self.clone()));
     }
 
-    pub fn tick(slf: Bound<'_, Self>, function: Bound<'_,PyAny>)-> PyResult<()>{
-
-        if !function.is_callable(){
-            return Err(PyRuntimeError::new_err(format!("Attatched object {:?} is not callable.",function)));
-        }
-
-        let mut storage = ObjectFunctionStorage::get_fun_storage();
-        let mut self_ = slf.borrow_mut();
-        if let Some(key) = self_.function_key{
-            storage.remove(key);
-        }
-
-        let func_persistent = function.unbind();
-        let obj  = slf.into_any();
-
-        self_.function_key = Some(storage.add(obj, func_persistent));
-
-        Ok(())
-    }
 }

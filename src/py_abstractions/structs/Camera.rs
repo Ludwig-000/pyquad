@@ -74,12 +74,11 @@ impl Camera2D {
             viewport,
         }
     }
-
-    /// Will make camera space equals given rect.
-    /// This will ignore the Rectangle's rotation.
+    /// Creates a camera based on a Retangle.
+    /// Takes A 2D rectangle, defined by its top-left corner, width and height.
     #[staticmethod]
-    pub fn from_display_rect(rect: &Rectangle) -> Camera2D {
-        let rec =  mq::Rect::new(rect.pos.x, rect.pos.y,rect.scale.x, rect.scale.y);
+    pub fn from_display_rect(top_left_x: f32, top_left_y: f32, width: f32, height: f32) -> Camera2D {
+        let rec =  mq::Rect::new(top_left_x, top_left_y,width, height);
         
         mq::Camera2D::from_display_rect(rec).into()
     }

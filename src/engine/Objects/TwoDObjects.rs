@@ -1,14 +1,143 @@
 use crate::py_abstractions::structs::TwoDObjects::{Circle::Circle, Rectangle::Rectangle};
+use glam::Vec4;
 use macroquad::prelude as mq;
 
 
 
 
+pub fn draw_circle(circle: &Circle) {
+    let color = [(circle.color.r*255.) as u8,
+     (circle.color.g*255.) as u8,
+     (circle.color.b*255.) as u8,
+     (circle.color.a*255.) as u8];
 
-pub fn draw_circle(circle: &Circle){
-    todo!()
+    // 1. Determine number of sides (clamp to minimum 3)
+    let sides = circle.sides.max(3) as usize;
+    
+    // We need (sides + 1) vertices: 1 center + 'sides' rim points
+    // We need (sides * 3) indices: 1 triangle per side
+    let mut vertices = Vec::with_capacity(sides + 1);
+    let mut indices = Vec::with_capacity(sides * 3);
+
+    // 2. Pre-calculate rotation math
+    let (rot_sin, rot_cos) = circle.rotation.sin_cos();
+    
+    // 3. Center Vertex
+    // UV is (0.5, 0.5) for the center
+    vertices.push(mq::Vertex {
+        position: mq::vec3(circle.position.x, circle.position.y, 0.0),
+        uv: mq::vec2(0.5, 0.5), 
+        color: color, 
+        normal: glam::Vec4::ZERO
+    });
+
+    // 4. Rim Vertices
+    for i in 0..sides {
+        // LOCAL angle (0 to 2PI). Represents the shape of the circle itself.
+        // Use THIS for UVs so the texture sticks to the mesh.
+        let local_angle = (i as f32 / sides as f32) * std::f32::consts::TAU;
+
+        // Calculate local unit circle coordinates
+        let rx = local_angle.cos();
+        let ry = local_angle.sin();
+
+        // UVs: based on LOCAL coordinates (unrotated)
+        let uv = mq::vec2(0.5 + rx * 0.5, 0.5 + ry * 0.5);
+
+        // Position: Rotate the local coordinates by the circle's rotation
+        // Standard 2D rotation matrix:
+        // x' = x*cos - y*sin
+        // y' = x*sin + y*cos
+        let rotated_x = rx * rot_cos - ry * rot_sin;
+        let rotated_y = rx * rot_sin + ry * rot_cos;
+
+        let pos = mq::vec3(
+            circle.position.x + rotated_x * circle.radius,
+            circle.position.y + rotated_y * circle.radius,
+            0.0
+        );
+
+        vertices.push(mq::Vertex {
+            position: pos,
+            uv,
+            color: color,
+            normal: glam::Vec4::ZERO
+        });
+    }
+
+    
+
+    // 5. Generate Indices
+    for i in 0..sides {
+        let center = 0;
+        let current = (i + 1) as u16;
+        let next = if i + 1 == sides { 1 } else { (i + 2) as u16 };
+
+        indices.push(center);
+        indices.push(current);
+        indices.push(next);
+    }
+
+    // Fix for the borrow checker error: use as_ref() first
+    let tex_ref = circle.texture.as_ref().map(|t| &*t.texture);
+    draw_2D_geomentry(&vertices, &indices, tex_ref);
 }
 
-pub fn draw_rect(rect: &Rectangle){
-    todo!();
+pub fn draw_rect(rect: &Rectangle) {
+    let w = rect.scale.x;
+    let h = rect.scale.y;
+    let x = rect.position.x;
+    let y = rect.position.y;
+    let rot = rect.rotation;
+    let color = [(rect.color.r*255.) as u8,
+     (rect.color.g*255.) as u8,
+     (rect.color.b*255.) as u8,
+     (rect.color.a*255.) as u8];
+
+    
+    let (sin, cos) = rot.sin_cos();
+
+    let transform = |lx: f32, ly: f32| -> mq::Vec3 {
+        let rx = lx * cos - ly * sin;
+        let ry = lx * sin + ly * cos;
+        mq::vec3(x + rx, y + ry, 0.0)
+    };
+
+    // Define vertices relative to center (0,0)
+    // TL, TR, BR, BL
+    let v_tl = transform(-w * 0.5, -h * 0.5);
+    let v_tr = transform( w * 0.5, -h * 0.5);
+    let v_br = transform( w * 0.5,  h * 0.5);
+    let v_bl = transform(-w * 0.5,  h * 0.5);
+
+    
+
+    let vertices = [
+        // Top Left (0)
+        mq::Vertex { position: v_tl, uv: mq::vec2(0.0, 0.0), color: color,normal: glam::Vec4::ZERO},
+        // Top Right (1)
+        mq::Vertex { position: v_tr, uv: mq::vec2(1.0, 0.0), color: color,normal: glam::Vec4::ZERO },
+        // Bottom Right (2)
+        mq::Vertex { position: v_br, uv: mq::vec2(1.0, 1.0), color: color,normal: glam::Vec4::ZERO },
+        // Bottom Left (3)
+        mq::Vertex { position: v_bl, uv: mq::vec2(0.0, 1.0), color: color,normal: glam::Vec4::ZERO },
+    ];
+
+    // Standard Quad Indices (Counter-Clockwise)
+    // Triangle 1: 0 -> 1 -> 2
+    // Triangle 2: 0 -> 2 -> 3
+    let indices = [0, 1, 2, 0, 2, 3];
+    let tex_ref = rect.texture.as_ref().map(|t| &*t.texture);
+    draw_2D_geomentry(&vertices, &indices, tex_ref);
+}
+
+
+
+fn draw_2D_geomentry(vertices: &[mq::Vertex], indices: &[u16], texture: Option<&mq::Texture2D>){
+
+        let context = unsafe {mq::get_internal_gl().quad_gl};
+
+        context.texture(texture);
+        context.draw_mode(mq::DrawMode::Triangles);
+        context.geometry(vertices, indices);
 }

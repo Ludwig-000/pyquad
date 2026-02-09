@@ -15,12 +15,16 @@ use crate::engine::Objects::Mesh::Mesh;
 use crate::engine::Objects::PhysicsWorld::ApplyPhysics;
 use crate::engine::Objects::Pill::Pill;
 use crate::engine::Objects::Sphere::Sphere;
+use crate::engine::Objects::TwoDObjects::draw_circle;
+use crate::engine::Objects::TwoDObjects::draw_rect;
 use crate::engine::SHADERS::shader_manager as sm;
 use crate::engine::PError::PError;
 use crate::engine::PArc::PArc;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::*;
 use crate::py_abstractions::structs::ThreeDObjects::ColliderOptions::ColliderOptions;
 use crate::py_abstractions::structs::ThreeDObjects::PhysicsHandle::PhysicsEnum;
+use crate::py_abstractions::structs::TwoDObjects::Circle::Circle;
+use crate::py_abstractions::structs::TwoDObjects::Rectangle::Rectangle;
 use pyo3::{Py};
 use pyo3::types::{PyWeakref};
 use crate::engine::PChannel;
@@ -30,6 +34,8 @@ use crate::engine::Objects::ObjectManagement::ObjectManagement;
 
 
 pub enum Command {
+    DrawRectangleFromPyClass(Rectangle),
+    DrawCircleFromPyClass(Circle),
     PhysicsEnum(PhysicsEnum, ObjectKey),
     ManuallyStepPhysics(f32),
     SetCollisionForObject{key: ObjectKey, collider: ColliderOptions},
@@ -211,6 +217,8 @@ pub async fn proccess_commands_loop() {
         while let Some(command) = COMMAND_QUEUE.pop() {
             
             match command {
+                Command::DrawCircleFromPyClass(circle)=> draw_circle(&circle),
+                Command::DrawRectangleFromPyClass(rect)=> draw_rect(&rect),
                 Command::PhysicsEnum(phys,key )=> {
                     let handle = object_storage.get_handle(key).expect("No physics handle found, yet physics function was called.");
                     object_storage.apply_physics_enum(phys, &handle);
