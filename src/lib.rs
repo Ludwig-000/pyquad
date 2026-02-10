@@ -81,6 +81,16 @@ pub fn _pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(crate::py_abstractions::Loading::Loading::download_file, m)?)?;
     m.add_function(wrap_pyfunction!(crate::py_abstractions::Loading::Loading::write_to_file, m)?)?;
 
+    m.add_class::<crate::py_abstractions::structs::GL::Vertex>()?;
+
+
+    let child_module = PyModule::new(py, "internal_gl")?;
+    child_module.add_class::<crate::py_abstractions::structs::GL::Internal_GL>()?;
+    m.add_submodule(&child_module)?;
+
+
+    //m.add_class::<crate::py_abstractions::structs::GL::Internal_GL>()?;
+
     m.add_class::<crate::py_abstractions::structs::RenderTarget::RenderTarget>()?;
     m.add_class::<crate::py_abstractions::structs::RenderTarget::RenderTargetParams>()?;
     m.add_class::<crate::py_abstractions::structs::Textures_and_Images::Texture2D>()?;

@@ -14,16 +14,11 @@ pub fn draw_circle(circle: &Circle) {
     // 1. Determine number of sides (clamp to minimum 3)
     let sides = circle.sides.max(3) as usize;
     
-    // We need (sides + 1) vertices: 1 center + 'sides' rim points
-    // We need (sides * 3) indices: 1 triangle per side
     let mut vertices = Vec::with_capacity(sides + 1);
     let mut indices = Vec::with_capacity(sides * 3);
 
-    // 2. Pre-calculate rotation math
     let (rot_sin, rot_cos) = circle.rotation.sin_cos();
     
-    // 3. Center Vertex
-    // UV is (0.5, 0.5) for the center
     vertices.push(mq::Vertex {
         position: mq::vec3(circle.position.x, circle.position.y, 0.0),
         uv: mq::vec2(0.5, 0.5), 
@@ -31,23 +26,13 @@ pub fn draw_circle(circle: &Circle) {
         normal: glam::Vec4::ZERO
     });
 
-    // 4. Rim Vertices
     for i in 0..sides {
-        // LOCAL angle (0 to 2PI). Represents the shape of the circle itself.
-        // Use THIS for UVs so the texture sticks to the mesh.
         let local_angle = (i as f32 / sides as f32) * std::f32::consts::TAU;
 
-        // Calculate local unit circle coordinates
         let rx = local_angle.cos();
         let ry = local_angle.sin();
 
-        // UVs: based on LOCAL coordinates (unrotated)
         let uv = mq::vec2(0.5 + rx * 0.5, 0.5 + ry * 0.5);
-
-        // Position: Rotate the local coordinates by the circle's rotation
-        // Standard 2D rotation matrix:
-        // x' = x*cos - y*sin
-        // y' = x*sin + y*cos
         let rotated_x = rx * rot_cos - ry * rot_sin;
         let rotated_y = rx * rot_sin + ry * rot_cos;
 
@@ -67,7 +52,6 @@ pub fn draw_circle(circle: &Circle) {
 
     
 
-    // 5. Generate Indices
     for i in 0..sides {
         let center = 0;
         let current = (i + 1) as u16;
@@ -78,7 +62,6 @@ pub fn draw_circle(circle: &Circle) {
         indices.push(next);
     }
 
-    // Fix for the borrow checker error: use as_ref() first
     let tex_ref = circle.texture.as_ref().map(|t| &*t.texture);
     draw_2D_geomentry(&vertices, &indices, tex_ref);
 }

@@ -27,7 +27,6 @@ use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 #[pyclass(eq)]
 #[derive(Clone, PartialEq)]
 pub struct Circle{
-
     #[pyo3(get,set)]
     pub position: Vec2,
     #[pyo3(get,set)]
