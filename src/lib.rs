@@ -84,9 +84,8 @@ pub fn _pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<crate::py_abstractions::structs::GL::Vertex>()?;
 
 
-    let child_module = PyModule::new(py, "internal_gl")?;
-    child_module.add_class::<crate::py_abstractions::structs::GL::Internal_GL>()?;
-    m.add_submodule(&child_module)?;
+    
+    m.add_class::<crate::py_abstractions::structs::GL::InternalGL>()?;
 
 
     //m.add_class::<crate::py_abstractions::structs::GL::Internal_GL>()?;
@@ -116,6 +115,8 @@ pub fn _pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<crate::py_abstractions::structs::ThreeDObjects::Cube::Cube>()?;
     m.add_class::<crate::py_abstractions::structs::ThreeDObjects::Sphere::Sphere>()?;
     m.add_class::<crate::py_abstractions::structs::ThreeDObjects::Mesh::Mesh>()?;
+    m.add_class::<crate::py_abstractions::structs::ThreeDObjects::Pill::Pill>()?;
+    m.add_class::<crate::py_abstractions::structs::ThreeDObjects::Cylinder::Cylinder>()?;
 
     m.add_class::<crate::py_abstractions::structs::TwoDObjects::Circle::Circle>()?;
     m.add_class::<crate::py_abstractions::structs::TwoDObjects::Rectangle::Rectangle>()?;

@@ -5181,7 +5181,7 @@ class Image:
         supported image formats are: ".png", ".jpeg"
         """
 
-class Internal_GL:
+class InternalGL:
     r"""
     NOT YET IMPLEMENTED
     """

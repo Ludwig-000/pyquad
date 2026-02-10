@@ -69,9 +69,9 @@ class PlayerCamera:
         
         zoom_factor  = 0.003
         if KeyCode.R in keys:
-            self.movespeed*= (1.01** (zoom_factor/delta_time))
+            self.movespeed*= (1.05** (zoom_factor/delta_time))
         if KeyCode.T in keys:
-            self.movespeed*= (0.99** (zoom_factor/delta_time))
+            self.movespeed*= (0.95** (zoom_factor/delta_time))
         if KeyCode.Escape in keys:
             show_mouse(True)
             set_cursor_grab(False)

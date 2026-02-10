@@ -19,7 +19,7 @@ impl Cube {
         Cube { scale: size,position,rotation,color,  mesh  }
     }
     pub fn draw(&self, gl: &mut macroquad::prelude::QuadGl ){
-            gl.texture(None);
+            gl.texture(self.mesh.texture.as_ref());
             gl.geometry(&self.mesh.vertices, &self.mesh.indices);
         
     }

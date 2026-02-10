@@ -217,8 +217,12 @@ pub async fn proccess_commands_loop() {
         while let Some(command) = COMMAND_QUEUE.pop() {
             
             match command {
-                Command::DrawCircleFromPyClass(circle)=> draw_circle(&circle),
-                Command::DrawRectangleFromPyClass(rect)=> draw_rect(&rect),
+                Command::DrawCircleFromPyClass(circle)=> {
+                    sm::switch_to_desired_shader(sm::ShaderKind::None);
+                    draw_circle(&circle)},
+                Command::DrawRectangleFromPyClass(rect)=> {
+                    sm::switch_to_desired_shader(sm::ShaderKind::None);
+                    draw_rect(&rect)},
                 Command::PhysicsEnum(phys,key )=> {
                     let handle = object_storage.get_handle(key).expect("No physics handle found, yet physics function was called.");
                     object_storage.apply_physics_enum(phys, &handle);

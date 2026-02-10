@@ -1,3 +1,5 @@
+use std::cell::RefCell;
+
 ///
 /// 
 /// 
@@ -55,13 +57,13 @@ impl Into<mq::Vertex> for Vertex{
 
 
 /// NOT YET IMPLEMENTED
-#[gen_stub_pyclass(module = "pyroquad.internal_gl")]
+#[gen_stub_pyclass(module = "pyroquad.internal_gl")] // module = .. does not seem to do anything but does not err?
 #[pyclass]
-pub struct Internal_GL();
+pub struct InternalGL();
 
 #[gen_stub_pymethods]
 #[pymethods]
-impl Internal_GL{
+impl InternalGL{
     #[staticmethod]
     pub fn clear_draw_calls(){
         todo!()
