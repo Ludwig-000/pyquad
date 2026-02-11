@@ -4962,7 +4962,7 @@ class Cube:
         r"""
         overwrites the current collider with the input option.
         """
-    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., collider_type:ColliderOptions=...) -> Cube: ...
+    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., texture:typing.Optional[Texture2D]=None, collider_type:ColliderOptions=...) -> Cube: ...
     def remove_tick(self) -> None: ...
 
 class Cylinder:
@@ -5018,7 +5018,7 @@ class Cylinder:
     @rot.setter
     def rot(self, value: Vec3) -> None: ...
     def remove_tick(self) -> None: ...
-    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., collider_type:ColliderOptions=...) -> Cylinder: ...
+    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., texture:typing.Optional[Texture2D]=None, collider_type:ColliderOptions=...) -> Cylinder: ...
     def tick(self, slf:Cylinder, function:typing.Any) -> None:
         r"""
         Add a function to this object, which will automatically be executed each frame.
@@ -5126,7 +5126,7 @@ class FileData:
         r"""
         Attempts to parse the file data as a Sound.
         """
-    def to_mesh_data(self, collider_type:ColliderOptions=...) -> Mesh:
+    def to_mesh_data(self, texture:typing.Optional[Texture2D]=None, collider_type:ColliderOptions=...) -> Mesh:
         r"""
         Attempts to parse the file as a mesh.
         Immediately returns a fully fledged Mesh object that has collision, is queued to be drawn,
@@ -5314,7 +5314,7 @@ class Mesh:
         overwrites the current collider with the input option.
         """
     @staticmethod
-    def from_file_data(data:FileData, collider_type:ColliderOptions) -> Mesh: ...
+    def from_file_data(data:FileData, texture:typing.Optional[Texture2D], collider_type:ColliderOptions) -> Mesh: ...
     def check_collision(self) -> builtins.list[typing.Any]:
         r"""
         Returns any object, with active collision, that is either
@@ -5483,7 +5483,7 @@ class Pill:
         ...   i.pos = Vec3.ZERO()
         ```
         """
-    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., collider_type:ColliderOptions=...) -> Pill: ...
+    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., texture:typing.Optional[Texture2D]=None, collider_type:ColliderOptions=...) -> Pill: ...
     def __eq__(self, other:Pill) -> builtins.bool:
         r"""
         Equality for Pill is based on unique ID.
@@ -5737,7 +5737,7 @@ class Sphere:
         """
     @scale.setter
     def scale(self, value: Vec3) -> None: ...
-    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., collider_type:ColliderOptions=...) -> Sphere: ...
+    def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., texture:typing.Optional[Texture2D]=None, collider_type:ColliderOptions=...) -> Sphere: ...
     def check_collision(self) -> builtins.list[typing.Any]:
         r"""
         Returns any object, with active collision, that is either

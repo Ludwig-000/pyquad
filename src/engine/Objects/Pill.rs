@@ -1,4 +1,4 @@
-use macroquad::{color::Color, prelude::{self as mq,}};
+use macroquad::{color::Color, prelude::{self as mq,}, texture::Texture2D};
 use glam::{Vec3A, Mat3A, Quat, EulerRot};
 
 #[derive( Debug, Clone)]
@@ -14,13 +14,13 @@ pub struct Pill{
 }
 
 impl Pill{
-    pub fn new(size: mq::Vec3, position: mq::Vec3, rotation: mq::Vec3, color: mq::Color)-> Pill{
-        let mesh: PillMesh = PillMesh::new(size, position, rotation, None, color, 20);
+    pub fn new(size: mq::Vec3, position: mq::Vec3, rotation: mq::Vec3, color: mq::Color, texture: Option<Texture2D>)-> Pill{
+        let mesh: PillMesh = PillMesh::new(size, position, rotation, texture, color, 20);
 
         Pill { scale: size,position,rotation,color,  mesh  }
     }
     pub fn draw(&self, gl: &mut macroquad::prelude::QuadGl ){
-        gl.texture(None);
+        gl.texture(self.mesh.texture.as_ref());
         gl.geometry(&self.mesh.vertices, &self.mesh.indices);
     
     }

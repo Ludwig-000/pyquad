@@ -60,6 +60,7 @@ pub enum Command {
         position: mq::Vec3,
         rotation: mq::Vec3,
         color: mq::Color,
+        texture: Option<mq::Texture2D>,
         collider: ColliderOptions,
         weak_ref: Py<PyWeakref>,
         sender: PChannel::PSyncSender<ObjectKey>,
@@ -69,6 +70,7 @@ pub enum Command {
         position: mq::Vec3,
         rotation: mq::Vec3,
         color: mq::Color,
+        texture: Option<mq::Texture2D>,
         collider: ColliderOptions,
         weak_ref: Py<PyWeakref>,
         sender: PChannel::PSyncSender<ObjectKey>,
@@ -78,6 +80,7 @@ pub enum Command {
         position: mq::Vec3,
         rotation: mq::Vec3,
         color: mq::Color,
+        texture: Option<mq::Texture2D>,
         collider: ColliderOptions,
         weak_ref: Py<PyWeakref>,
         sender: PChannel::PSyncSender<ObjectKey>,
@@ -87,6 +90,7 @@ pub enum Command {
         position: mq::Vec3,
         rotation: mq::Vec3,
         color: mq::Color,
+        texture: Option<mq::Texture2D>,
         collider: ColliderOptions,
         weak_ref: Py<PyWeakref>,
         sender: PChannel::PSyncSender<ObjectKey>,
@@ -363,25 +367,25 @@ pub async fn proccess_commands_loop() {
                         });
                     
                 }
-                Command::CreatePill { size, position, rotation, color, collider, weak_ref, sender }=>{
+                Command::CreatePill { size, position, rotation, color,texture, collider, weak_ref, sender }=>{
                     object_storage.quick_push(collider,sender, weak_ref, 
                         move || {
-                            let internal_pill = Pill::new(size, position, rotation, color);
+                            let internal_pill = Pill::new(size, position, rotation, color,texture,);
                             Object::Pill(internal_pill)
                         });
                 }
-                Command::CreateCylinder { size, position, rotation, color, collider, weak_ref, sender }=>{
+                Command::CreateCylinder { size, position, rotation, color,texture, collider, weak_ref, sender }=>{
                     object_storage.quick_push(collider,sender, weak_ref, 
                         move || {
-                            let internal_cyl = Cylinder::new(size, position, rotation, color);
+                            let internal_cyl = Cylinder::new(size, position, rotation, color,texture);
                             Object::Cylinder(internal_cyl)
                         });
                 }
-                Command::CreateCube { size, position, rotation,color,collider, weak_ref: pyAny, sender }=>{
+                Command::CreateCube { size, position, rotation,color,texture,collider, weak_ref: pyAny, sender }=>{
 
                     object_storage.quick_push(collider,sender, pyAny, 
                         move || {
-                            let internal_cube = Cube::new(size, position, rotation, color);
+                            let internal_cube = Cube::new(size, position, rotation, color,texture);
                             Object::Cube(internal_cube)
                         });
                         
@@ -393,11 +397,11 @@ pub async fn proccess_commands_loop() {
                             Object::Mesh(mesh)
                         });
                 }
-                Command::CreateSphere { size, position, rotation,color, collider,weak_ref: pyAny, sender }=>{
+                Command::CreateSphere { size, position, rotation,color,texture, collider,weak_ref: pyAny, sender }=>{
 
                     object_storage.quick_push(collider,sender, pyAny, 
                         move || {
-                            let internal_sphere = Sphere::new(size, position, rotation, color);
+                            let internal_sphere = Sphere::new(size, position, rotation, color, texture);
                             Object::Sphere(internal_sphere)
                         });
                         

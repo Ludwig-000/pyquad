@@ -3,6 +3,7 @@ use pyo3_stub_gen::derive::* ;
 use pyo3::types::{PyWeakref, PyWeakrefReference};
 use pyo3::exceptions::*;
 
+use crate::py_abstractions::structs::Textures_and_Images::Texture2D;
 use crate::{implement_Drop3D, implement_basic_getter_methods3D, implement_basic_magic_methods3D, implement_basic_setter_methods3D, implement_check_collision3D, implement_remove_tick3D, implement_set_collider3D, implement_tick3D};
 use crate::engine::PChannel::PChannel;
 use crate::py_abstractions::structs::ThreeDObjects::PhysicsHandle::Physics;
@@ -55,7 +56,7 @@ crate::implement_Drop3D!(Cube);
 #[pymethods]
 impl Cube {
 
-    #[pyo3(signature = (position= Vec3::ZERO(), rotation = Vec3::ZERO(),scale= Vec3::ONE(), color = Color::WHITE(), collider_type = ColliderOptions::NONE()))]
+    #[pyo3(signature = (position= Vec3::ZERO(), rotation = Vec3::ZERO(),scale= Vec3::ONE(), color = Color::WHITE(), texture=None,collider_type = ColliderOptions::NONE()))]
     #[new]
     pub fn new(
         py: Python<'_>,
@@ -63,6 +64,7 @@ impl Cube {
         rotation: Vec3,
         scale: Vec3,
         color: Color,
+        texture: Option<Texture2D>,
         collider_type: ColliderOptions,
     ) -> PyResult<Py<Cube>> {
 
@@ -88,6 +90,7 @@ impl Cube {
             position: position.into(), 
             rotation: rotation.into(), 
             color: color.into(),
+            texture: texture.map(|t|t.into()),
             collider: collider_type,
             weak_ref: weak_ref_handle.clone_ref(py),
             sender 

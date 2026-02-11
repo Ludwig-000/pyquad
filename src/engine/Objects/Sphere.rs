@@ -21,13 +21,13 @@ pub struct Sphere {
 }
 
 impl Sphere {
-    pub fn new(size: mq::Vec3, position: mq::Vec3, rotation: mq::Vec3, color: mq::Color) -> Sphere {
-        let mesh: SphereMesh = SphereMesh::new(size, position, rotation, None, color);
+    pub fn new(size: mq::Vec3, position: mq::Vec3, rotation: mq::Vec3, color: mq::Color, texture: Option<mq::Texture2D>) -> Sphere {
+        let mesh: SphereMesh = SphereMesh::new(size, position, rotation, texture, color);
         Sphere { scale: size, position, rotation, color, mesh }
     }
 
     pub fn draw(&self, gl: &mut macroquad::prelude::QuadGl) {
-        gl.texture(None);
+        gl.texture(self.mesh.texture.as_ref());
         gl.geometry(&self.mesh.vertices, &self.mesh.indices);
     }
 }

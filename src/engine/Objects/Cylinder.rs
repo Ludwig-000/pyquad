@@ -1,4 +1,4 @@
-use macroquad::{color::Color, prelude::{self as mq,}};
+use macroquad::{color::Color, prelude::{self as mq,}, texture::Texture2D};
 use glam::{Vec3A, Mat3A, Quat, EulerRot};
 
 #[derive( Debug, Clone)]
@@ -13,14 +13,14 @@ pub struct Cylinder{
 
 }
 impl Cylinder{
-    pub fn new(size: mq::Vec3, position: mq::Vec3, rotation: mq::Vec3, color: mq::Color)-> Cylinder{
-        let mesh: CylinderMesh = CylinderMesh::new(size, position, rotation, None, color,10);
+    pub fn new(size: mq::Vec3, position: mq::Vec3, rotation: mq::Vec3, color: mq::Color, texture: Option<Texture2D>)-> Cylinder{
+        let mesh: CylinderMesh = CylinderMesh::new(size, position, rotation, texture, color,10);
 
         Cylinder { scale: size,position,rotation,color,  mesh  }
     }
 
     pub fn draw(&self, gl: &mut macroquad::prelude::QuadGl ){
-        gl.texture(None);
+        gl.texture(self.mesh.texture.as_ref());
         gl.geometry(&self.mesh.vertices, &self.mesh.indices);
     
     }

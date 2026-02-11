@@ -8,8 +8,10 @@ precision highp float;
 varying lowp vec4 v_color;
 varying highp vec3 v_world_pos;
 varying mediump vec3 v_normal;
+varying vec2 v_texcoord;
 
 uniform vec3 LightDir;
+uniform sampler2D Texture;
 
 void main() {
     vec3 N = v_normal;
@@ -25,11 +27,12 @@ void main() {
     }
 
     vec3 L = normalize(LightDir);
-
     float ndotl = dot(N, L) * 0.5 + 0.5;
-
     float brightness = 0.3 + 0.5 * ndotl;
 
-    vec3 color = v_color.rgb * brightness;
-    gl_FragColor = vec4(color, v_color.a);
+    vec4 texColor = texture2D(Texture, v_texcoord);
+
+    vec3 final_rgb = v_color.rgb * texColor.rgb * brightness;
+    
+    gl_FragColor = vec4(final_rgb, v_color.a * texColor.a);
 }

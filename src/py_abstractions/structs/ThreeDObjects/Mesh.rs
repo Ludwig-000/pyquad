@@ -69,7 +69,7 @@ crate::implement_Drop3D!(Mesh);
 impl Mesh{
 
     #[staticmethod]
-    pub fn from_file_data(py: Python<'_>,data: FileData, collider_type: ColliderOptions)-> PyResult<Py<Mesh>>{
+    pub fn from_file_data(py: Python<'_>,data: FileData, texture: Option<Texture2D>,collider_type: ColliderOptions)-> PyResult<Py<Mesh>>{
         
         let (sender, receiver) = PChannel::sync_channel(1);
 
@@ -87,7 +87,7 @@ impl Mesh{
             weak_ref_ref.cast_into::<PyWeakref>()?.unbind() 
         };
 
-        let mesh =  internal_mesh::Mesh::load_from_gltf(&data.bytes, None).map_err(|e|{
+        let mesh =  internal_mesh::Mesh::load_from_gltf(&data.bytes, texture.map(|t|t.into())).map_err(|e|{
             PError::GLTFError(e)
         })?;
 

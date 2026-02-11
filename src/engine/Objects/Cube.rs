@@ -1,4 +1,4 @@
-use macroquad::{color::Color, prelude::{self as mq,}};
+use macroquad::{color::Color, prelude::{self as mq,}, texture::Texture2D};
 use glam::{Vec3A, Mat3A, Quat, EulerRot};
 
 #[derive( Debug, Clone)]
@@ -13,8 +13,8 @@ pub struct Cube{
 
 }
 impl Cube {
-    pub fn new(size: mq::Vec3, position: mq::Vec3, rotation: mq::Vec3, color: mq::Color)-> Cube{
-        let mesh: CubeMesh = CubeMesh::new(size, position, rotation, None, color);
+    pub fn new(size: mq::Vec3, position: mq::Vec3, rotation: mq::Vec3, color: mq::Color, texture: Option<Texture2D>)-> Cube{
+        let mesh: CubeMesh = CubeMesh::new(size, position, rotation, texture, color);
 
         Cube { scale: size,position,rotation,color,  mesh  }
     }
