@@ -1,7 +1,10 @@
 
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::* ;
-use crate::py_abstractions::{Loading::Loading::load_file, structs::{Audio::Sound, ThreeDObjects::{ColliderOptions::ColliderOptions, Mesh::Mesh}, Textures_and_Images::{self, Image, Texture2D}}};
+use crate::py_abstractions::{Loading::Loading::load_file, structs::{ ThreeDObjects::{ColliderOptions::ColliderOptions, Mesh::Mesh}}};
+use crate::py_abstractions::Audio::Sound;
+use crate::py_abstractions::Textures_and_Images::{Image,Texture2D};
+use crate::py_abstractions::Textures_and_Images;
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 
 

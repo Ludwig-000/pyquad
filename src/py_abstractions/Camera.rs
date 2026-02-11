@@ -7,7 +7,7 @@ use pyo3_stub_gen::{derive::gen_stub_pyfunction,derive::*};
 
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::py_abstractions::structs::GLAM::Vec2::Vec2;
-use crate::py_abstractions::structs::RenderTarget::*;
+use crate::py_abstractions::RenderTarget::*;
 use crate::py_abstractions::structs::TwoDObjects::Rectangle::Rectangle;
 #[gen_stub_pyclass]
 #[pyclass]

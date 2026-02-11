@@ -3,7 +3,7 @@ use pyo3_stub_gen::derive::* ;
 use pyo3::types::{PyWeakref, PyWeakrefReference};
 use pyo3::exceptions::*;
 use crate::engine::PChannel::PChannel;
-use crate::py_abstractions::structs::Textures_and_Images::Texture2D;
+use crate::py_abstractions::Textures_and_Images::Texture2D;
 use crate::py_abstractions::structs::ThreeDObjects::PhysicsHandle::Physics;
 use std::hash::{Hash, Hasher};
 

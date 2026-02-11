@@ -70,7 +70,7 @@ pub fn _pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
 
 
 
-    m.add_function(wrap_pyfunction!(crate::py_abstractions::structs::Camera::set_default_camera, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::Camera::set_default_camera, m)?)?;
 
 
     m.add_class::<crate::py_abstractions::Color::Color>()?;
@@ -81,30 +81,30 @@ pub fn _pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(crate::py_abstractions::Loading::Loading::download_file, m)?)?;
     m.add_function(wrap_pyfunction!(crate::py_abstractions::Loading::Loading::write_to_file, m)?)?;
 
-    m.add_class::<crate::py_abstractions::structs::GL::Vertex>()?;
+    m.add_class::<crate::py_abstractions::GL::Vertex>()?;
 
 
     
-    m.add_class::<crate::py_abstractions::structs::GL::InternalGL>()?;
+    m.add_class::<crate::py_abstractions::GL::InternalGL>()?;
 
 
     //m.add_class::<crate::py_abstractions::structs::GL::Internal_GL>()?;
 
-    m.add_class::<crate::py_abstractions::structs::RenderTarget::RenderTarget>()?;
-    m.add_class::<crate::py_abstractions::structs::RenderTarget::RenderTargetParams>()?;
-    m.add_class::<crate::py_abstractions::structs::Textures_and_Images::Texture2D>()?;
-    m.add_class::<crate::py_abstractions::structs::Textures_and_Images::Image>()?;
-    m.add_class::<crate::py_abstractions::structs::Camera::Camera2D>()?;
-    m.add_class::<crate::py_abstractions::structs::Camera::Camera3D>()?;
-    m.add_function(wrap_pyfunction!(crate::py_abstractions::structs::RenderTarget::render_target_msaa, m)?)?;
-    m.add_function(wrap_pyfunction!(crate::py_abstractions::structs::RenderTarget::render_target, m)?)?;
+    m.add_class::<crate::py_abstractions::RenderTarget::RenderTarget>()?;
+    m.add_class::<crate::py_abstractions::RenderTarget::RenderTargetParams>()?;
+    m.add_class::<crate::py_abstractions::Textures_and_Images::Texture2D>()?;
+    m.add_class::<crate::py_abstractions::Textures_and_Images::Image>()?;
+    m.add_class::<crate::py_abstractions::Camera::Camera2D>()?;
+    m.add_class::<crate::py_abstractions::Camera::Camera3D>()?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::RenderTarget::render_target_msaa, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::py_abstractions::RenderTarget::render_target, m)?)?;
 
 
 
-    m.add_class::<crate::py_abstractions::structs::Audio::PlaySoundParams>()?;
-    m.add_class::<crate::py_abstractions::structs::Audio::Sound>()?;
+    m.add_class::<crate::py_abstractions::Audio::PlaySoundParams>()?;
+    m.add_class::<crate::py_abstractions::Audio::Sound>()?;
 
-    m.add_class::<crate::py_abstractions::structs::Config::Config>()?;
+    m.add_class::<crate::py_abstractions::Config::Config>()?;
 
     m.add_class::<crate::py_abstractions::structs::GLAM::BVec2::BVec2>()?;
     m.add_class::<crate::py_abstractions::structs::GLAM::BVec3::BVec3>()?;
@@ -123,10 +123,10 @@ pub fn _pyroquad( py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<crate::py_abstractions::structs::ThreeDObjects::PhysicsHandle::Physics>()?;
     m.add_class::<crate::py_abstractions::structs::ThreeDObjects::ColliderOptions::ColliderOptions>()?;
 
-    m.add_class::<crate::py_abstractions::structs::Shader::Shader>()?;
-    m.add_class::<crate::py_abstractions::structs::KeyCode::KeyCode>()?;
+    m.add_class::<crate::py_abstractions::Shader::Shader>()?;
+    m.add_class::<crate::py_abstractions::KeyCode::KeyCode>()?;
 
-    m.add_class::<crate::py_abstractions::structs::MouseButton::MouseButton>()?;
+    m.add_class::<crate::py_abstractions::MouseButton::MouseButton>()?;
 
 
 

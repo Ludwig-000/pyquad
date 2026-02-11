@@ -1,5 +1,5 @@
 
-use crate::py_abstractions::structs::Textures_and_Images::*;
+use crate::py_abstractions::Textures_and_Images::*;
 use macroquad::prelude as mq;
 
 use macroquad::texture::DrawTextureParams;

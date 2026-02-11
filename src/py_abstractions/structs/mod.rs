@@ -1,12 +1,4 @@
-pub mod Textures_and_Images;
-pub mod Camera;
+
 pub mod GLAM;
-pub mod RenderTarget;
-pub mod KeyCode;
-pub mod Config;
-pub mod Audio;
 pub mod ThreeDObjects;
-pub mod Shader;
-pub mod MouseButton;
 pub mod TwoDObjects;
-pub mod GL;

@@ -6,9 +6,9 @@
 // also, any conversion between my abstracted pyclasses and the structs used in macroquad is being done here.
 // ( example:  Color -> mq::Color )
 
-use crate::py_abstractions::structs::MouseButton::MouseButton;
+use crate::py_abstractions::MouseButton::MouseButton;
 use crate::py_abstractions::structs::ThreeDObjects::ObjectFunctionStorage;
-use crate::py_abstractions::structs::Textures_and_Images::*;
+use crate::py_abstractions::Textures_and_Images::*;
 use macroquad::prelude as mq;
 
 use pyo3::prelude::*;
@@ -24,8 +24,8 @@ use crate::engine::CoreLoop::Command;
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::py_abstractions::structs::GLAM::Vec2::Vec2;
 use crate::py_abstractions::Color::*;
-use crate::py_abstractions::structs::KeyCode::*;
-use crate::py_abstractions::structs::Config::Config;
+use crate::py_abstractions::KeyCode::*;
+use crate::py_abstractions::Config::Config;
 use std::process;
 use std::sync::atomic::{AtomicBool, Ordering};
 use pyo3::exceptions::PyRuntimeError;

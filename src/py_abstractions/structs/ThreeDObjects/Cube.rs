@@ -3,7 +3,7 @@ use pyo3_stub_gen::derive::* ;
 use pyo3::types::{PyWeakref, PyWeakrefReference};
 use pyo3::exceptions::*;
 
-use crate::py_abstractions::structs::Textures_and_Images::Texture2D;
+use crate::py_abstractions::Textures_and_Images::Texture2D;
 use crate::{implement_Drop3D, implement_basic_getter_methods3D, implement_basic_magic_methods3D, implement_basic_setter_methods3D, implement_check_collision3D, implement_remove_tick3D, implement_set_collider3D, implement_tick3D};
 use crate::engine::PChannel::PChannel;
 use crate::py_abstractions::structs::ThreeDObjects::PhysicsHandle::Physics;

@@ -12,7 +12,7 @@ use crate::engine::Objects::ObjectDataCache::ThreeDObjCache;
 use crate::engine::PError::PError;
 use crate::py_abstractions::structs::ThreeDObjects::ColliderOptions::{ColliderOptions, InnerColliderOptions};
 use crate::py_abstractions::structs::ThreeDObjects::PhysicsHandle::Physics;
-use crate::py_abstractions::{Loading::FileData::FileData, structs::Textures_and_Images::Texture2D};
+use crate::py_abstractions::{Loading::FileData::FileData, Textures_and_Images::Texture2D};
 use crate::py_abstractions::structs::GLAM::Vec3::Vec3;
 use crate::engine::Objects::Mesh as internal_mesh;
 use pyo3::prelude::PyResult;

@@ -6,7 +6,7 @@ use crate::engine::CoreLoop::COMMAND_QUEUE;
 use crate::engine::CoreLoop::Command;
 use crate::py_abstractions::structs::GLAM::Vec2::Vec2;
 use std::collections::HashSet;
-use crate::py_abstractions::structs::MouseButton::MouseButton;
+use crate::py_abstractions::MouseButton::MouseButton;
 
 #[gen_stub_pyfunction]
 #[pyfunction]
