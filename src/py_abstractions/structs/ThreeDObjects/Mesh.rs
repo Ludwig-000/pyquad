@@ -40,7 +40,7 @@ use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 use crate::py_abstractions::structs::ThreeDObjects::ObjectMacros::*;
 
 #[gen_stub_pyclass]
-#[pyclass(subclass, weakref)]
+#[pyclass(weakref)]
 pub struct Mesh{
 	pub key: ObjectKey,
     pub function_key: Option<FunctionKey>,

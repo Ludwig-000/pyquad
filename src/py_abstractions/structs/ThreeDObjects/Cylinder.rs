@@ -24,7 +24,7 @@ use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 
 
 #[gen_stub_pyclass]
-#[pyclass(subclass, weakref)]
+#[pyclass(weakref)]
 pub struct Cylinder{
     key: ObjectKey, // The key to the actual underlying cube, stored inside "ObjectStorage".
 

@@ -32,7 +32,7 @@ pub struct Vertex {
 }
 
 impl Vertex{
-    pub fn new(position: Vec3, uv: Vec2, color: Color, normal: (f32,f32,f32,f32))-> Vertex{
+    pub fn new(position: Vec3, uv: Vec2, color: Color)-> Vertex{
         Vertex{ 
             position: position.into(),
              uv: uv.into(),
@@ -42,7 +42,7 @@ impl Vertex{
                 (color.b * 255.)as u8,
                 (color.a * 255.)as u8,
             ],
-            normal: mq::Vec4::new(normal.0, normal.1, normal.2, normal.3)
+            normal: mq::Vec4::ZERO,
         }
     }
 }

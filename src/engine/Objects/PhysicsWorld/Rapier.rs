@@ -7,6 +7,8 @@ use slotmap::{DefaultKey, Key, KeyData};
 use crate::{engine::Objects::ObjectManagement::ObjectStorage::{self as obj, ObjectStorage}, py_abstractions::structs::ThreeDObjects::ColliderOptions::{ColliderOptions, InnerColliderOptions}};
 use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::Object;
+
+
 pub fn physics_thread(){
     let c = RapierWorld::new();
     
@@ -26,7 +28,7 @@ pub struct ObjectHandle {
 
 
 
-struct Transforms<'a>{
+pub struct Transforms<'a>{
     pos: &'a Vec3,
     rot: &'a Vec3,
     scale: &'a Vec3,
@@ -176,7 +178,7 @@ impl RapierWorld{
             .gravity_scale(gravity_scale)
             .linear_damping(0.0) 
             .angular_damping(0.0)
-            .user_data(key_to_u128(key)) // <--- ADDED THIS
+            .user_data(key_to_u128(key))
             .build();
 
         // 4. Link User Data to Collider (You already had this)
@@ -345,7 +347,6 @@ pub fn key_to_u128(key: ObjectKey) -> u128 {
 }
 
 pub fn extract_object_transforms(obj: &obj::Object)-> Transforms<'_>{
-    
     match obj{
         obj::Object::Cube(cube) => Transforms { pos: &cube.position, rot: &cube.rotation, scale: &cube.scale },
         obj::Object::Mesh(mesh) => Transforms { pos: &mesh.position, rot: &mesh.rotation, scale: &mesh.scale},

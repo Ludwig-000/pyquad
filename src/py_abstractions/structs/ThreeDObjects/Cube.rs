@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::* ;
-use pyo3::types::{PyWeakref, PyWeakrefReference};
+use pyo3::types::{PyType, PyWeakref, PyWeakrefReference};
 use pyo3::exceptions::*;
 
 use crate::py_abstractions::Textures_and_Images::Texture2D;
@@ -25,7 +25,7 @@ use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 
 
 #[gen_stub_pyclass]
-#[pyclass(subclass, weakref)]
+#[pyclass( weakref)]
 pub struct Cube{
     key: ObjectKey, // The key to the actual underlying cube, stored inside "ObjectStorage".
 
