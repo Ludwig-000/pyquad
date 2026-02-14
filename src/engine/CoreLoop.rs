@@ -9,6 +9,7 @@ use crossbeam::queue::SegQueue;
 
 use macroquad::prelude as mq;
 use macroquad::audio as au;
+use macroquad::window::get_internal_gl;
 use crate::engine::Objects::Cylinder::Cylinder;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::ObjectKey;
 use crate::engine::Objects::Mesh::Mesh;
@@ -21,6 +22,8 @@ use crate::engine::SHADERS::shader_manager as sm;
 use crate::engine::PError::PError;
 use crate::engine::PArc::PArc;
 use crate::engine::Objects::ObjectManagement::ObjectStorage::*;
+use crate::py_abstractions::GL::GLENUM;
+use crate::py_abstractions::GL::implement_GlEnum;
 use crate::py_abstractions::structs::ThreeDObjects::ColliderOptions::ColliderOptions;
 use crate::py_abstractions::structs::ThreeDObjects::PhysicsHandle::PhysicsEnum;
 use crate::py_abstractions::structs::TwoDObjects::Circle::Circle;
@@ -34,6 +37,7 @@ use crate::engine::Objects::ObjectManagement::ObjectManagement;
 
 
 pub enum Command {
+    GLENUM(GLENUM),
     DrawRectangleFromPyClass(Rectangle),
     DrawCircleFromPyClass(Circle),
     PhysicsEnum(PhysicsEnum, ObjectKey),
@@ -221,6 +225,12 @@ pub async fn proccess_commands_loop() {
         while let Some(command) = COMMAND_QUEUE.pop() {
             
             match command {
+                Command::GLENUM(glenum)=> {
+                    let gl  = unsafe {
+                        get_internal_gl().quad_gl
+                    };
+                    implement_GlEnum(glenum, gl);
+                }
                 Command::DrawCircleFromPyClass(circle)=> {
                     sm::switch_to_desired_shader(sm::ShaderKind::None);
                     draw_circle(&circle)},

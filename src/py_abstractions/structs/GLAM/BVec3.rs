@@ -28,7 +28,7 @@ impl BVec3 {
 
     // Const constructor for splat values
     #[inline(always)]
-    pub const fn splat(value: bool) -> Self {
+    pub const fn const_splat(value: bool) -> Self {
     BVec3 { x: value, y: value, z: value }
     }
 
@@ -53,16 +53,20 @@ impl BVec3 {
     /// All false.
     #[classattr]
     fn FALSE() -> BVec3 {
-        Self::splat(false)
+        Self::const_splat(false)
     }
 
     /// All true.
     #[classattr]
     fn TRUE() -> BVec3 {
-        Self::splat(true)
+        Self::const_splat(true)
     }
 
-    
+    #[staticmethod]
+    pub fn splat(value: bool) -> Self {
+        BVec3 { x: value, y: value, z: value }
+    }
+
     #[inline]
     pub fn bitmask(&self) -> u32 {
         (self.x as u32) | (self.y as u32) << 1 | (self.z as u32) << 2

@@ -26,7 +26,7 @@ impl BVec2 {
 
     // Const constructor for splat values
     #[inline(always)]
-    pub const fn splat(value: bool) -> Self {
+    pub const fn const_splat(value: bool) -> Self {
     BVec2 { x: value, y: value }
     }
 
@@ -52,13 +52,18 @@ impl BVec2 {
     /// All false.
     #[classattr]
     fn FALSE() -> BVec2 {
-        Self::splat(false)
+        Self::const_splat(false)
     }
 
     /// All true.
     #[classattr]
     fn TRUE() -> BVec2 {
-        Self::splat(true)
+        Self::const_splat(true)
+    }
+    
+    #[staticmethod]
+    pub fn splat(value: bool) -> Self {
+        BVec2 { x: value, y: value }
     }
     
     #[inline]
