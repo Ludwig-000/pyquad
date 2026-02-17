@@ -442,7 +442,6 @@ pub async fn proccess_commands_loop() {
                 Command::DrawCubemap {pos,size,texture,color} => {
                     sm::switch_to_desired_shader(sm::ShaderKind::None);
                     mq::draw_cube(pos,size,texture.as_ref(),color);
-                    crate::engine::Cubemap::draw_fullscreen_quad();
         
                 }
         
