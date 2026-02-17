@@ -425,12 +425,20 @@ this will still be drawn during 'draw_all_objects()'
 Example:
  
 ```
-...# we flicker the c
+...# we have turned an enemy invisible,
+... #but want to reveal him if he has been spottet for a short duration
+>>>enemy = " $py_constructor "
+>>>while True:
+>>>     
+>>>     if enemy_used_invisibility:
+>>>         enemy.set_draw_each_frame(False)
+>>>     if is_spottet:
+>>>         enemy.manually_draw_now()
 ```
 "
 ]
                 pub fn manually_draw_now(&self){
-                    
+                    todo!()
                 }
             }
         }
