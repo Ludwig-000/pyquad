@@ -1,0 +1,3 @@
+disallowed-methods = [
+    { path = "macroquad::prelude::set_camera", reason = "Use the wrappers inside engine->CameraManager instead." },
+]

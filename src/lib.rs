@@ -6,7 +6,7 @@
 #![allow(clippy::excessive_precision)]
 #![warn(clippy::large_enum_variant)]
 #![allow(clippy::wrong_self_convention)]
-
+#![deny(clippy::disallowed_methods)]
 
 use pyo3::prelude::*;
 use pyo3_stub_gen::define_stub_info_gatherer;
