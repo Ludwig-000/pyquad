@@ -6,6 +6,8 @@
 #![allow(clippy::excessive_precision)]
 #![warn(clippy::large_enum_variant)]
 #![allow(clippy::wrong_self_convention)]
+#![allow(clippy::too_many_arguments)]
+#![allow(clippy::needless_range_loop)]
 #![deny(clippy::disallowed_methods)]
 
 use pyo3::prelude::*;

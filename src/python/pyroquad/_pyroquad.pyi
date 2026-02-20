@@ -4967,9 +4967,9 @@ class Cube:
         ```
         ...# we flicker the Cube every second frame.
         >>>myCube = Cube()
-        >>>flag = true
-        >>>while(true):
-        >>>     flag = !flag
+        >>>flag = True
+        >>>while True:
+        >>>     flag = not flag
         >>>     myCube.set_draw_each_frame(flag)
         ```
         """
@@ -4982,7 +4982,15 @@ class Cube:
         Example:
          
         ```
-        ...# we flicker the c
+        ...# we have turned an enemy invisible,
+        ... #but want to reveal him if he has been spottet for a short duration
+        >>>enemy = Cube()
+        >>>while True:
+        >>>     
+        >>>     if enemy_used_invisibility:
+        >>>         enemy.set_draw_each_frame(False)
+        >>>     if is_spottet:
+        >>>         enemy.manually_draw_now()
         ```
         """
     def __eq__(self, other:Cube) -> builtins.bool:
@@ -5071,9 +5079,9 @@ class Cylinder:
         ```
         ...# we flicker the Cylinder every second frame.
         >>>myCylinder = Cylinder()
-        >>>flag = true
-        >>>while(true):
-        >>>     flag = !flag
+        >>>flag = True
+        >>>while True:
+        >>>     flag = not flag
         >>>     myCylinder.set_draw_each_frame(flag)
         ```
         """
@@ -5086,7 +5094,15 @@ class Cylinder:
         Example:
          
         ```
-        ...# we flicker the c
+        ...# we have turned an enemy invisible,
+        ... #but want to reveal him if he has been spottet for a short duration
+        >>>enemy = Cylinder()
+        >>>while True:
+        >>>     
+        >>>     if enemy_used_invisibility:
+        >>>         enemy.set_draw_each_frame(False)
+        >>>     if is_spottet:
+        >>>         enemy.manually_draw_now()
         ```
         """
     def tick(self, slf:Cylinder, function:typing.Any) -> None:
@@ -5224,7 +5240,7 @@ class Image:
     def height(self) -> builtins.int: ...
     @height.setter
     def height(self, value: builtins.int) -> None: ...
-    def __new__(cls, bytes:typing.Sequence[builtins.int], width:builtins.int, height:builtins.int) -> Image: ...
+    def __new__(cls, path:builtins.str) -> Image: ...
     @staticmethod
     def empty() -> Image: ...
     @staticmethod
@@ -5249,7 +5265,7 @@ class Image:
         Returns a pixel [Color] from this image.
         """
     @staticmethod
-    def from_file(path:builtins.str) -> Image:
+    def from_bytes(bytes:typing.Sequence[builtins.int], width:builtins.int, height:builtins.int) -> Image:
         r"""
         Creates an image from a given file.
         
@@ -5396,9 +5412,9 @@ class Mesh:
         ```
         ...# we flicker the Mesh every second frame.
         >>>myMesh = Mesh.from_file_data(...)
-        >>>flag = true
-        >>>while(true):
-        >>>     flag = !flag
+        >>>flag = True
+        >>>while True:
+        >>>     flag = not flag
         >>>     myMesh.set_draw_each_frame(flag)
         ```
         """
@@ -5411,7 +5427,15 @@ class Mesh:
         Example:
          
         ```
-        ...# we flicker the c
+        ...# we have turned an enemy invisible,
+        ... #but want to reveal him if he has been spottet for a short duration
+        >>>enemy = Mesh.from_file_data(...)
+        >>>while True:
+        >>>     
+        >>>     if enemy_used_invisibility:
+        >>>         enemy.set_draw_each_frame(False)
+        >>>     if is_spottet:
+        >>>         enemy.manually_draw_now()
         ```
         """
     def __eq__(self, other:Mesh) -> builtins.bool:
@@ -5617,9 +5641,9 @@ class Pill:
         ```
         ...# we flicker the Pill every second frame.
         >>>myPill = Pill()
-        >>>flag = true
-        >>>while(true):
-        >>>     flag = !flag
+        >>>flag = True
+        >>>while True:
+        >>>     flag = not flag
         >>>     myPill.set_draw_each_frame(flag)
         ```
         """
@@ -5632,7 +5656,15 @@ class Pill:
         Example:
          
         ```
-        ...# we flicker the c
+        ...# we have turned an enemy invisible,
+        ... #but want to reveal him if he has been spottet for a short duration
+        >>>enemy = Pill()
+        >>>while True:
+        >>>     
+        >>>     if enemy_used_invisibility:
+        >>>         enemy.set_draw_each_frame(False)
+        >>>     if is_spottet:
+        >>>         enemy.manually_draw_now()
         ```
         """
     def __new__(cls, position:Vec3=..., rotation:Vec3=..., scale:Vec3=..., color:Color=..., texture:typing.Optional[Texture2D]=None, collider_type:ColliderOptions=...) -> Pill: ...
@@ -5891,9 +5923,9 @@ class Sphere:
         ```
         ...# we flicker the Sphere every second frame.
         >>>mySphere = Sphere()
-        >>>flag = true
-        >>>while(true):
-        >>>     flag = !flag
+        >>>flag = True
+        >>>while True:
+        >>>     flag = not flag
         >>>     mySphere.set_draw_each_frame(flag)
         ```
         """
@@ -5906,7 +5938,15 @@ class Sphere:
         Example:
          
         ```
-        ...# we flicker the c
+        ...# we have turned an enemy invisible,
+        ... #but want to reveal him if he has been spottet for a short duration
+        >>>enemy = Sphere()
+        >>>while True:
+        >>>     
+        >>>     if enemy_used_invisibility:
+        >>>         enemy.set_draw_each_frame(False)
+        >>>     if is_spottet:
+        >>>         enemy.manually_draw_now()
         ```
         """
     def check_collision(self) -> builtins.list[typing.Any]:
@@ -5970,8 +6010,7 @@ class Texture2D:
     r"""
     Texture, data stored in GPU memory
     """
-    @staticmethod
-    def from_image(image:Image) -> Texture2D: ...
+    def __new__(cls, image:Image) -> Texture2D: ...
 
 class Vec2:
     ZERO: Vec2

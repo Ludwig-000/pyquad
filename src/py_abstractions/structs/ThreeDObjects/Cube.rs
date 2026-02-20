@@ -8,6 +8,7 @@ use crate::{implement_Drop3D, implement_basic_getter_methods3D, implement_basic_
 use crate::engine::PChannel::PChannel;
 use crate::py_abstractions::structs::ThreeDObjects::PhysicsHandle::Physics;
 use std::hash::{Hash, Hasher};
+use std::sync::Arc;
 
 use slotmap::Key;
 use crate::py_abstractions::structs::ThreeDObjects::ColliderOptions::InnerColliderOptions;
@@ -81,7 +82,7 @@ impl Cube {
         
         let weak_ref_handle: Py<PyWeakref> = {
             let bound_cube = cube_handle.bind(py); 
-            let weak_ref_ref = PyWeakrefReference::new(&bound_cube)?;
+            let weak_ref_ref = PyWeakrefReference::new(bound_cube)?;
             weak_ref_ref.cast_into::<PyWeakref>()?.unbind() 
         };
 

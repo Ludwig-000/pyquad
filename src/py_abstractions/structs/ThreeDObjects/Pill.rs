@@ -79,7 +79,7 @@ impl Pill {
         
         let weak_ref_handle: Py<PyWeakref> = {
             let bound_cube = cube_handle.bind(py); 
-            let weak_ref_ref = PyWeakrefReference::new(&bound_cube)?;
+            let weak_ref_ref = PyWeakrefReference::new(bound_cube)?;
             weak_ref_ref.cast_into::<PyWeakref>()?.unbind() 
         };
 
